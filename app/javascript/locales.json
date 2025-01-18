@@ -5925,6 +5925,7 @@
       "partial_titles": {
         "call_list": "Your call list",
         "completed_calls": "Your completed calls",
+        "coordinator_cr": "Your Care Recipient Shifts",
         "search_results": "Search results",
         "shared_cases": "Shared cases",
         "unconfirmed_support": "Unconfirmed Practical Support"
