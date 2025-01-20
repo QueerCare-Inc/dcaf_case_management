@@ -7,16 +7,16 @@ class DashboardsController < ApplicationController
 
   def index
     @shared_patients = eager_loaded_patients.shared_patients(current_line)
-    @unconfirmed_support_patients = eager_loaded_patients.unconfirmed_practical_support(current_line)
+    @unconfirmed_support_patients = eager_loaded_patients.unconfirmed_shift(current_line)
   end
 
   def search
-    if params[:search].present?
-      @results = eager_loaded_patients.search params[:search],
+    @results = if params[:search].present?
+                 eager_loaded_patients.search params[:search],
                                               lines: [current_line || Line.all]
-    else
-      @results = []
-    end
+               else
+                 []
+               end
 
     @patient = Patient.new
     @today = Time.zone.today.to_date

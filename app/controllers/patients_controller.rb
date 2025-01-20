@@ -58,8 +58,11 @@ class PatientsController < ApplicationController
 
   def fetch_pledge
     endpoint = ENV.fetch('PLEDGE_GENERATOR_ENDPOINT', 'http://localhost:3001/generate')
-    basic_auth = { username: ENV.fetch('PLEDGE_GENERATOR_USER', 'apiuser'), password: ENV.fetch('PLEDGE_GENERATOR_TOKEN', 'PLEDGETOKEN') }
-    extra_params = params.permit(:case_manager_name, *current_tenant.pledge_config.remote_pledge_extras.map { |x, y| x.to_sym })
+    basic_auth = { username: ENV.fetch('PLEDGE_GENERATOR_USER', 'apiuser'),
+                   password: ENV.fetch('PLEDGE_GENERATOR_TOKEN', 'PLEDGETOKEN') }
+    extra_params = params.permit(:case_manager_name, *current_tenant.pledge_config.remote_pledge_extras.map do |x, y|
+      x.to_sym
+    end)
     payload = {
       fund: Rails.env.development? ? 'test' : current_tenant.name.downcase,
       base: {
@@ -71,13 +74,15 @@ class PatientsController < ApplicationController
           fund_pledge: @patient.fund_pledge,
           procedure_cost: @patient.procedure_cost,
           patient_contribution: @patient.patient_contribution,
-          naf_pledge: @patient.naf_pledge,
+          naf_pledge: @patient.naf_pledge
         },
         clinic: {
           name: @patient.clinic.name,
-          location: @patient.clinic.display_location,
+          location: @patient.clinic.display_location
         },
-        external_pledges: @patient.external_pledges.where(active: true).map { |x| { source: x.source, amount: x.amount.to_i }} || [],
+        external_pledges: @patient.external_pledges.where(active: true).map do |x|
+          { source: x.source, amount: x.amount.to_i }
+        end || []
       },
       extra: extra_params.to_h
     }
@@ -206,24 +211,38 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :name, :last_menstrual_period_days, :last_menstrual_period_weeks,
-    :appointment_date, :primary_phone, :pronouns
+    :name, :care_coordinator, # :last_menstrual_period_days, :last_menstrual_period_weeks,
+    :appointment_date, :primary_phone, :pronouns, :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
-    :line_id, :age, :race_ethnicity, :language, :voicemail_preference, :textable,
+    :line_id,
+    :legal_name, :email,
+    :age, :race_ethnicity, :language, :voicemail_preference, :textable,
     :city, :state, :county, :zipcode, :other_contact, :other_phone,
-    :other_contact_relationship, :employment_status, :income,
+    :other_contact_relationship,
+    :other_contact_referencing,
+    :employment_status, :income,
     :household_size_adults, :household_size_children, :insurance, :referred_by,
-    :procedure_type, special_circumstances: []
+    :procedure_type,
+    :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
+    { special_circumstances: [] }
   ].freeze
 
-  ABORTION_INFORMATION_PARAMS = [
-    :clinic_id, :resolved_without_fund, :referred_to_clinic, :completed_ultrasound,
+  # Does this make sense for a one to many relationship?
+  PROCEDURE_INFORMATION_PARAMS = [
+    :clinic_id,
+    :surgeon_id, :procedure_type,
+    :resolved_without_fund, :referred_to_clinic, :completed_ultrasound,
     :procedure_cost, :ultrasound_cost, :patient_contribution, :naf_pledge, :fund_pledge,
     :fund_pledged_at, :pledge_sent_at, :solidarity, :solidarity_lead, :appointment_time,
     :multiday_appointment
   ].freeze
+
+  # Does this make sense for a one to many relationship?
+  SHIFT_INFORMATION_PARAMS = [
+    :shift_id, :street_address, :city, :state, :zipcode, :phone, :required_services
+  ]
 
   FULFILLMENT_PARAMS = [
     fulfillment_attributes: [:id, :fulfilled, :procedure_date, :gestation_at_procedure,
@@ -235,7 +254,7 @@ class PatientsController < ApplicationController
   def patient_params
     permitted_params = [].concat(
       PATIENT_DASHBOARD_PARAMS, PATIENT_INFORMATION_PARAMS,
-      ABORTION_INFORMATION_PARAMS, OTHER_PARAMS
+      PROCEDURE_INFORMATION_PARAMS, SHIFT_INFORMATION_PARAMS, OTHER_PARAMS
     )
     permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:patient).permit(permitted_params)
@@ -243,14 +262,13 @@ class PatientsController < ApplicationController
 
   def encrypt_payload(payload)
     encryptor = ActiveSupport::MessageEncryptor.new(ENV.fetch('PLEDGE_GENERATOR_ENCRYPTOR', '0' * 32))
-    encrypted = encryptor.encrypt_and_sign(payload)
-    encrypted
+    encryptor.encrypt_and_sign(payload)
   end
 
   def render_csv
     now = Time.zone.now.strftime('%Y%m%d')
     csv_filename = "patient_data_export_#{now}.csv"
-    set_headers()
+    set_headers
 
     response.status = 200
 
@@ -261,11 +279,11 @@ class PatientsController < ApplicationController
     end
   end
 
-  def set_headers()
-    headers["Content-Type"] = "text/csv"
+  def set_headers
+    headers['Content-Type'] = 'text/csv'
     headers['X-Accel-Buffering'] = 'no'
-    headers["Cache-Control"] = "no-cache"
+    headers['Cache-Control'] = 'no-cache'
     headers[Rack::ETAG] = nil # Without this, data doesn't stream
-    headers.delete("Content-Length")
+    headers.delete('Content-Length')
   end
 end

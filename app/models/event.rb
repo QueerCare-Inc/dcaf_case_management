@@ -16,6 +16,7 @@ class Event < ApplicationRecord
     pledged: 3,
     unknown_action: 4
   }
+  # TODO: what other actions do we want to add?
 
   # Validations
   validates :event_type, :cm_name, :patient_name, :patient_id, :line, presence: true

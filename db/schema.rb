@@ -367,6 +367,27 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_162657) do
     t.index ["fund_id"], name: "index_practical_supports_on_fund_id"
   end
 
+  create_table "shifts", force: :cascade do |t|
+    t.string "name"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string "support_type", null: false
+    t.boolean "confirmed"
+    t.string "source", null: false
+    t.string "can_support_type"
+    t.bigint "can_support_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "fund_id"
+    # t.decimal "amount", precision: 8, scale: 2
+    # t.date "support_date"
+    # t.string "attachment_url", comment: "A link to a fund's stored receipt for this particular entry"
+    t.boolean "fulfilled" #, comment: "An indicator that a particular practical support is fulfilled, completed, or paid out."
+    # t.date "purchase_date", comment: "Date of purchase, if applicable"
+    t.index ["can_support_type", "can_support_id"], name: "index_practical_supports_on_can_support_type_and_can_support_id"
+    t.index ["fund_id"], name: "index_practical_supports_on_fund_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"

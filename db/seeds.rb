@@ -18,6 +18,7 @@ ActsAsTenant.without_tenant do
   ActiveRecord::SessionStore::Session.destroy_all
   Line.destroy_all
   PracticalSupport.destroy_all
+  Shift.destroy_all
   Fund.destroy_all
 end
 

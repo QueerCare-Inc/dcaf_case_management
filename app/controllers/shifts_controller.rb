@@ -1,58 +1,61 @@
 class ShiftsController < ApplicationController
-  before_action :set_shift, only: %i[ show edit update destroy ]
+  before_action :find_patient, only: [:create]
+  before_action :find_support, only: [:edit, :update, :destroy]
+  rescue_from ActiveRecord::RecordNotFound,
+              with: -> { head :not_found }
 
-  # GET /shifts
-  def index
-    @shifts = Shift.all
-  end
-
-  # GET /shifts/1
-  def show
-  end
-
-  # GET /shifts/new
-  def new
-    @shift = Shift.new
-  end
-
-  # GET /shifts/1/edit
   def edit
+    @note = @support.notes.new
+    respond_to { |format| format.js }
   end
 
-  # POST /shifts
   def create
-    @shift = Shift.new(shift_params)
-
-    if @shift.save
-      redirect_to @shift, notice: "Shift was successfully created."
+    @support = @patient.shifts.new shift_params
+    if @support.save
+      flash.now[:notice] = t('flash.patient_info_saved', timestamp: Time.zone.now.display_timestamp)
+      @support = @patient.reload.shifts.order(created_at: :desc)
+      respond_to { |format| format.js }
     else
-      render :new, status: :unprocessable_entity
+      flash.now[:alert] = "Shift failed to save: #{@support.errors.full_messages.to_sentence}"
+      respond_to do |format|
+        format.js { render partial: 'layouts/flash_messages' }
+      end
     end
   end
 
-  # PATCH/PUT /shifts/1
   def update
-    if @shift.update(shift_params)
-      redirect_to @shift, notice: "Shift was successfully updated.", status: :see_other
+    if @support.update shift_params
+      flash.now[:notice] = t('flash.patient_info_saved', timestamp: Time.zone.now.display_timestamp)
+      respond_to { |format| format.js }
     else
-      render :edit, status: :unprocessable_entity
+      flash.now[:alert] = "Shift failed to save: #{@support.errors.full_messages.to_sentence}"
+      respond_to do |format|
+        format.js { render partial: 'layouts/flash_messages' }
+      end
     end
   end
 
-  # DELETE /shifts/1
   def destroy
-    @shift.destroy!
-    redirect_to shifts_url, notice: "Shift was successfully destroyed.", status: :see_other
+    flash.now[:alert] = 'Removed shift'
+    @support.destroy
+    respond_to { |format| format.js }
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_shift
-      @shift = Shift.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def shift_params
-      params.require(:shift).permit(:name, :start_time, :end_time)
-    end
+  # Only allow a list of trusted parameters through.
+  def shift_params
+    params.require(:shift)
+          .permit(:name, :start_time, :end_time,
+                  :confirmed, :support_type, :fullfilled)
+  end
+
+  def find_patient
+    @patient = Patient.find params[:patient_id]
+  end
+
+  def find_support
+    find_patient
+    @support = @patient.shifts.find params[:id]
+  end
 end

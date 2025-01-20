@@ -4,7 +4,9 @@ module UsersHelper
     [
       ['Case manager', 'cm'],
       ['Data volunteer', 'data_volunteer'],
-      ['Admin', 'admin']
+      ['Admin', 'admin'],
+      ['Care Recipient', 'cr'],
+      ['Volunteer', 'volunteer']
     ]
   end
 

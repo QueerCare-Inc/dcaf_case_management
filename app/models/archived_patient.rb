@@ -8,8 +8,8 @@ class ArchivedPatient < ApplicationRecord
   include LastMenstrualPeriodMeasureable
 
   # Relationships
-  belongs_to :clinic, optional: true
   belongs_to :line
+  belongs_to :clinic, optional: true
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
   has_many :external_pledges, as: :can_pledge
@@ -49,11 +49,11 @@ class ArchivedPatient < ApplicationRecord
   # from a year plus ago
   def self.archive_eligible_patients!
     Patient.all.each do |patient|
-      if ( patient.archive_date < Date.today )
-        ActiveRecord::Base.transaction do
-          ArchivedPatient.convert_patient(patient)
-          patient.destroy!
-        end
+      next unless patient.archive_date < Date.today
+
+      ActiveRecord::Base.transaction do
+        ArchivedPatient.convert_patient(patient)
+        patient.destroy!
       end
     end
   end
@@ -112,8 +112,7 @@ class ArchivedPatient < ApplicationRecord
       age_range: patient.age_range,
       has_alt_contact: patient.has_alt_contact,
       notes_count: patient.notes_count,
-      has_special_circumstances: patient.has_special_circumstances,
-
+      has_special_circumstances: patient.has_special_circumstances
     )
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id

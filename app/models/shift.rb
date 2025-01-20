@@ -16,6 +16,6 @@ class Shift < ApplicationRecord
   has_many :notes, as: :can_note
 
   # Validations
-  validates :name, :source, :support_type, :start_time, :end_time, :filled, presence: true, length: { maximum: 150 }
-  validates :filled, format: :boolean
+  validates :name, :source, :support_type, :start_time, :end_time, :fulfilled, presence: true, length: { maximum: 150 }
+  # validates :filled, format: :boolean
 end
