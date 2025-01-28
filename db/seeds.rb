@@ -168,11 +168,11 @@ fund2 = Fund.create! name: 'CatFund',
 
       if i.even?
         patient.notes.create! full_text: additional_note_text
-        patient.practical_supports.create! support_type: 'Advice', source: 'Counselor'
+        patient.practical_supports.create! support_type: 'Advice', source: 'Counselor', start_time: (Time.now + rand(10).days), end_time: (Time.now - rand(10).days + 4.hours)
       end
 
       if i % 3 == 0
-        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', support_date: 3.days.from_now
+        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', support_date: 3.days.from_now, start_time: (Time.now + rand(3).days), end_time: (Time.now - rand(3).days + 4.hours)
       end
 
       if i % 5 == 0
