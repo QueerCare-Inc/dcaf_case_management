@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  # resources :shifts
   devise_for :users,
              controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' },
              skip: [:registrations]
@@ -46,7 +45,7 @@ Rails.application.routes.draw do
       resources :external_pledges,
                 only: [ :create, :update, :destroy ]
       resources :practical_supports,
-                only: [ :create, :edit, :update, :destroy ]          
+                only: [ :create, :edit, :update, :destroy ]      
     end
 
     # For practical support notes

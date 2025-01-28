@@ -33,8 +33,7 @@ class Patient < ApplicationRecord
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
   has_many :external_pledges, as: :can_pledge
-  # has_many :practical_supports, as: :can_support
-  has_many :shifts, as: :can_support
+  has_many :practical_supports, as: :can_support
   has_many :notes, as: :can_note
   belongs_to :pledge_generated_by, class_name: 'User', inverse_of: nil, optional: true
   belongs_to :pledge_sent_by, class_name: 'User', inverse_of: nil, optional: true
@@ -225,7 +224,7 @@ class Patient < ApplicationRecord
   def all_versions(include_fulfillment)
     all_versions = versions || []
     all_versions += external_pledges.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
-    all_versions += shifts.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
+    all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
     if include_fulfillment
       all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
     end
@@ -293,11 +292,11 @@ class Patient < ApplicationRecord
                   updated_at: { '$lte' => datetime })
   end
 
-  def self.unconfirmed_shift(line)
+  def self.unconfirmed_practical_support(line)
     Patient.distinct
            .where(line: line)
-           .joins(:shifts)
-           .where({ shifts: { confirmed: false }, created_at: 3.months.ago.. })
+           .joins(:practical_supports)
+           .where({ practical_supports: { confirmed: false }, created_at: 3.months.ago.. })
   end
 
   # This is intended to protect against saving maliscious data sent via an edited request. It should
