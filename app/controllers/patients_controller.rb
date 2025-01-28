@@ -240,8 +240,8 @@ class PatientsController < ApplicationController
   ].freeze
 
   # Does this make sense for a one to many relationship?
-  SHIFT_INFORMATION_PARAMS = [
-    :shift_id, :street_address, :city, :state, :zipcode, :phone, :required_services
+  PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
+    :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
   ]
 
   FULFILLMENT_PARAMS = [
