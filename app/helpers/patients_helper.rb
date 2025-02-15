@@ -100,19 +100,26 @@ module PatientsHelper
   end
 
   def procedure_type_options(current_value = nil)
-    standard_options = [
-      [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
-      [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
-      [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
-      [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
-      [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
-      [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
-      [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
-    ]
-    full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
-    full_set.push(*standard_options) unless Config.hide_standard_dropdown
+    procedure_type_options = Config.find_or_create_by(config_key: 'procedure_type').options
 
-    options_plus_current(full_set, current_value)
+    return [] if procedure_type_options.blank?
+
+    options_plus_current([nil] + procedure_type_options, current_value)
+
+    # THIS SECTION CURRENTLY BREAKS THE PATIENT VIEW AND CONFIG MANAGEMENT
+    # standard_options = [
+    #   [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
+    #   [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
+    #   [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
+    #   [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
+    #   [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
+    #   [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
+    #   [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
+    # ]
+    # full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
+    # full_set.push(*standard_options) unless Config.hide_standard_dropdown
+
+    # options_plus_current(full_set, current_value)
   end
 
   def income_options
