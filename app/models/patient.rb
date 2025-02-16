@@ -70,6 +70,7 @@ class Patient < ApplicationRecord
                       allow_blank: true
 
   validate :special_circumstances_length
+  validate :in_case_of_emergency
 
   # Methods
   def save_identifier
@@ -163,6 +164,10 @@ class Patient < ApplicationRecord
     special_circumstances.map { |circumstance| circumstance.present? }.any?
   end
 
+  def has_in_case_of_emergency
+    in_case_of_emergency.map { |emergency| emergency.present? }.any?
+  end
+
   def archive_date
     if fulfillment.audited?
       # If a patient fulfillment is ticked off as audited, archive 3 months
@@ -197,6 +202,7 @@ class Patient < ApplicationRecord
     super.merge(
       status: status,
       primary_phone_display: primary_phone_display,
+      email_display: email_display
     )
   end
 
@@ -245,6 +251,14 @@ class Patient < ApplicationRecord
 
     special_circumstances.each do |value|
       errors.add(:special_circumstances, 'is invalid') if value && value.length > 50
+    end
+  end
+
+  def in_case_of_emergency_length
+    errors.add(:in_case_of_emergency, 'is invalid') unless in_case_of_emergency.length <= 7
+
+    in_case_of_emergency.each do |value|
+      errors.add(:in_case_of_emergency, 'is invalid') if value && value.length > 120
     end
   end
 end

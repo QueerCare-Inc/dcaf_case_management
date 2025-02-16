@@ -38,6 +38,7 @@ en:
         appointment_time: Appointment time
         procedure_time: Procedure time
         audited: Audited
+        care_coordinator: Care Coordinator
         check_number: Check number
         city: City
         clinic_id: Clinic ID
@@ -362,6 +363,7 @@ en:
       currently: 'Currently: %{weeks}w %{days}d'
       delete: Delete duplicate patient record
       delete_label: 'Admin: Delete'
+      email: Email
       phone: Phone number
       weeks_along: Weeks along at intake
     data_entry:
@@ -438,11 +440,13 @@ en:
       income_help: Employment, Food Stamps, SS, TANF, etc.
       insurance: Patient insurance
       language: Preferred Language
-      other_contact:
-        name: Other contact name
-        phone: Other phone
-        relationship: Relationship to other contact
-        title: Other Contact
+      legal_name: Legal Name (if different)
+      emergency_contact:
+        name: Emergency contact name
+        phone: Emergency contact phone
+        relationship: Relationship to emergency contact
+        emergency_reference_wording: How do you want %{fund} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?
+        title: Emergency Contact
       referred_by: How patient heard about %{fund}
       special_circumstances:
         domestic_violence: Domestic violence
@@ -453,6 +457,17 @@ en:
         prison: Prison
         rape: Rape
         title: Special Circumstances
+      in_case_of_emergency:
+        advanced_care_directive: Do you have an advanced care directive?
+        ident_disclosure_permission: Does %{fund} have permission to disclose your name, gender, sex, and medical history to emergency response teams?
+        title: In Case of Emergency
+        emergency_call:
+          criminal_activity: Criminal activity or danger to life
+          fire_or_smoke: Fire or smoke
+          medical_emergency: Medical emergency
+          mental_health_emergency: Mental health emergency
+          missing_person: Missing or lost persons
+          title: Under what circumstances, if any, would you want a %{fund} volunteer to call 911?
       textable: Textable?
       title: Patient information
       voicemail_preference: Voicemail preference

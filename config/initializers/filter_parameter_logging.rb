@@ -23,6 +23,7 @@ Rails.application.config.filter_parameters += [
   :shared_flag,
   :income,
   :special_circumstances,
+  :in_case_of_emergency,
   :procedure_cost,
   :procedure_date,
   :procedure_completed_date,

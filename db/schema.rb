@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -286,6 +286,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.time "appointment_time", comment: "A patient's appointment time"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
+    t.string "legal_name"
+    t.string "email"
+    t.string "emergency_reference_wording"
+    t.string "in_case_of_emergency", default: [], array: true
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
     t.index ["emergency_conctact"], name: "index_patients_on_emergency_conctact"
     t.index ["emergency_contact_phone"], name: "index_patients_on_emergency_contact_phone"

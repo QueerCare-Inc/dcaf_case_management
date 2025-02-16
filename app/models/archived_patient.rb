@@ -11,7 +11,7 @@ class ArchivedPatient < ApplicationRecord
   belongs_to :clinic, optional: true
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
-
+  
   # Enums
   enum :age_range, {
     not_specified: :not_specified,
@@ -75,6 +75,7 @@ class ArchivedPatient < ApplicationRecord
       has_alt_contact: patient.has_alt_contact,
       notes_count: patient.notes_count,
       has_special_circumstances: patient.has_special_circumstances
+      has_in_case_of_emergency: patient.has_in_case_of_emergency
     )
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id

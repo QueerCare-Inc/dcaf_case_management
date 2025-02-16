@@ -149,7 +149,8 @@ class PatientsController < ApplicationController
     :household_size_adults, :household_size_children, :insurance, :referred_by,
     :procedure_type,
     :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
-    { special_circumstances: [] }
+    { special_circumstances: [] },
+    { in_case_of_emergency: [] }
   ].freeze
 
   # Does this make sense for a one to many relationship?

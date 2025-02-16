@@ -11,7 +11,7 @@
                          label: t('patient.shared.name'),
                          autocomplete: 'off' %>
       </div>
-      
+
       <div class="col-2">
         <%= f.text_field :pronouns,
                          value: patient.pronouns,
@@ -22,7 +22,7 @@
         <%= f.date_field :intake_date,
                           label: t('patient.shared.intake_date'),
                           autocomplete: 'off' %>
-      </div>          
+      </div>
 
       <div class="col-2">
         <%= f.date_field :procedure_date,
@@ -39,13 +39,20 @@
                          autocomplete: 'off' %>
       </div>
 
-      <div class="col">
-        <%= f.text_field :pronouns,
-                         value: patient.pronouns,
-                         autocomplete: 'off' %>
+      <div class="col-2">
+        <%= f.text_field :email,
+                          value: patient.email_display,
+                          label: t('patient.dashboard.email')
+                          %>
       </div>
 
-      <div class="col">
+      <div class="col-2">
+        <%= f.text_field :care_coordinator,
+                          label: t('patient.shared.care_coordinator'),
+                          autocomplete: 'on' %>
+      </div>
+
+      <div class="col-2">
         <div class="form-group">
           <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(patient) %></label>
           <input type="text" value="<%= patient.status %>" class="form-control form-control-plaintext" id="patient_status_display" autocomplete="off" disabled>
