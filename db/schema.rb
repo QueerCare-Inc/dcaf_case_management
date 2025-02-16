@@ -24,8 +24,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.string "language"
     t.date "initial_call_date"
     t.boolean "shared_flag"
-    t.integer "last_menstrual_period_weeks"
-    t.integer "last_menstrual_period_days"
     t.string "city"
     t.string "state"
     t.string "county"
@@ -38,19 +36,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.string "referred_by"
     t.boolean "referred_to_clinic"
     t.date "appointment_date"
-    t.integer "procedure_cost"
-    t.integer "patient_contribution"
-    t.integer "naf_pledge"
-    t.integer "fund_pledge"
-    t.datetime "fund_pledged_at", precision: nil
-    t.boolean "pledge_sent"
-    t.boolean "resolved_without_fund"
-    t.datetime "pledge_generated_at", precision: nil
-    t.datetime "pledge_sent_at", precision: nil
     t.boolean "textable"
     t.bigint "clinic_id"
-    t.bigint "pledge_generated_by_id"
-    t.bigint "pledge_sent_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
@@ -58,15 +45,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.boolean "solidarity"
     t.string "solidarity_lead"
     t.string "procedure_type"
-    t.integer "ultrasound_cost"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
     t.index ["clinic_id"], name: "index_archived_patients_on_clinic_id"
     t.index ["fund_id"], name: "index_archived_patients_on_fund_id"
     t.index ["line_id"], name: "index_archived_patients_on_line_id"
     t.index ["line_legacy"], name: "index_archived_patients_on_line_legacy"
-    t.index ["pledge_generated_by_id"], name: "index_archived_patients_on_pledge_generated_by_id"
-    t.index ["pledge_sent_by_id"], name: "index_archived_patients_on_pledge_sent_by_id"
   end
 
   create_table "auth_factors", force: :cascade do |t|
@@ -202,8 +186,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
   create_table "fulfillments", force: :cascade do |t|
     t.boolean "fulfilled", default: false, null: false
     t.date "procedure_date"
-    t.integer "gestation_at_procedure"
-    t.integer "fund_payout"
     t.string "check_number"
     t.date "date_of_check"
     t.boolean "audited"
@@ -302,8 +284,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.datetime "pledge_sent_at", precision: nil
     t.boolean "textable"
     t.bigint "clinic_id"
-    t.bigint "pledge_generated_by_id"
-    t.bigint "pledge_sent_by_id"
     t.bigint "last_edited_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -313,7 +293,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.string "solidarity_lead"
     t.string "procedure_type"
     t.time "appointment_time", comment: "A patient's appointment time"
-    t.integer "ultrasound_cost"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
@@ -422,8 +401,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
   add_foreign_key "archived_patients", "clinics"
   add_foreign_key "archived_patients", "funds"
   add_foreign_key "archived_patients", "lines"
-  add_foreign_key "archived_patients", "users", column: "pledge_generated_by_id"
-  add_foreign_key "archived_patients", "users", column: "pledge_sent_by_id"
   add_foreign_key "auth_factors", "users"
   add_foreign_key "call_list_entries", "funds"
   add_foreign_key "call_list_entries", "lines"
@@ -442,8 +419,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
   add_foreign_key "patients", "funds"
   add_foreign_key "patients", "lines"
   add_foreign_key "patients", "users", column: "last_edited_by_id"
-  add_foreign_key "patients", "users", column: "pledge_generated_by_id"
-  add_foreign_key "patients", "users", column: "pledge_sent_by_id"
   add_foreign_key "practical_supports", "funds"
   add_foreign_key "users", "funds"
   add_foreign_key "versions", "funds"

@@ -19,24 +19,6 @@
           <%= f.check_box :naf_only, label: t('clinic_locator.naf_only_toggle') %>
           <%= f.check_box :medicaid_only, label: t('clinic_locator.medicaid_only_toggle') %>
         </div>
-
-        <div class="col">
-          <div class="col">
-            <%= f.select :gestation_weeks,
-                         options_for_select(weeks_options, patient.last_menstrual_period_now_weeks),
-                         label: t('clinic_locator.gestation_above'),
-                         autocomplete: 'off' %>
-          </div>
-          <div class="col">
-            <%= f.select :gestation_days,
-                         options_for_select(days_options, patient.last_menstrual_period_now_days),
-                         hide_label: true, 
-                         autocomplete: 'off' %>
-            <%= f.label :last_menstrual_period_days,
-                        t('common.days_along'),
-                        class: "sr-only" %>
-          </div>
-        </div>
       </div>
 
       <%= f.submit t('clinic_locator.search_button'), class: "btn btn-primary" %>

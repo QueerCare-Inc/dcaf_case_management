@@ -33,10 +33,8 @@ class Config < ApplicationRecord
   # Must have a `_options` method implemented
   SHOW_CURRENT_OPTIONS = [
     :county,
-    :external_pledge_source,
     :insurance,
     :language,
-    :pledge_limit_help_text,
     :practical_support,
     :procedure_type,
     :referred_by,
@@ -45,8 +43,6 @@ class Config < ApplicationRecord
 
   enum :config_key, {
     insurance: 0,
-    external_pledge_source: 1,
-    pledge_limit_help_text: 2,
     language: 3,
     resources_url: 4,
     practical_support_guidance_url: 5,
@@ -84,10 +80,6 @@ class Config < ApplicationRecord
 
   VALIDATIONS = {
     insurance:
-      [:validate_length],
-    external_pledge_source:
-      [:validate_length],
-    pledge_limit_help_text:
       [:validate_length],
     practical_support:
       [:validate_length],

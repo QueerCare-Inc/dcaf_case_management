@@ -29,18 +29,10 @@
 
       <div class="col info-form-right">
         <%= f.form_group :procedure_info_checkboxes do %>
-          <%= f.check_box :resolved_without_fund, 
-                          label: t('patient.procedure_information.clinic_section.resolved_without_fund', fund: current_tenant.name),
-                          label_class: 'tooltip-header-checkbox',
-                          data: { 'tooltip-text': resolved_without_fund_help_text } %>
           <%= f.check_box :referred_to_clinic,
                           label: t('patient.procedure_information.clinic_section.referred_to_clinic'),
                           label_class: 'tooltip-header-checkbox',
                           data: { 'tooltip-text': referred_to_clinic_help_text } %>
-          <%= f.check_box :completed_ultrasound,
-                          label: t('patient.procedure_information.clinic_section.ultrasound_completed'),
-                          label_class: 'tooltip-header-checkbox',
-                          data: { 'tooltip-text': mandatory_ultrasound_help_text } %>
           <%= f.check_box :solidarity,
                           label: t('patient.procedure_information.clinic_section.solidarity'),
                           label_class: 'tooltip-header-checkbox',

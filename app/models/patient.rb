@@ -9,8 +9,6 @@ class Patient < ApplicationRecord
   include Notetakeable
   include PatientSearchable
   include AttributeDisplayable
-  include LastMenstrualPeriodMeasureable
-  include Pledgeable
   include Statusable
   include Exportable
   include EventLoggable
@@ -18,8 +16,6 @@ class Patient < ApplicationRecord
   # Callbacks
   before_validation :clean_fields
   before_save :save_identifier
-  before_save :update_pledge_sent_by_sent_at
-  before_save :update_fund_pledged_at
   after_create :initialize_fulfillment
   after_update :confirm_still_shared, if: :shared_flag?
   after_update :update_call_list_lines, if: :saved_change_to_line_id?
@@ -32,11 +28,8 @@ class Patient < ApplicationRecord
   belongs_to :clinic, optional: true
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
-  has_many :external_pledges, as: :can_pledge
   has_many :practical_supports, as: :can_support
   has_many :notes, as: :can_note
-  belongs_to :pledge_generated_by, class_name: 'User', inverse_of: nil, optional: true
-  belongs_to :pledge_sent_by, class_name: 'User', inverse_of: nil, optional: true
   belongs_to :last_edited_by, class_name: 'User', inverse_of: nil, optional: true
 
   # Enable mass posting in forms
@@ -59,20 +52,14 @@ class Patient < ApplicationRecord
   validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
   validate :confirm_appointment_after_initial_call
-  validate :pledge_sent, :pledge_info_presence, if: :updating_pledge_sent?
-  validates :last_menstrual_period_weeks,
-            :last_menstrual_period_days,
-            :age,
-            :procedure_cost,
-            :fund_pledge,
-            :naf_pledge,
-            :patient_contribution,
+
+  validates  :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
   validates :name, :primary_phone, :other_contact, :other_phone, :other_contact_relationship,
             :voicemail_preference, :language, :pronouns, :city, :state, :county, :zipcode,
-            :race_ethnicity, :employment_status, :insurance, :income, :referred_by, :solidarity_lead, :procedure_type,
+            :race_ethnicity, :employment_status, :insurance, :income, :referred_by, :procedure_type,
             length: { maximum: 150 }
   validates_associated :fulfillment
 
@@ -85,34 +72,6 @@ class Patient < ApplicationRecord
   validate :special_circumstances_length
 
   # Methods
-  def self.pledged_status_summary(line)
-    plucked_attrs = [:fund_pledge, :pledge_sent, :id, :name, :appointment_date, :fund_pledged_at]
-    start_of_period = if Config.start_day.downcase.to_s == 'monthly'
-                        Time.zone.today.beginning_of_month.in_time_zone(Config.time_zone)
-                      else
-                        Time.zone.today.beginning_of_week(Config.start_day).in_time_zone(Config.time_zone)
-                      end
-    # Get patients who have been pledged this week, as a simplified hash
-    base = Patient.where(line: line,
-                         resolved_without_fund: [false, nil])
-                  .where.not(fund_pledge: [0, nil])
-
-    patients = base.where(pledge_sent_at: start_of_period..)
-                   .or(base.where(fund_pledged_at: start_of_period..))
-                   .order(fund_pledged_at: :asc)
-                   .select(*plucked_attrs)
-
-    # Divide people up based on whether pledges have been sent or not
-    patients.each_with_object(sent: [], pledged: []) do |patient, summary|
-      if patient.pledge_sent?
-        summary[:sent] << patient
-      else
-        summary[:pledged] << patient
-      end
-      summary
-    end
-  end
-
   def save_identifier
     # [Line first initial][Phone 6th digit]-[Phone last four]
     self.identifier = "#{line.name[0].upcase}#{primary_phone[-5]}-#{primary_phone[-4..-1]}"
@@ -238,11 +197,7 @@ class Patient < ApplicationRecord
   def as_json
     super.merge(
       status: status,
-      last_menstrual_period_at_appt_weeks: last_menstrual_period_at_appt_weeks,
-      last_menstrual_period_at_appt_days: last_menstrual_period_at_appt_days,
-      last_menstrual_period_now_weeks: last_menstrual_period_now_weeks,
-      last_menstrual_period_now_days: last_menstrual_period_now_days,
-      primary_phone_display: primary_phone_display
+      primary_phone_display: primary_phone_display,
     )
   end
 
@@ -267,24 +222,6 @@ class Patient < ApplicationRecord
 
   def initialize_fulfillment
     build_fulfillment.save
-  end
-
-  def update_pledge_sent_by_sent_at
-    if pledge_sent && !pledge_sent_by
-      self.pledge_sent_at = Time.zone.now
-      self.pledge_sent_by = last_edited_by
-    elsif !pledge_sent
-      self.pledge_sent_by = nil
-      self.pledge_sent_at = nil
-    end
-  end
-
-  def update_fund_pledged_at
-    if fund_pledge_changed? && fund_pledge && !fund_pledged_at
-      self.fund_pledged_at = Time.zone.now
-    elsif fund_pledge.blank?
-      self.fund_pledged_at = nil
-    end
   end
 
   def self.fulfilled_on_or_before(datetime)

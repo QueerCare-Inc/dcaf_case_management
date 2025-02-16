@@ -23,9 +23,6 @@ module PracticalSupportsHelper
   end
 
   def practical_support_source_options(current_value = nil)
-    options = [nil, ActsAsTenant.current_tenant.full_name] +
-      Config.find_or_create_by(config_key: 'external_pledge_source').options
-
     standard_options = [
       [ t('common.patient'), 'Patient' ],
       [ t('common.clinic'), 'Clinic' ],
@@ -33,9 +30,7 @@ module PracticalSupportsHelper
       [ t('patient.helper.practical_support.not_sure_yet'), 'Not sure yet (see notes)' ]
     ]
 
-    options.push(*standard_options) unless Config.hide_standard_dropdown?
-
-    options_plus_current(options, current_value)
+    options_plus_current(standard_options, current_value)
   end
 
   def practical_support_guidance_link
