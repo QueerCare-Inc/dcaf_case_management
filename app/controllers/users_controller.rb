@@ -4,11 +4,17 @@ class UsersController < ApplicationController
                                             :change_role_to_admin,
                                             :change_role_to_data_volunteer,
                                             :change_role_to_cm,
+                                            :change_role_to_cr,
+                                            :change_role_to_volunteer,
                                             :toggle_disabled]
   before_action :confirm_admin_user_async, only: [:search]
-  before_action :find_user, only: [:update, :edit, :change_role_to_admin,
+  before_action :find_user, only: [:update, :edit,
+                                   :change_role_to_admin,
                                    :change_role_to_data_volunteer,
-                                   :change_role_to_cm, :toggle_disabled]
+                                   :change_role_to_cm,
+                                   :change_role_to_cr,
+                                   :change_role_to_volunteer,
+                                   :toggle_disabled]
 
   rescue_from ActiveRecord::RecordNotFound, with: -> { head :not_found }
   rescue_from Exceptions::UnauthorizedError, with: -> { head :unauthorized }
@@ -52,6 +58,7 @@ class UsersController < ApplicationController
 
   def create
     raise Exceptions::UnauthorizedError unless current_user.admin?
+
     @user = User.new(user_params)
     hex = SecureRandom.urlsafe_base64
     @user.password, @user.password_confirmation = hex
@@ -75,6 +82,16 @@ class UsersController < ApplicationController
 
   def change_role_to_cm
     @user.update role: 'cm' if user_not_demoting_themself?(@user)
+    render 'edit'
+  end
+
+  def change_role_to_cr
+    @user.update role: 'cr' if user_not_demoting_themself?(@user)
+    render 'edit'
+  end
+
+  def change_role_to_volunteer
+    @user.update role: 'volunteer' if user_not_demoting_themself?(@user)
     render 'edit'
   end
 

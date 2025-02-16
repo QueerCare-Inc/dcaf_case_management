@@ -7,7 +7,7 @@ class SubmitPledgeTest < ApplicationSystemTestCase
     @user = create :user, role: :data_volunteer
     @clinic = create :clinic, fax: "202-867-5309"
     @patient = create :patient, clinic: @clinic,
-                                appointment_date: Time.zone.now + 14,
+                                procedure_date: Time.zone.now + 14,
                                 fund_pledge: 500,
                                 shared_flag: true
 
@@ -98,7 +98,7 @@ class SubmitPledgeTest < ApplicationSystemTestCase
   describe 'cancelling a pledge' do
     before do
       @patient.update pledge_sent: true,
-                      appointment_date: 2.weeks.from_now,
+                      procedure_date: 2.weeks.from_now,
                       fund_pledge: 500
 
       visit edit_patient_path @patient

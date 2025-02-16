@@ -23,8 +23,8 @@ class PledgeFormGenerator
     patient.clinic.name
   end
 
-  def appointment_date
-    patient.appointment_date.strftime "%B %e, %Y"
+  def procedure_date
+    patient.procedure_date.strftime "%B %e, %Y"
   end
 
   def patient_name
@@ -101,7 +101,7 @@ class PledgeFormGenerator
 
   def build_patient_info_block(pdf)
     patient_info_block = <<-TEXT
-      We are writing to confirm that the #{@fund.full_name} (#{@fund.name}) is pledging assistance in the amount of <b>#{patient_amount}</b> toward the cost of abortion care for <b>#{patient_name} (#{patient_identifier})</b> on <b>#{appointment_date}</b>. This payment will be remitted to the abortion provider, <b>#{patient_provider_name}</b> located in <b>#{provider_address}</b>.
+      We are writing to confirm that the #{@fund.full_name} (#{@fund.name}) is pledging assistance in the amount of <b>#{patient_amount}</b> toward the cost of abortion care for <b>#{patient_name} (#{patient_identifier})</b> on <b>#{procedure_date}</b>. This payment will be remitted to the abortion provider, <b>#{patient_provider_name}</b> located in <b>#{provider_address}</b>.
 
       In order to receive payment, the abortion provider must mail a copy of this pledge form to:
     TEXT

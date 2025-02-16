@@ -7,7 +7,7 @@ class DashboardsControllerTest < ActionDispatch::IntegrationTest
     @patient = create :patient,
                       name: 'Susie Everyteen',
                       primary_phone: '123-456-7890',
-                      other_phone: '333-444-5555',
+                      emergency_contact_phone: '333-444-5555',
                       line: @line
     sign_in @user
     choose_line @line
@@ -46,7 +46,7 @@ class DashboardsControllerTest < ActionDispatch::IntegrationTest
 
       it 'calculates if information is set' do
         create :clinic
-        @patient.update appointment_date: 3.days.from_now,
+        @patient.update procedure_date: 3.days.from_now,
                         clinic_id: Clinic.first.id,
                         fund_pledge: 50
 

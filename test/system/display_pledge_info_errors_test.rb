@@ -21,7 +21,7 @@ class DisplayPledgeInfoErrorsTest < ApplicationSystemTestCase
 
     it 'should not show errors when information is present' do
       @patient = create :patient, clinic: @clinic,
-                                  appointment_date: 14.days.from_now,
+                                  procedure_date: 14.days.from_now,
                                   fund_pledge: 500
       visit edit_patient_path @patient
 

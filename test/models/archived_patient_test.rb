@@ -6,15 +6,15 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     @user2 = create :user
     @line = create :line
     with_versioning(@user) do
-      @patient = create :patient, other_phone: '111-222-3333',
-                                  other_contact: 'Yolo',
+      @patient = create :patient, emergency_contact_phone: '111-222-3333',
+                                  emergency_contact: 'Yolo',
                                   line: @line
 
       @patient.calls.create attributes_for(:call, status: :reached_patient)
       create_language_config
       @archived_patient = create :archived_patient,
                                  line: @line,
-                                 initial_call_date: 200.days.ago
+                                 intake_date: 200.days.ago
     end
   end
 
@@ -29,7 +29,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     end
 
     it 'requires an initial call date' do
-      @archived_patient.initial_call_date = nil
+      @archived_patient.intake_date = nil
       refute @archived_patient.valid?
     end
   end
@@ -39,13 +39,13 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       with_versioning(@user) do
         @clinic = create :clinic
         @patient = create :patient, primary_phone: '222-222-3336',
-                                    other_phone: '222-222-4441',
+                                    emergency_contact_phone: '222-222-4441',
                                     line: @line,
                                     clinic: @clinic,
                                     city: 'Washington',
                                     race_ethnicity: 'Asian',
-                                    initial_call_date: 16.days.ago,
-                                    appointment_date: 6.days.ago,
+                                    intake_date: 16.days.ago,
+                                    procedure_date: 6.days.ago,
                                     multiday_appointment: true,
                                     practical_support_waiver: true
         @patient.calls.create status: :couldnt_reach_patient
@@ -75,8 +75,8 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       assert_equal @archived_patient.line, @patient.line
       assert_equal @archived_patient.city, @patient.city
       assert_equal @archived_patient.race_ethnicity, @patient.race_ethnicity
-      assert_equal @archived_patient.appointment_date,
-                   @patient.appointment_date
+      assert_equal @archived_patient.procedure_date,
+                   @patient.procedure_date
       assert_equal @archived_patient.multiday_appointment,
                    @patient.multiday_appointment
       assert_equal @archived_patient.practical_support_waiver,
@@ -128,14 +128,14 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   describe 'archive_audited_patients' do
     before do
       @patient_audited = create :patient, primary_phone: '222-222-3333',
-                                      other_phone: '222-222-4444',
-                                      initial_call_date: 30.days.ago,
+                                      emergency_contact_phone: '222-222-4444',
+                                      intake_date: 30.days.ago,
                                       line: @line
       @patient_audited.fulfillment.update audited: true
 
       @patient_unaudited = create :patient, primary_phone: '564-222-3333',
-                                      other_phone: '222-222-9074',
-                                      initial_call_date: 120.days.ago,
+                                      emergency_contact_phone: '222-222-9074',
+                                      intake_date: 120.days.ago,
                                       line: @line
     end
 
@@ -147,7 +147,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       end
     end
     it 'should convert four months old, audited patient to archived patient' do
-      @patient_audited.update initial_call_date: 120.days.ago
+      @patient_audited.update intake_date: 120.days.ago
       @patient_audited.save!
       assert_difference 'ArchivedPatient.all.count', 1 do
         assert_difference 'Patient.all.count', -1 do
@@ -160,8 +160,8 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   describe 'archive_unaudited_year_ago_patients' do
     before do
       @patient_old_unaudited = create :patient, primary_phone: '564-222-3333',
-                                      other_phone: '222-222-9074',
-                                      initial_call_date: 370.days.ago,
+                                      emergency_contact_phone: '222-222-9074',
+                                      intake_date: 370.days.ago,
                                       line: @line
       @patient_old_unaudited.fulfillment.update audited: false
       @patient_old_unaudited.save!

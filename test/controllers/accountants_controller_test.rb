@@ -3,7 +3,7 @@ require 'test_helper'
 class AccountantsControllerTest < ActionDispatch::IntegrationTest
   before do
     @patient = create :patient, clinic: @clinic,
-                                appointment_date: 4.days.from_now,
+                                procedure_date: 4.days.from_now,
                                 fund_pledge: 50
   end
 
@@ -87,14 +87,14 @@ class AccountantsControllerTest < ActionDispatch::IntegrationTest
           @clinic2 = create(:clinic)
 
           create :patient, name: 'sarah clinic1',
-                           appointment_date: 4.days.from_now,
+                           procedure_date: 4.days.from_now,
                            fund_pledge: 500,
                            pledge_sent: true,
                            pledge_sent_at: nil,
                            clinic: @clinic1
 
           create :patient, name: 'sally clinic2',
-                           appointment_date: 4.days.from_now,
+                           procedure_date: 4.days.from_now,
                            fund_pledge: 500,
                            pledge_sent: true,
                            pledge_sent_at: nil,
@@ -116,13 +116,13 @@ class AccountantsControllerTest < ActionDispatch::IntegrationTest
 
       it 'should account for edge cases around empty times' do
         create :patient, name: 'susan everyteen',
-                         appointment_date: 4.days.from_now,
+                         procedure_date: 4.days.from_now,
                          fund_pledge: 500,
                          pledge_sent: true,
                          pledge_sent_at: nil,
                          clinic: create(:clinic)
         create :patient, name: 'susan everyteen 2',
-                         appointment_date: 4.days.from_now,
+                         procedure_date: 4.days.from_now,
                          fund_pledge: 500,
                          pledge_sent: true,
                          pledge_sent_at: 4.days.from_now,

@@ -32,7 +32,7 @@ export default PatientDashboardForm = ({
       name: updatedPatientData.name,
       last_menstrual_period_days: updatedPatientData.last_menstrual_period_days,
       last_menstrual_period_weeks: updatedPatientData.last_menstrual_period_weeks,
-      appointment_date: updatedPatientData.appointment_date,
+      procedure_date: updatedPatientData.procedure_date,
       primary_phone: updatedPatientData.primary_phone,
       pronouns: updatedPatientData.pronouns,
     }
@@ -95,8 +95,8 @@ export default PatientDashboardForm = ({
       </div>
 
       <Input
-        id="patient_appointment_date"
-        name="patient[appointment_date]"
+        id="patient_procedure_date"
+        name="patient[procedure_date]"
         label={i18n.t('patient.shared.appt_date')}
         type="date"
         help={
@@ -105,8 +105,8 @@ export default PatientDashboardForm = ({
             days: patientData.last_menstrual_period_at_appt_days
           })
         }
-        value={patientData.appointment_date}
-        onChange={e => debouncedAutosave({ appointment_date: e.target.value })}
+        value={patientData.procedure_date}
+        onChange={e => debouncedAutosave({ procedure_date: e.target.value })}
       />
 
       <Input

@@ -5,8 +5,8 @@ class TableContentTest < ApplicationSystemTestCase
   # problematic test
   before do
     @user = create :user
-    @patient = create :patient, initial_call_date: 3.days.ago,
-                                appointment_date: 3.days.from_now.utc,
+    @patient = create :patient, intake_date: 3.days.ago,
+                                procedure_date: 3.days.from_now.utc,
                                 shared_flag: true,
                                 last_menstrual_period_weeks: 6,
                                 last_menstrual_period_days: 3

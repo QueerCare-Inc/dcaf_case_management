@@ -55,6 +55,9 @@ gem 'wicked'
 # Twilio Verify
 gem 'twilio-ruby'
 
+# Calendar for shift scheduling
+gem 'simple_calendar', '~>3.0.4'
+
 # Specific useful stuff
 gem 'render_async', '~> 2.1' # load slow partials asynchronously
 gem 'prawn' # pledge pdf generation

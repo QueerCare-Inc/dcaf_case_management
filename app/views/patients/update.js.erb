@@ -1,9 +1,3 @@
-// rerack LMP calculation
-$('#patient_appointment_date')
-  .parent()
-  .find('small.form-text')
-  .text("<%= t('patient.dashboard.approx_gestation', weeks: @patient.last_menstrual_period_at_appt_weeks, days: @patient.last_menstrual_period_at_appt_days) %>");
-
 // rerack status
 $('#patient_status_display')
   .val('<%= @patient.status %>');
@@ -14,12 +8,6 @@ $('.daria-tooltip.tooltip-header-help')
                   .attr('data-original-title', "<%= status_help_text(@patient)%>")
                   .tooltip('update');
 
-// rerack current LMP
-$('#patient_last_menstrual_period_weeks')
-  .parent()
-  .find('small.form-text')
-  .text("<%= t('patient.dashboard.currently', weeks: @patient.last_menstrual_period_now_weeks, days: @patient.last_menstrual_period_now_days) %>");
-
 // refresh changelog
 $('#change_log').html(
   '<%= escape_javascript(render partial: "patients/change_log", locals: { patient: @patient })%>'
@@ -27,27 +15,6 @@ $('#change_log').html(
 
 // Rerack shared flag status
 $('#patient_shared_flag').prop('checked', <%= @patient.shared_flag? %>);
-
-// if pledge is sent, re-rack fulfillment info
-<% if current_user.allowed_data_access? && @patient.pledge_sent? %>
-  // populate the fulfillment form if it's supposed to be there and not there already
-  if ($('#pledge_fulfillment-menu-item').length == 0) {
-    $('#pledge_fulfillment').empty()
-                            .append('<%= escape_javascript(render partial: "patients/fulfillment", locals: { patient: @patient })%>');
-    $('#menu-list').append(
-      '<%= escape_javascript(render "patients/menu_item", link_for: "pledge_fulfillment", active: false) %>'
-    );
-  }
-<% else %>
-  // ensure fulfillment form is cleared out
-  $('#pledge_fulfillment').empty();
-  $('#pledge_fulfillment-menu-item').remove();
-<% end %>
-
-// Rerack pledge button
-$('#menu-pledge-button').html(
-  '<%= escape_javascript(render "patients/menu_pledge_button", patient: @patient) %>'
-);
 
 // If updating the accountants view, refresh the row
 if($('#row-<%= @patient.id %>')) {

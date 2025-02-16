@@ -20,7 +20,7 @@ class BudgetBarHelperTest < ActionView::TestCase
     before do
       @patient_hash = {
         id: 123,
-        appointment_date: 2.days.from_now,
+        procedure_date: 2.days.from_now,
         fund_pledge: 100,
         name: 'Friend Ship'
       }
@@ -29,11 +29,11 @@ class BudgetBarHelperTest < ActionView::TestCase
     it 'should return a link and appointment if set' do
       content = budget_bar_expenditure_content @patient_hash
       assert_match @patient_hash[:name], content
-      assert_match @patient_hash[:appointment_date].display_date, content
+      assert_match @patient_hash[:procedure_date].display_date, content
     end
 
     it 'should accommodate no appt date' do
-      @patient_hash[:appointment_date] = nil
+      @patient_hash[:procedure_date] = nil
       content = budget_bar_expenditure_content @patient_hash
       assert_match @patient_hash[:name], content
       assert_match 'no appt date', content

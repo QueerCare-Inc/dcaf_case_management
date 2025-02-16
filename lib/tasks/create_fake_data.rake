@@ -24,12 +24,12 @@ namespace :db do
           patient = Patient.create!(
             name: 'Randomized Patient',
             primary_phone: "#{idx}".rjust(10, "0"),
-            initial_call_date: initial_call,
+            intake_date: initial_call,
             created_by: users.sample,
             shared_flag: flag,
             line: lines[gen.rand(3)], # thank you seeds.rb! 
             clinic: has_appt ? clinics.sample : nil,
-            appointment_date: has_appt ? initial_call + gen.rand(15) : nil,
+            procedure_date: has_appt ? initial_call + gen.rand(15) : nil,
             last_menstrual_period_weeks: gen.rand(15) + 3,
             last_menstrual_period_days: gen.rand(7),
             procedure_cost: has_appt ? gen.rand(600) : nil,
@@ -77,7 +77,7 @@ namespace :db do
               created_by_id: User.first.id,
               fulfilled: true,
               fund_payout: patient.fund_pledge,
-              procedure_date: patient.appointment_date
+              procedure_date: patient.procedure_date
             ).save
           end 
 

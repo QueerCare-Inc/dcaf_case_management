@@ -1,0 +1,17 @@
+<!-- locals: title, calendar_type (for div id and tbody div id) -->
+
+<div id="<%= calendar_type %>" class="margin-bottom mt-5">
+  <h1 class="border-bottom title">
+    <%= title %>
+  </h1>
+
+    <%= month_calendar events: @shifts do |date, shifts| %>
+        <%= date.to_formatted_s(:short) %>
+        
+        <% shifts.each do |shift| %>
+        <div>
+            <%= shift.name %>
+        </div>
+        <% end %>
+    <% end %>
+</div>

@@ -7,7 +7,6 @@ ActsAsTenant.without_tenant do
   Event.destroy_all
   Call.destroy_all
   CallListEntry.destroy_all
-  ExternalPledge.destroy_all
   Fulfillment.destroy_all
   Note.destroy_all
   Patient.destroy_all
@@ -79,10 +78,6 @@ fund2 = Fund.create! name: 'CatFund',
     # Create user-settable configuration
     Config.create config_key: :insurance,
                   config_value: { options: ['DC Medicaid', 'MD Medicaid', 'VA Medicaid', 'Other Insurance'] }
-    Config.create config_key: :external_pledge_source,
-                  config_value: { options: ['Texas Amalgamated Abortion Services (TAAS)', 'Metallica Abortion Fund'] }
-    Config.create config_key: :pledge_limit_help_text,
-                  config_value: { options: ['Pledge Limit Guidelines:', '1st trimester (7-12 weeks): $100', '2nd trimester (12-24 weeks): $300', 'Later care (25+ weeks): $600'] }
     Config.create config_key: :language,
                   config_value: { options: %w[Spanish French Korean] }
     Config.create config_key: :resources_url,
@@ -100,12 +95,9 @@ fund2 = Fund.create! name: 'CatFund',
     10.times do |i|
       patient = Patient.create! name: "Patient #{i}",
                                 primary_phone: "123-123-123#{i}",
-                                initial_call_date: 3.days.ago,
+                                intake_date: 3.days.ago,
                                 shared_flag: i.even?,
-                                last_menstrual_period_weeks: (i + 1 * 2),
-                                last_menstrual_period_days: 3,
                                 line: lines.first,
-                                solidarity: i % 4 == 0
 
       # Create associated objects
       case i
@@ -116,8 +108,8 @@ fund2 = Fund.create! name: 'CatFund',
         end
       when 1
         PaperTrail.request(whodunnit: user.id) do
-          patient.update! name: 'Other Contact info - 1', other_contact: 'Jane Doe',
-                          other_phone: '234-456-6789', other_contact_relationship: 'Sister'
+          patient.update! name: 'Other Contact info - 1', emergency_contact: 'Jane Doe',
+                          emergency_contact_phone: '234-456-6789', emergency_contact_relationship: 'Sister'
           patient.calls.create! status: :reached_patient,
                                 created_at: 14.hours.ago
         end
@@ -127,16 +119,12 @@ fund2 = Fund.create! name: 'CatFund',
                         zipcode: "20009",
                         pronouns: 'she/they',
                         clinic: Clinic.first,
-                        appointment_date: 2.days.from_now
+                        procedure_date: 2.days.from_now
       when 3
         # pledge submitted
         patient.update! clinic: Clinic.first,
-                        appointment_date: 3.days.from_now,
-                        naf_pledge: 200,
-                        procedure_cost: 400,
-                        fund_pledge: 100,
-                        pledge_sent: true,
-                        patient_contribution: 100,
+                        procedure_date: 3.days.from_now,
+                        
                         zipcode: "06222",
                         pronouns: 'ze/zir',
                         name: 'Pledge submitted - 3'
@@ -148,10 +136,6 @@ fund2 = Fund.create! name: 'CatFund',
           # And a recent call on file
           patient.calls.create! status: :left_voicemail
         end
-      when 5
-        # Resolved without Fund
-        patient.update! name: 'Resolved without assistance - 5',
-                        resolved_without_fund: true
       end
 
       if i != 9
@@ -168,11 +152,11 @@ fund2 = Fund.create! name: 'CatFund',
 
       if i.even?
         patient.notes.create! full_text: additional_note_text
-        patient.practical_supports.create! support_type: 'Advice', source: 'Counselor'
+        patient.practical_supports.create! support_type: 'Advice', source: 'Counselor', start_time: (Time.now + rand(10).days), end_time: (Time.now - rand(10).days + 4.hours)
       end
 
       if i % 3 == 0
-        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', support_date: 3.days.from_now
+        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', support_date: 3.days.from_now, start_time: (Time.now + rand(3).days), end_time: (Time.now - rand(3).days + 4.hours)
       end
 
       if i % 5 == 0
@@ -191,36 +175,28 @@ fund2 = Fund.create! name: 'CatFund',
       patient = Patient.create!(
         name: "Reporting Patient #{i}",
         primary_phone: "321-0#{i}0-001#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: i.even?,
         line: i.even? ? lines.first : lines.second,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now,
-        last_menstrual_period_weeks: 7,
-        last_menstrual_period_days: 7,
-        naf_pledge: 300,
-        fund_pledge: 50,
-        procedure_cost: 600,
-        pledge_sent: true,
-        patient_contribution: 100
+        procedure_date: 10.days.from_now,
+        
       )
 
       next unless i.even?
 
-      patient.fulfillment.update fulfilled: true,
-                                 fund_payout: 4000,
-                                 procedure_date: 10.days.from_now
+      patient.fulfillment.update fulfilled: true
     end
 
     (1..5).each do |patient_number|
       patient = Patient.create!(
         name: "Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-002#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now
+        procedure_date: 10.days.from_now
       )
 
       # reached within the past 30 days
@@ -236,11 +212,11 @@ fund2 = Fund.create! name: 'CatFund',
       patient = Patient.create!(
         name: "Old Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-003#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now
+        procedure_date: 10.days.from_now
       )
 
       5.times do
@@ -253,13 +229,12 @@ fund2 = Fund.create! name: 'CatFund',
       Patient.create!(
         name: "Pledge Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-004#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now,
-        pledge_sent: true,
-        fund_pledge: 50
+        procedure_date: 10.days.from_now,
+
       )
     end
 
@@ -272,9 +247,8 @@ fund2 = Fund.create! name: 'CatFund',
         voicemail_preference: 'yes',
         line: lines.first,
         language: 'Spanish',
-        initial_call_date: 140.days.ago,
-        last_menstrual_period_weeks: 6,
-        last_menstrual_period_days: 5,
+        intake_date: 140.days.ago,
+
         created_at: 140.days.ago
       )
 
@@ -286,7 +260,7 @@ fund2 = Fund.create! name: 'CatFund',
 
       patient.update!(
         # header info - hand filled in
-        appointment_date: 130.days.ago,
+        procedure_date: 130.days.ago,
 
         # patient info - hand filled in
         age: 24,
@@ -294,9 +268,9 @@ fund2 = Fund.create! name: 'CatFund',
         city: 'Washington',
         state: 'DC',
         county: 'Washington',
-        other_contact: 'Susie Q.',
-        other_phone: "555-0#{patient_number}0-0053",
-        other_contact_relationship: 'Mother',
+        emergency_contact: 'Susie Q.',
+        emergency_contact_phone: "555-0#{patient_number}0-0053",
+        emergency_contact_relationship: 'Mother',
         employment_status: 'Student',
         income: '$10,000-14,999',
         household_size_adults: 3,
@@ -307,8 +281,7 @@ fund2 = Fund.create! name: 'CatFund',
 
         # abortion info - hand filled in
         clinic: Clinic.all.sample,
-        referred_to_clinic: patient_number.odd?,
-        resolved_without_fund: patient_number.even?,
+
 
         updated_at: 138.days.ago # not sure if this even works?
       )
@@ -325,52 +298,6 @@ fund2 = Fund.create! name: 'CatFund',
         created_at: 137.days.ago
       )
 
-      # only continue for the unresolved patient(s)
-      next if patient.resolved_without_fund?
-
-      # another call. get abortion information, create pledges, a note.
-      patient.calls.create! status: :reached_patient, created_at: 136.days.ago
-
-      # abortion info - pledges - hand filled in
-      patient.update!(
-        procedure_cost: 555,
-        patient_contribution: 120,
-        naf_pledge: 120,
-        fund_pledge: 115,
-        pledge_sent: true,
-        pledge_generated_at: 133.days.ago,
-        updated_at: 133.days.ago
-      )
-      # generate external pledges
-      patient.external_pledges.create!(
-        source: 'Metallica Abortion Fund',
-        amount: 100,
-        created_at: 133.days.ago
-      )
-      patient.external_pledges.create!(
-        source: 'Texas Amalgamated Abortion Services (TAAS)',
-        amount: 100,
-        created_at: 133.days.ago
-      )
-
-      # notes tab
-      PaperTrail.request(whodunnit: user2.id) do
-        patient.notes.create!(
-          full_text: 'Two note, maybe with iffy PII! From the second call.',
-          created_at: 133.days.ago
-        )
-      end
-
-      # fulfillment
-      patient.fulfillment.update!(
-        fulfilled: true,
-        procedure_date: 130.days.ago,
-        gestation_at_procedure: '11',
-        fund_payout: 555,
-        check_number: 4563,
-        date_of_check: 125.days.ago,
-        updated_at: 125.days.ago
-      )
     end
 
     (1..2).each do |patient_number|
@@ -381,9 +308,8 @@ fund2 = Fund.create! name: 'CatFund',
         voicemail_preference: 'yes',
         line: lines.first,
         language: 'Spanish',
-        initial_call_date: 640.days.ago,
-        last_menstrual_period_weeks: 6,
-        last_menstrual_period_days: 5,
+        intake_date: 640.days.ago,
+
         created_at: 640.days.ago
       )
 
@@ -399,7 +325,7 @@ fund2 = Fund.create! name: 'CatFund',
       # We reach Patient 2
       patient.update!(
         # header info - hand filled in
-        appointment_date: 630.days.ago,
+        procedure_date: 630.days.ago,
 
         # patient info - hand filled in
         age: 24,
@@ -409,9 +335,9 @@ fund2 = Fund.create! name: 'CatFund',
         county: 'Washington',
         zipcode: "20009",
         pronouns: 'they/them',
-        other_contact: 'Susie Q.',
-        other_phone: "555-6#{patient_number}0-0053",
-        other_contact_relationship: 'Mother',
+        emergency_contact: 'Susie Q.',
+        emergency_contact_phone: "555-6#{patient_number}0-0053",
+        emergency_contact_relationship: 'Mother',
 
         employment_status: 'Student',
         income: '$10,000-14,999',
@@ -423,8 +349,7 @@ fund2 = Fund.create! name: 'CatFund',
 
         # abortion info - hand filled in
         clinic: Clinic.all.sample,
-        referred_to_clinic: patient_number.odd?,
-        resolved_without_fund: patient_number.even?
+
       )
 
       # toggle flag, maybe
@@ -444,30 +369,25 @@ fund2 = Fund.create! name: 'CatFund',
     regina = Patient.create! name: 'Regina (SCENARIO)',
                              line: lines.first,
                              primary_phone: "000-000-0001",
-                             last_menstrual_period_weeks: 6,
-                             initial_call_date: 30.days.ago
+
+                             intake_date: 30.days.ago
     regina.calls.create! created_at: 30.days.ago,
                          status: 'reached_patient'
-    regina.update appointment_date: 18.days.ago,
+    regina.update procedure_date: 18.days.ago,
                   clinic: Clinic.first,
-                  fund_pledge: 100,                             
-                  fund_pledged_at: 22.days.ago,
-                  pledge_sent: true,
-                  pledge_sent_at: 22.days.ago
+
     regina.calls.create! created_at: 22.days.ago,
                          status: 'reached_patient'
     regina.fulfillment.update fulfilled: true,
-                              fund_payout: 100,
                               procedure_date: 18.days.ago,
                               date_of_check: 1.day.ago,
                               check_number: '500',
-                              gestation_at_procedure: 8
     regina.notes.create! full_text: "SCENARIO: Regina calls us at 6 weeks LMP on 3-12. We call her back and reach the patient. We explain the fund's policies of only funding after 7 weeks LMP. Regina’s options are to either schedule her appointment a week from the day she calls or fund her procedure on her own. We offer her references to clinics who will be able to see her and the number to other funders who may be able to help her. We emphasize although we cannot fund her now financially, we can in the future and she should call us back if that is the case. She says she will make an appointment for two weeks out. Regina calls us back on 3-20. Her funding is completed. We send the pledge to the clinic on Regina's behalf. Regina goes to her appointment on 3-24 and has her abortion. The clinic mails us back the completed pledge form on 4-15. Fund checks the pledge against our system, completes an entry in our ledger, notes the completed pledge on Regina's file in DARIA (which then anon’s her data eventually), writes a check to the clinic and mails the check it to the clinic."
 
     janis = Patient.create! name: 'Janis (SCENARIO)',
                             line: lines.first,
                             primary_phone: "000-000-0002",
-                            initial_call_date: 40.days.ago
+                            intake_date: 40.days.ago
     janis.calls.create! created_at: 40.days.ago,
                         status: 'left_voicemail'
     janis.calls.create! created_at: 40.days.ago,
@@ -487,7 +407,6 @@ ActsAsTenant.without_tenant do
        "Inserted #{Event.count} Event objects. \n" \
        "Inserted #{Call.count} Call objects. \n" \
        "Inserted #{CallListEntry.count} CallListEntry objects. \n" \
-       "Inserted #{ExternalPledge.count} ExternalPledge objects. \n" \
        "Inserted #{Fulfillment.count} Fulfillment objects. \n" \
        "Inserted #{Note.count} Note objects. \n" \
        "Inserted #{Patient.count} Patient objects. \n" \

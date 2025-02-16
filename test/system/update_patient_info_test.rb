@@ -91,7 +91,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       before do
         @patient.update last_menstrual_period_weeks: 5,
                         last_menstrual_period_days: 2,
-                        appointment_date: 5.days.from_now.strftime('%Y-%m-%d')
+                        procedure_date: 5.days.from_now.strftime('%Y-%m-%d')
         visit edit_patient_path @patient
       end
 
@@ -305,7 +305,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
 
   describe 'changing fulfillment information' do
     before do
-      @patient = create :patient, appointment_date: 2.days.from_now,
+      @patient = create :patient, procedure_date: 2.days.from_now,
                                   clinic: @clinic,
                                   fund_pledge: 100,
                                   pledge_sent: true

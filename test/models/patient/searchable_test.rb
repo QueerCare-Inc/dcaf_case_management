@@ -11,15 +11,15 @@ class PatientTest::PatientSearchable < PatientTest
                                line: @line
       @pt_2 = create :patient, name: 'Susan E',
                                primary_phone: '124-567-7890',
-                               other_contact: 'Friend Ship',
+                               emergency_contact: 'Friend Ship',
                                line: @line
       @pt_3 = create :patient, name: 'Susan A',
                                primary_phone: '555-555-5555',
-                               other_phone: '999-999-9999',
+                               emergency_contact_phone: '999-999-9999',
                                line: @line
       @pt_4 = create :patient, name: 'Susan A in MD',
                                primary_phone: '777-777-7777',
-                               other_phone: '999-111-9888',
+                               emergency_contact_phone: '999-111-9888',
                                line: @line2
     end
 
