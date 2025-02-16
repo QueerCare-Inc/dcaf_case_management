@@ -245,10 +245,10 @@ module PatientsHelper
     Line.all.sort_by(&:name).map { |x| [x.name, x.id] }
   end
 
-  def appointment_date_display(patient)
-    return nil unless patient.appointment_date.present?
+  def procedure_date_display(patient)
+    return nil unless patient.procedure_date.present?
 
-    day = patient.appointment_date.strftime('%m/%d/%Y')
+    day = patient.procedure_date.strftime('%m/%d/%Y')
     if patient.appointment_time
       time = patient.appointment_time.strftime('%l:%M %p').strip
       day = "#{day} @ #{time}"

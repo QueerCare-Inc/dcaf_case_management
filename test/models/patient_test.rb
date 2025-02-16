@@ -6,12 +6,12 @@ class PatientTest < ActiveSupport::TestCase
   before do
     @user = create :user
     @line = create :line
-    @patient = create :patient, other_phone: '111-222-3333',
-                                other_contact: 'Yolo',
+    @patient = create :patient, emergency_contact_phone: '111-222-3333',
+                                emergency_contact: 'Yolo',
                                 line: @line
 
-    @patient2 = create :patient, other_phone: '333-222-3333',
-                                other_contact: 'Foobar',
+    @patient2 = create :patient, emergency_contact_phone: '333-222-3333',
+                                emergency_contact: 'Foobar',
                                 line: @line
     @patient.calls.create attributes_for(:call, status: :reached_patient)
     @call = @patient.calls.first
@@ -21,19 +21,19 @@ class PatientTest < ActiveSupport::TestCase
   describe 'callbacks' do
     before do
       @new_patient = build :patient, name: '  Name With Whitespace  ',
-                                     other_contact: ' also name with whitespace ',
-                                     other_contact_relationship: '  something ',
+                                     emergency_contact: ' also name with whitespace ',
+                                     emergency_contact_relationship: '  something ',
                                      primary_phone: '111-222-3333',
-                                     other_phone: '999-888-7777'
+                                     emergency_contact_phone: '999-888-7777'
     end
 
     it 'should clean fields before save' do
       @new_patient.save
       assert_equal 'Name With Whitespace', @new_patient.name
-      assert_equal 'also name with whitespace', @new_patient.other_contact
-      assert_equal 'something', @new_patient.other_contact_relationship
+      assert_equal 'also name with whitespace', @new_patient.emergency_contact
+      assert_equal 'something', @new_patient.emergency_contact_relationship
       assert_equal '1112223333', @new_patient.primary_phone
-      assert_equal '9998887777', @new_patient.other_phone
+      assert_equal '9998887777', @new_patient.emergency_contact_phone
     end
 
     it 'should init a fulfillment after creation' do
@@ -59,7 +59,7 @@ class PatientTest < ActiveSupport::TestCase
       refute @patient.valid?
     end
 
-    %w(primary_phone other_phone).each do |phone|
+    %w(primary_phone emergency_contact_phone).each do |phone|
       it "should enforce a max length of 10 for #{phone}" do
         @patient[phone] = '123-456-789022'
         refute @patient.valid?
@@ -72,26 +72,26 @@ class PatientTest < ActiveSupport::TestCase
       end
     end
 
-    %w(initial_call_date name primary_phone).each do |field|
+    %w(intake_date name primary_phone).each do |field|
       it "should enforce presence of #{field}" do
         @patient[field.to_sym] = nil
         refute @patient.valid?
       end
     end
 
-    it 'should require appointment_date to be after initial_call_date' do
+    it 'should require procedure_date to be after intake_date' do
       # when initial call date is nil
-      @patient.appointment_date = '2016-05-01'
-      @patient.initial_call_date = nil
+      @patient.procedure_date = '2016-05-01'
+      @patient.intake_date = nil
       refute @patient.valid?
       # when initial call date is after appointment date
-      @patient.initial_call_date = '2016-06-01'
+      @patient.intake_date = '2016-06-01'
       refute @patient.valid?
       # when appointment date is nil
-      @patient.appointment_date = nil
+      @patient.procedure_date = nil
       assert @patient.valid?
       # when appointment date is after initial call date
-      @patient.appointment_date = '2016-07-01'
+      @patient.procedure_date = '2016-07-01'
       assert @patient.valid?
     end
 
@@ -168,12 +168,12 @@ class PatientTest < ActiveSupport::TestCase
       noon = Time.zone.today.beginning_of_day + 12.hours
       # to ensure this spec isn't flaky if someone runs it between 12am - 4am ET
       Timecop.freeze(noon) do
-        @patient.update appointment_date: 2.days.from_now, fund_pledge: 300
-        @patient2.update appointment_date: 4.days.from_now, fund_pledge: 500,
+        @patient.update procedure_date: 2.days.from_now, fund_pledge: 300
+        @patient2.update procedure_date: 4.days.from_now, fund_pledge: 500,
                         pledge_sent: true, clinic: create(:clinic)
         # Removed because we don't include resolved_without_fund patients in the summary
         @filtered_pt = create :patient, name: 'Resolved without fund (filtered out)',
-                                        appointment_date: 2.days.from_now,
+                                        procedure_date: 2.days.from_now,
                                         fund_pledge: 100, clinic: create(:clinic),
                                         resolved_without_fund: true
         shaped_patient = patient_to_hash @patient
@@ -222,7 +222,7 @@ class PatientTest < ActiveSupport::TestCase
                     config_value: {options: ['Monday']}
       Timecop.freeze("January 20, 1973") { @patient.update! fund_pledge: 250 }                      
       Timecop.freeze("January 23, 1973") { @patient.update! pledge_sent: true, 
-                                                            appointment_date: @patient.initial_call_date + 1.day, 
+                                                            procedure_date: @patient.intake_date + 1.day, 
                                                             clinic: create(:clinic) }
 
       Timecop.freeze("January 25, 1973") do
@@ -239,10 +239,10 @@ class PatientTest < ActiveSupport::TestCase
       early_monday_morning_in_pacific = Time.zone.local(2023, 2, 6, 8, 30, 45)
       late_sunday_evening_in_pacific = Time.zone.local(2023, 2, 6, 1, 30, 45)
 
-      @patient.update(appointment_date: tuesday_in_pacific, initial_call_date: tuesday_in_pacific - 1.day, fund_pledge: 300)
-      @patient2.update(appointment_date: early_monday_morning_in_pacific, initial_call_date: early_monday_morning_in_pacific - 1.day, fund_pledge: 500, pledge_sent: true, clinic: create(:clinic))
+      @patient.update(procedure_date: tuesday_in_pacific, intake_date: tuesday_in_pacific - 1.day, fund_pledge: 300)
+      @patient2.update(procedure_date: early_monday_morning_in_pacific, intake_date: early_monday_morning_in_pacific - 1.day, fund_pledge: 500, pledge_sent: true, clinic: create(:clinic))
       # Removed because we don't include patient's with appt's outside of current week (time zone aware)
-      @filtered_pt = create(:patient, name: 'Outside of the time zone week', appointment_date: late_sunday_evening_in_pacific, initial_call_date: late_sunday_evening_in_pacific - 1.day, fund_pledge: 100, clinic: create(:clinic))
+      @filtered_pt = create(:patient, name: 'Outside of the time zone week', procedure_date: late_sunday_evening_in_pacific, intake_date: late_sunday_evening_in_pacific - 1.day, fund_pledge: 100, clinic: create(:clinic))
       shaped_patient = patient_to_hash @patient
       shaped_patient2 = patient_to_hash @patient2
 
@@ -263,7 +263,7 @@ class PatientTest < ActiveSupport::TestCase
 
   describe 'callbacks' do
     describe 'clean_fields' do
-      %w(name other_contact).each do |field|
+      %w(name emergency_contact).each do |field|
         it "should strip whitespace from before and after #{field}" do
           @patient[field] = '   Yolo Goat   '
           @patient.save
@@ -271,7 +271,7 @@ class PatientTest < ActiveSupport::TestCase
         end
       end
 
-      %w(primary_phone other_phone).each do |field|
+      %w(primary_phone emergency_contact_phone).each do |field|
         it "should remove nondigits on save from #{field}" do
           @patient[field] = '111-222-3333'
           @patient.save
@@ -285,7 +285,7 @@ class PatientTest < ActiveSupport::TestCase
         create :clinic
         @patient = create :patient, shared_flag: true,
                                     clinic: Clinic.first,
-                                    appointment_date: 2.days.from_now,
+                                    procedure_date: 2.days.from_now,
                                     fund_pledge: 300
       end
 
@@ -331,7 +331,7 @@ class PatientTest < ActiveSupport::TestCase
   describe 'other methods' do
     before do
       @patient = create :patient, primary_phone: '111-222-3333',
-                                  other_phone: '111-222-4444',
+                                  emergency_contact_phone: '111-222-4444',
                                   name: 'Yolo Goat Bart Simpson'
     end
 
@@ -341,8 +341,8 @@ class PatientTest < ActiveSupport::TestCase
     end
 
     it 'secondary_phone_display - should be hyphenated other phone' do
-      refute_equal @patient.other_phone, @patient.other_phone_display
-      assert_equal '111-222-4444', @patient.other_phone_display
+      refute_equal @patient.emergency_contact_phone, @patient.emergency_contact_phone_display
+      assert_equal '111-222-4444', @patient.emergency_contact_phone_display
     end
 
     it 'initials - creates proper initials' do
@@ -482,7 +482,7 @@ class PatientTest < ActiveSupport::TestCase
 
     describe 'okay_to_destroy? method' do
       it 'should return false if pledge is sent' do
-        @patient.update appointment_date: 2.days.from_now,
+        @patient.update procedure_date: 2.days.from_now,
                         fund_pledge: 100,
                         clinic: (create :clinic),
                         pledge_sent: true
@@ -496,11 +496,11 @@ class PatientTest < ActiveSupport::TestCase
     describe 'archive_date method' do
       it 'should return a year if unaudited' do
         @patient.fulfillment.update audited: false
-        assert_equal @patient.initial_call_date + 365.days, @patient.archive_date
+        assert_equal @patient.intake_date + 365.days, @patient.archive_date
       end
       it 'should return three months if audited' do
         @patient.fulfillment.update audited: true
-        assert_equal @patient.initial_call_date + 90.days, @patient.archive_date
+        assert_equal @patient.intake_date + 90.days, @patient.archive_date
       end
 
       it 'should return custom audit config' do
@@ -513,10 +513,10 @@ class PatientTest < ActiveSupport::TestCase
         c.save
 
         @patient.fulfillment.update audited: false
-        assert_equal @patient.initial_call_date + 100.days, @patient.archive_date
+        assert_equal @patient.intake_date + 100.days, @patient.archive_date
 
         @patient.fulfillment.update audited: true
-        assert_equal @patient.initial_call_date + 300.days, @patient.archive_date
+        assert_equal @patient.intake_date + 300.days, @patient.archive_date
       end
     end
 
@@ -557,8 +557,8 @@ class PatientTest < ActiveSupport::TestCase
                                             confirmed: true
 
         # no practical support, also should not show up
-        @patient3 = create :patient, other_phone: '333-222-1111',
-                            other_contact: 'Cats',
+        @patient3 = create :patient, emergency_contact_phone: '333-222-1111',
+                            emergency_contact: 'Cats',
                             line: @line
       end
 
@@ -616,7 +616,7 @@ class PatientTest < ActiveSupport::TestCase
       @clinic = create :clinic
       @patient.fund_pledge = 500
       @patient.clinic = @clinic
-      @patient.appointment_date = 14.days.from_now
+      @patient.procedure_date = 14.days.from_now
     end
 
     it 'should validate pledge_sent when all items in #check_other_validations? are present' do
@@ -639,7 +639,7 @@ class PatientTest < ActiveSupport::TestCase
     end
 
     it 'should not validate pledge_sent if the appointment date is blank' do
-      @patient.appointment_date = nil
+      @patient.procedure_date = nil
       @patient.pledge_sent = true
       refute @patient.valid?
       assert_equal ['Appointment date cannot be blank'], @patient.errors.messages[:pledge_sent]
@@ -648,7 +648,7 @@ class PatientTest < ActiveSupport::TestCase
     it 'should produce three error messages if three required fields are blank' do
       @patient.fund_pledge = nil
       @patient.clinic = nil
-      @patient.appointment_date = nil
+      @patient.procedure_date = nil
       @patient.pledge_sent = true
       refute @patient.valid?
       assert_equal ["CATF pledge field cannot be blank", 'Clinic name cannot be blank', 'Appointment date cannot be blank'],
@@ -666,7 +666,7 @@ class PatientTest < ActiveSupport::TestCase
       @user = create :user
       @patient.update fund_pledge: 500,
                       clinic: @clinic,
-                      appointment_date: 14.days.from_now,
+                      procedure_date: 14.days.from_now,
                       last_edited_by: @user,
                       pledge_sent: true
       @patient.reload
@@ -723,7 +723,7 @@ class PatientTest < ActiveSupport::TestCase
       pledge_sent: patient.pledge_sent,
       id: patient.id,
       name: patient.name,
-      appointment_date: patient.appointment_date,
+      procedure_date: patient.procedure_date,
       pledge_sent_at: patient.pledge_sent_at
     }
   end

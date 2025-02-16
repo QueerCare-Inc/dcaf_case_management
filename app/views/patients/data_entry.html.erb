@@ -8,8 +8,8 @@
                         local: true do |f| %>
   <%= f.select :line_id, options_for_select(line_options, current_line.id) %>
 
-  <%= f.date_field :initial_call_date,
-                   label: t('patient.new.initial_call_date') %>
+  <%= f.date_field :intake_date,
+                   label: t('patient.new.intake_date') %>
 
   <%= f.text_field :name,
                    label: t('common.name'), autocomplete: 'off' %>
@@ -21,14 +21,14 @@
   <%= f.text_field :pronouns,
                    autocomplete: 'off' %>
 
-  <%= f.text_field :other_contact,
-                   label: t('patient.information.other_contact.name'),
+  <%= f.text_field :emergency_contact,
+                   label: t('patient.information.emergency_contact.name'),
                    autocomplete: 'off' %>
-  <%= f.text_field :other_phone,
-                   label: t('patient.information.other_contact.phone'),
+  <%= f.text_field :emergency_contact_phone,
+                   label: t('patient.information.emergency_contact.phone'),
                    autocomplete: 'off' %>
-  <%= f.text_field :other_contact_relationship,
-                   label: t('patient.information.other_contact.relationship'),
+  <%= f.text_field :emergency_contact_relationship,
+                   label: t('patient.information.emergency_contact.relationship'),
                    autocomplete: 'off'%>
 
   <%= f.text_field :city, autocomplete: 'off' %>
@@ -53,7 +53,7 @@
                options_for_select(clinic_options),
                label: t('patient.pledge_fulfillment.confirmation.clinic') %>
 
-  <%= f.date_field :appointment_date,
+  <%= f.date_field :procedure_date,
                    label: t('patient.shared.appt_date'),
                    autocomplete: 'off' %>
 

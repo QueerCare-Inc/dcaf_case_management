@@ -15,7 +15,7 @@ class Config < ApplicationRecord
     start_of_week: "How to render your budget bar. Default is weekly starting on Monday. Enter \"Sunday\" for weekly budget starting on Sunday, or \"Monthly\" for a calendar month based budget.",
     budget_bar_max: "The maximum for the budget bar. Defaults to 1000 if not set. Enter as a number with no dollar sign or commas.",
     hide_practical_support: 'Enter "yes" to hide the Practical Support panel on patient pages. This will not remove any existing data.',
-    days_to_keep_fulfilled_patients: "Number of days (after initial entry) to keep identifying information for a patient whose pledge has been fulfilled and marked audited. Defaults to 90 days (3 months).",
+    # days_to_keep_fulfilled_patients: "Number of days (after initial entry) to keep identifying information for a patient whose pledge has been fulfilled and marked audited. Defaults to 90 days (3 months).",
     days_to_keep_all_patients: "Number of days (after initial entry) to keep identifying information for any patient, regardless of pledge fulfillment. Defaults to 365 days (1 year).",
     shared_reset: "Number of idle days until a patient is removed from the shared list. Defaults to 6 days, maximum 6 weeks.",
     hide_budget_bar: 'Enter "yes" to hide the budget bar display.',
@@ -114,8 +114,8 @@ class Config < ApplicationRecord
     practical_support_guidance_url:
       [:validate_singleton, :validate_url],
 
-    days_to_keep_fulfilled_patients:
-      [:validate_singleton, :validate_patient_archive],
+    # days_to_keep_fulfilled_patients:
+    #   [:validate_singleton, :validate_patient_archive],
     days_to_keep_all_patients:
       [:validate_singleton, :validate_patient_archive],
     shared_reset:

@@ -10,23 +10,23 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
     @another_clinic = create :clinic, name: 'alternative clinic'
 
     @nonpledged_patient = create :patient, name: 'Eileene Zarha',
-                                           initial_call_date: 5.weeks.ago,
+                                           intake_date: 5.weeks.ago,
                                            line: @line
 
     @pledged_patient = create :patient, name: 'Olga Zarha',
                                         fund_pledge: 100,
                                         clinic: @clinic,
                                         pledge_sent: true,
-                                        appointment_date: 2.weeks.ago,
-                                        initial_call_date: 5.weeks.ago,
+                                        procedure_date: 2.weeks.ago,
+                                        intake_date: 5.weeks.ago,
                                         line: @line
 
     @fulfilled_patient = create :patient, name: 'Thorny Zarha',
                                           fund_pledge: 200,
                                           clinic: @clinic,
                                           pledge_sent: true,
-                                          appointment_date: 2.weeks.ago,
-                                          initial_call_date: 5.weeks.ago,
+                                          procedure_date: 2.weeks.ago,
+                                          intake_date: 5.weeks.ago,
                                           line: @line
     @fulfilled_patient.fulfillment.update fulfilled: true,
                                           procedure_date: 1.week.ago,
@@ -39,8 +39,8 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                                              clinic: @another_clinic,
                                              pledge_sent: true,
                                              fund_pledge: 123,
-                                             appointment_date: 2.weeks.ago,
-                                             initial_call_date: 5.weeks.ago,
+                                             procedure_date: 2.weeks.ago,
+                                             intake_date: 5.weeks.ago,
                                              line: @line
 
 
@@ -75,10 +75,10 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
     it 'should properly display large numbers of patients' do
       30.times do |i|
         Patient.create! name: "Patient #{i}",
-                        appointment_date: 3.days.from_now,
+                        procedure_date: 3.days.from_now,
                         clinic: @clinic,
                         fund_pledge: 100,
-                        initial_call_date: 3.days.ago,
+                        intake_date: 3.days.ago,
                         line: @line,
                         naf_pledge: 200,
                         patient_contribution: 100,

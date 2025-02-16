@@ -9,7 +9,7 @@ class ActivityLogTest < ApplicationSystemTestCase
     @patient = create :patient,
                       fund_pledge: 100,
                       clinic: @clinic,
-                      appointment_date: 3.days.from_now,
+                      procedure_date: 3.days.from_now,
                       line: @line
 
     log_in_as @user, @line

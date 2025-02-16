@@ -95,7 +95,7 @@ fund2 = Fund.create! name: 'CatFund',
     10.times do |i|
       patient = Patient.create! name: "Patient #{i}",
                                 primary_phone: "123-123-123#{i}",
-                                initial_call_date: 3.days.ago,
+                                intake_date: 3.days.ago,
                                 shared_flag: i.even?,
                                 line: lines.first,
 
@@ -108,8 +108,8 @@ fund2 = Fund.create! name: 'CatFund',
         end
       when 1
         PaperTrail.request(whodunnit: user.id) do
-          patient.update! name: 'Other Contact info - 1', other_contact: 'Jane Doe',
-                          other_phone: '234-456-6789', other_contact_relationship: 'Sister'
+          patient.update! name: 'Other Contact info - 1', emergency_contact: 'Jane Doe',
+                          emergency_contact_phone: '234-456-6789', emergency_contact_relationship: 'Sister'
           patient.calls.create! status: :reached_patient,
                                 created_at: 14.hours.ago
         end
@@ -119,10 +119,11 @@ fund2 = Fund.create! name: 'CatFund',
                         zipcode: "20009",
                         pronouns: 'she/they',
                         clinic: Clinic.first,
-                        appointment_date: 2.days.from_now
+                        procedure_date: 2.days.from_now
       when 3
         # pledge submitted
         patient.update! clinic: Clinic.first,
+                        procedure_date: 3.days.from_now,
                         
                         zipcode: "06222",
                         pronouns: 'ze/zir',
@@ -174,10 +175,11 @@ fund2 = Fund.create! name: 'CatFund',
       patient = Patient.create!(
         name: "Reporting Patient #{i}",
         primary_phone: "321-0#{i}0-001#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: i.even?,
         line: i.even? ? lines.first : lines.second,
         clinic: Clinic.all.sample,
+        procedure_date: 10.days.from_now,
         
       )
 
@@ -190,11 +192,11 @@ fund2 = Fund.create! name: 'CatFund',
       patient = Patient.create!(
         name: "Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-002#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now
+        procedure_date: 10.days.from_now
       )
 
       # reached within the past 30 days
@@ -210,11 +212,11 @@ fund2 = Fund.create! name: 'CatFund',
       patient = Patient.create!(
         name: "Old Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-003#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
-        appointment_date: 10.days.from_now
+        procedure_date: 10.days.from_now
       )
 
       5.times do
@@ -227,10 +229,11 @@ fund2 = Fund.create! name: 'CatFund',
       Patient.create!(
         name: "Pledge Reporting Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-004#{rand(10)}",
-        initial_call_date: 3.days.ago,
+        intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
         line: lines[patient_number % 3] || lines.first,
         clinic: Clinic.all.sample,
+        procedure_date: 10.days.from_now,
 
       )
     end
@@ -244,6 +247,7 @@ fund2 = Fund.create! name: 'CatFund',
         voicemail_preference: 'yes',
         line: lines.first,
         language: 'Spanish',
+        intake_date: 140.days.ago,
 
         created_at: 140.days.ago
       )
@@ -256,7 +260,7 @@ fund2 = Fund.create! name: 'CatFund',
 
       patient.update!(
         # header info - hand filled in
-        appointment_date: 130.days.ago,
+        procedure_date: 130.days.ago,
 
         # patient info - hand filled in
         age: 24,
@@ -264,9 +268,9 @@ fund2 = Fund.create! name: 'CatFund',
         city: 'Washington',
         state: 'DC',
         county: 'Washington',
-        other_contact: 'Susie Q.',
-        other_phone: "555-0#{patient_number}0-0053",
-        other_contact_relationship: 'Mother',
+        emergency_contact: 'Susie Q.',
+        emergency_contact_phone: "555-0#{patient_number}0-0053",
+        emergency_contact_relationship: 'Mother',
         employment_status: 'Student',
         income: '$10,000-14,999',
         household_size_adults: 3,
@@ -304,6 +308,7 @@ fund2 = Fund.create! name: 'CatFund',
         voicemail_preference: 'yes',
         line: lines.first,
         language: 'Spanish',
+        intake_date: 640.days.ago,
 
         created_at: 640.days.ago
       )
@@ -320,7 +325,7 @@ fund2 = Fund.create! name: 'CatFund',
       # We reach Patient 2
       patient.update!(
         # header info - hand filled in
-        appointment_date: 630.days.ago,
+        procedure_date: 630.days.ago,
 
         # patient info - hand filled in
         age: 24,
@@ -330,9 +335,9 @@ fund2 = Fund.create! name: 'CatFund',
         county: 'Washington',
         zipcode: "20009",
         pronouns: 'they/them',
-        other_contact: 'Susie Q.',
-        other_phone: "555-6#{patient_number}0-0053",
-        other_contact_relationship: 'Mother',
+        emergency_contact: 'Susie Q.',
+        emergency_contact_phone: "555-6#{patient_number}0-0053",
+        emergency_contact_relationship: 'Mother',
 
         employment_status: 'Student',
         income: '$10,000-14,999',
@@ -365,10 +370,10 @@ fund2 = Fund.create! name: 'CatFund',
                              line: lines.first,
                              primary_phone: "000-000-0001",
 
-                             initial_call_date: 30.days.ago
+                             intake_date: 30.days.ago
     regina.calls.create! created_at: 30.days.ago,
                          status: 'reached_patient'
-    regina.update appointment_date: 18.days.ago,
+    regina.update procedure_date: 18.days.ago,
                   clinic: Clinic.first,
 
     regina.calls.create! created_at: 22.days.ago,
@@ -382,7 +387,7 @@ fund2 = Fund.create! name: 'CatFund',
     janis = Patient.create! name: 'Janis (SCENARIO)',
                             line: lines.first,
                             primary_phone: "000-000-0002",
-                            initial_call_date: 40.days.ago
+                            intake_date: 40.days.ago
     janis.calls.create! created_at: 40.days.ago,
                         status: 'left_voicemail'
     janis.calls.create! created_at: 40.days.ago,

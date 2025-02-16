@@ -58,17 +58,20 @@
         <%= f.text_field :zipcode, autocomplete: 'off',
                           pattern: '\d{5}(-?\d{4})?'%>
 
-        <h3><%= t 'patient.information.other_contact.title' %></h3>
-        <%= f.text_field :other_contact,
+        <h3><%= t 'patient.information.emergency_contact.title' %></h3>
+        <%= f.text_field :emergency_contact,
                          autocomplete: 'off',
-                         label: t('patient.information.other_contact.name') %>
-        <%= f.text_field :other_phone,
-                         value: patient.other_phone_display,
+                         label: t('patient.information.emergency_contact.name') %>
+        <%= f.text_field :emergency_contact_phone,
+                         value: patient.emergency_contact_phone_display,
                          autocomplete: 'off',
-                         label: t('patient.information.other_contact.phone') %>
-        <%= f.text_field :other_contact_relationship,
+                         label: t('patient.information.emergency_contact.phone') %>
+        <%= f.text_field :emergency_contact_relationship,
                          autocomplete: 'off',
-                         label: t('patient.information.other_contact.relationship')%>
+                         label: t('patient.information.emergency_contact.relationship')%>
+        <%= f.text_field :emergency_reference_wording,
+                         autocomplete: 'off',
+                         label: t('patient.information.emergency_contact.emergency_reference_wording', fund: current_tenant.name)%>
       </div>
 
       <div class="col info-form-right">

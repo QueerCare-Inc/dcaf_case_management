@@ -6,10 +6,10 @@ class PledgeFormGeneratorTest < ActiveSupport::TestCase
     # ActsAsTenant.current_tenant.update pledge_generation_config: 'DCAF'
     @user = create :user, name: 'Da User'
     clinic = create :clinic, name: 'Da Clinic', city: 'Morgantown', state: 'WV'
-    @patient = create :patient, name: 'Sarah', other_phone: '111-222-3333',
-                                other_contact: 'Yolo', clinic: clinic,
-                                initial_call_date: Date.new(2015, 12, 1),
-                                appointment_date: Date.new(2016, 1, 1),
+    @patient = create :patient, name: 'Sarah', emergency_contact_phone: '111-222-3333',
+                                emergency_contact: 'Yolo', clinic: clinic,
+                                intake_date: Date.new(2015, 12, 1),
+                                procedure_date: Date.new(2016, 1, 1),
                                 fund_pledge: 300, naf_pledge: 200
                                 
     @case_manager_name = 'Angela Davis'
@@ -31,7 +31,7 @@ class PledgeFormGeneratorTest < ActiveSupport::TestCase
     end
 
     it 'should get the clinic date formatted' do
-      assert_equal(@pledge_form_generator.appointment_date, 'January  1, 2016')
+      assert_equal(@pledge_form_generator.procedure_date, 'January  1, 2016')
     end
 
     it 'should get the patient provider name' do

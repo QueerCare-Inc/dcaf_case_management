@@ -16,7 +16,7 @@ Rails.application.config.filter_parameters += [
   :city,
   :state,
   :zip,
-  :appointment_date,
+  :procedure_date,
   :insurance,
   :street_address_1,
   :street_address_2,

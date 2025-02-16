@@ -25,10 +25,10 @@ class ArchivedPatient < ApplicationRecord
   }
 
   # Validations
-  validates :initial_call_date,
+  validates :intake_date,
             :line,
             presence: true
-  validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
+  validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
   # validates_associated :fulfillment
 
@@ -52,8 +52,8 @@ class ArchivedPatient < ApplicationRecord
       city: patient.city,
       state: patient.state,
       county: patient.county,
-      initial_call_date: patient.initial_call_date,
-      appointment_date: patient.appointment_date,
+      intake_date: patient.intake_date,
+      procedure_date: patient.procedure_date,
       multiday_appointment: patient.multiday_appointment,
       practical_support_waiver: patient.practical_support_waiver,
 
@@ -86,7 +86,7 @@ class ArchivedPatient < ApplicationRecord
 
     patient.versions.destroy_all
 
-    patient.fulfillment.update! can_fulfill: archived_patient
+    # patient.fulfillment.update! can_fulfill: archived_patient
 
     patient.calls.each do |call|
       call.update! can_call: archived_patient

@@ -245,15 +245,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
   create_table "patients", force: :cascade do |t|
     t.string "name", null: false
     t.string "primary_phone", null: false
-    t.string "other_contact"
-    t.string "other_phone"
-    t.string "other_contact_relationship"
+    t.string "emergency_conctact"
+    t.string "emergency_contact_phone"
+    t.string "emergency_contact_relationship"
     t.string "identifier"
     t.string "voicemail_preference", default: "not_specified"
     t.string "line_legacy"
     t.string "language"
     t.string "pronouns"
-    t.date "initial_call_date", null: false
+    t.date "intake_date", null: false
     t.boolean "shared_flag"
     t.integer "last_menstrual_period_weeks"
     t.integer "last_menstrual_period_days"
@@ -272,16 +272,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.string "referred_by"
     t.boolean "referred_to_clinic"
     t.boolean "completed_ultrasound"
-    t.date "appointment_date"
-    t.integer "procedure_cost"
-    t.integer "patient_contribution"
-    t.integer "naf_pledge"
-    t.integer "fund_pledge"
-    t.datetime "fund_pledged_at", precision: nil
-    t.boolean "pledge_sent"
-    t.boolean "resolved_without_fund"
-    t.datetime "pledge_generated_at", precision: nil
-    t.datetime "pledge_sent_at", precision: nil
+    t.date "procedure_date"
     t.boolean "textable"
     t.bigint "clinic_id"
     t.bigint "last_edited_by_id"
@@ -296,17 +287,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_28_041159) do
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
+    t.index ["emergency_conctact"], name: "index_patients_on_emergency_conctact"
+    t.index ["emergency_contact_phone"], name: "index_patients_on_emergency_contact_phone"
     t.index ["fund_id"], name: "index_patients_on_fund_id"
     t.index ["identifier"], name: "index_patients_on_identifier"
     t.index ["last_edited_by_id"], name: "index_patients_on_last_edited_by_id"
     t.index ["line_id"], name: "index_patients_on_line_id"
     t.index ["line_legacy"], name: "index_patients_on_line_legacy"
     t.index ["name"], name: "index_patients_on_name"
-    t.index ["other_contact"], name: "index_patients_on_other_contact"
-    t.index ["other_phone"], name: "index_patients_on_other_phone"
-    t.index ["pledge_generated_by_id"], name: "index_patients_on_pledge_generated_by_id"
-    t.index ["pledge_sent"], name: "index_patients_on_pledge_sent"
-    t.index ["pledge_sent_by_id"], name: "index_patients_on_pledge_sent_by_id"
     t.index ["primary_phone", "fund_id"], name: "index_patients_on_primary_phone_and_fund_id", unique: true
     t.index ["shared_flag"], name: "index_patients_on_shared_flag"
   end

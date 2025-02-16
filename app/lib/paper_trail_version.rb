@@ -23,8 +23,8 @@ class PaperTrailVersion < PaperTrail::Version
     can_support_id
   ].freeze
   DATE_FIELDS = %w[
-    appointment_date
-    initial_call_date
+    procedure_date
+    intake_date
   ].freeze
   TIME_FIELDS = %w[
     pledge_generated_at

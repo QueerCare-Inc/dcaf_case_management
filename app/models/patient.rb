@@ -40,16 +40,16 @@ class Patient < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   validates :name,
             :primary_phone,
-            :initial_call_date,
+            :intake_date,
             :line,
             presence: true
   validates :primary_phone, format: /\A\d{10}\z/,
                             length: { is: 10 }
   validate :confirm_unique_phone_number
-  validates :other_phone, format: /\A\d{10}\z/,
+  validates :emergency_contact_phone, format: /\A\d{10}\z/,
                           length: { is: 10 },
                           allow_blank: true
-  validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
+  validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
   validate :confirm_appointment_after_initial_call
 
@@ -57,7 +57,7 @@ class Patient < ApplicationRecord
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
-  validates :name, :primary_phone, :other_contact, :other_phone, :other_contact_relationship,
+  validates :name, :primary_phone, :emergency_contact, :emergency_contact_phone, :emergency_contact_relationship,
             :voicemail_preference, :language, :pronouns, :city, :state, :county, :zipcode,
             :race_ethnicity, :employment_status, :insurance, :income, :referred_by, :procedure_type,
             length: { maximum: 150 }
@@ -131,7 +131,7 @@ class Patient < ApplicationRecord
   end
 
   def has_alt_contact
-    other_contact.present? || other_phone.present? || other_contact_relationship.present?
+    emergency_contact.present? || emergency_contact_phone.present? || emergency_contact_relationship.present?
   end
 
   def age_range
@@ -168,11 +168,11 @@ class Patient < ApplicationRecord
       # If a patient fulfillment is ticked off as audited, archive 3 months
       # after initial call date. If we're already past 3 months later when
       # the audit happens, it will archive that night
-      initial_call_date + Config.archive_fulfilled_patients.days
+      intake_date + Config.archive_fulfilled_patients.days
     else
       # If a patient is waiting for audit they archive a year after their
       # initial call date
-      initial_call_date + Config.archive_all_patients.days
+      intake_date + Config.archive_all_patients.days
     end
   end
 
@@ -182,7 +182,6 @@ class Patient < ApplicationRecord
 
   def all_versions(include_fulfillment)
     all_versions = versions || []
-    all_versions += external_pledges.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
     all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
     if include_fulfillment
       all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
@@ -204,17 +203,17 @@ class Patient < ApplicationRecord
   private
 
   def confirm_appointment_after_initial_call
-    return unless appointment_date.present? && initial_call_date&.send(:>, appointment_date)
+    return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
 
-    errors.add(:appointment_date, 'must be after date of initial call')
+    errors.add(:procedure_date, 'must be after date of initial call')
   end
 
   def clean_fields
     primary_phone.gsub!(/\D/, '') if primary_phone
-    other_phone.gsub!(/\D/, '') if other_phone
+    emergency_contact_phone.gsub!(/\D/, '') if emergency_contact_phone
     name.strip! if name
-    other_contact.strip! if other_contact
-    other_contact_relationship.strip! if other_contact_relationship
+    emergency_contact.strip! if emergency_contact
+    emergency_contact_relationship.strip! if emergency_contact_relationship
 
     # add dash if needed
     zipcode.gsub!(/(\d{5})(\d{4})/, '\1-\2') if zipcode

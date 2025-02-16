@@ -134,16 +134,16 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :name, :care_coordinator, # :last_menstrual_period_days, :last_menstrual_period_weeks,
-    :appointment_date, :primary_phone, :pronouns, :status
+    :name, :care_coordinator, 
+    :procedure_date, :primary_phone, :pronouns, :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
     :line_id,
     :legal_name, :email,
     :age, :race_ethnicity, :language, :voicemail_preference, :textable,
-    :city, :state, :county, :zipcode, :other_contact, :other_phone,
-    :other_contact_relationship,
+    :city, :state, :county, :zipcode, :emergency_contact, :other_phone,
+    :emergency_contact_relationship,
     :other_contact_referencing,
     :employment_status, :income,
     :household_size_adults, :household_size_children, :insurance, :referred_by,

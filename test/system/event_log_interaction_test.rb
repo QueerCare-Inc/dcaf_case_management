@@ -48,7 +48,7 @@ class EventLogInteractionTest < ApplicationSystemTestCase
     it 'should log sent pledges' do
       @patient.update clinic: create(:clinic),
                       fund_pledge: 100,
-                      appointment_date: 3.days.from_now
+                      procedure_date: 3.days.from_now
       visit edit_patient_path @patient
 
       find('#submit-pledge-button').click
