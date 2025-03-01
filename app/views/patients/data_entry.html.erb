@@ -106,32 +106,7 @@
       label: t('patient.abortion_information.clinic_section.procedure_type') %>
   <% end %>
 
-
-  <%= f.number_field :procedure_cost,
-                     label: t('patient.pledge_fulfillment.form.procedure_cost') %>
-  <%= f.number_field :patient_contribution,
-                     label: t('patient.abortion_information.cost_section.patient_contribution'),
-                     autocomplete: 'off',
-                     prepend: '$' %>
-  <%= f.number_field :naf_pledge,
-                     label: t('patient.abortion_information.cost_section.naf_pledge'),
-                     autocomplete: 'off',
-                     prepend: '$' %>
-
-  <div class="row">
-    <div class="col">
-      <%= f.check_box :pledge_sent, label: t('patient.status.key.pledge_sent') %>
-    </div>
-    <div class="col">
-      <%= f.date_field :pledge_sent_at,
-                       label: t('patient.pledge_fulfillment.confirmation.pledge_sent_at'),
-                       autocomplete: 'off' %>
-    </div>
-  </div>
-
   <%= f.check_box :referred_to_clinic, label: t('patient.abortion_information.clinic_section.referred_to_clinic') %>
-  <%= f.check_box :completed_ultrasound, label: t('patient.abortion_information.clinic_section.ultrasound_completed') %>
-  <%= f.check_box :resolved_without_fund, label: t('patient.status.key.resolved', fund: current_tenant.name) %>
 
   <fieldset class="mt-5">
     <legend class="font-weight-bold" id="special_circumstances_label">

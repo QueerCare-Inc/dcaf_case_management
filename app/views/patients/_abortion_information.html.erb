@@ -37,10 +37,6 @@
                           label: t('patient.abortion_information.clinic_section.referred_to_clinic'),
                           label_class: 'tooltip-header-checkbox',
                           data: { 'tooltip-text': referred_to_clinic_help_text } %>
-          <%= f.check_box :completed_ultrasound,
-                          label: t('patient.abortion_information.clinic_section.ultrasound_completed'),
-                          label_class: 'tooltip-header-checkbox',
-                          data: { 'tooltip-text': mandatory_ultrasound_help_text } %>
           <%= f.check_box :solidarity,
                           label: t('patient.abortion_information.clinic_section.solidarity'),
                           label_class: 'tooltip-header-checkbox',
@@ -77,11 +73,6 @@
       <div class="col">
         <%= f.number_field :procedure_cost,
                            label: t('patient.abortion_information.cost_section.abortion_cost'),
-                           autocomplete: 'off',
-                           prepend: '$' %>
-
-        <%= f.number_field :ultrasound_cost,
-                           label: t('patient.abortion_information.cost_section.ultrasound_cost'),
                            autocomplete: 'off',
                            prepend: '$' %>
 

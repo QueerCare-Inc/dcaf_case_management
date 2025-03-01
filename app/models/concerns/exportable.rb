@@ -31,7 +31,6 @@ module Exportable
     'Shared?' => :shared_flag,
     'Has Special Circumstances' => :has_special_circumstances,
     'Abortion cost' => :procedure_cost,
-    'Ultrasound cost' => :ultrasound_cost,
     'Patient contribution' => :patient_contribution,
     'NAF pledge' => :naf_pledge,
     'Fund pledge' => :fund_pledge,

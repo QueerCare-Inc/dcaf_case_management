@@ -54,7 +54,6 @@ en:
         check_number: Check number
         city: City
         clinic_id: Clinic ID
-        completed_ultrasound: Completed ultrasound?
         confirmed: Confirmed
         county: County
         date_of_check: Date of check
@@ -71,8 +70,6 @@ en:
         initial_call_date: Initial call date
         insurance: Insurance
         language: Language
-        last_menstrual_period_days: Last menstrual period days
-        last_menstrual_period_weeks: Last menstrual period weeks
         region_id: Region ID
         multiday_appointment: Multi-day appointment
         naf_pledge: NAF pledge
@@ -104,7 +101,6 @@ en:
         end_time: End time
         support_type: Support type
         textable: Textable
-        ultrasound_cost: Ultrasound cost
         voicemail_preference: Voicemail preference
         zipcode: Zipcode
       practical_support:
@@ -388,7 +384,6 @@ en:
         solidarity: Solidarity Pledge
         solidarity_lead: Solidarity Lead
         title: Clinic details
-        ultrasound_completed: Ultrasound completed?
       cost_section:
         abortion_cost: Abortion cost
         fund_pledge: "%{fund} pledge"
@@ -396,7 +391,6 @@ en:
         outstanding_balance: Outstanding Balance
         patient_contribution: Patient contribution
         title: Cost details
-        ultrasound_cost: Ultrasound cost
       title: Abortion information
     call_log:
       delete_confirm: Are you sure you want to remove this call from the call log?
@@ -631,7 +625,6 @@ en:
     budget_bar: The budget bar lists money tentatively set aside for a patient (by entering a value in the %{fund} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.
     call_list: This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.
     completed_calls: This is a list of patients you have called within the last 8 hours.
-    mandatory_ultrasound: If you are in a state that requires ultrasounds and the patient has completed one, you can log it here.
     patient_identifier: Semi-unique internal identifier for this patient, based on their phone number.
     practical_support_confirmed: Check this box if this practical support is confirmed by the point of contact.
     practical_support_fulfilled: Check this box if this practical support is completed or paid out, and requires no further attention.

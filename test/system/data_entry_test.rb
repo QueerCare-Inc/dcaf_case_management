@@ -45,7 +45,6 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'English', from: 'patient_language'
       select 'Do not leave a voicemail', from: 'patient_voicemail_preference'
       check 'patient_referred_to_clinic'
-      check 'patient_completed_ultrasound'
       check 'Pledge Sent'
       check 'fetal_patient_special_circumstances'
       check 'home_patient_special_circumstances'
@@ -98,7 +97,6 @@ class DataEntryTest < ApplicationSystemTestCase
         assert has_field? 'National Abortion Federation pledge', with: '50'
         assert has_field? 'CATF pledge', with: '100'
         assert has_checked_field? 'Referred to clinic'
-        assert has_checked_field? 'Ultrasound completed?'
       end
     end
 
@@ -144,7 +142,6 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'English', from: 'patient_language'
       select 'Do not leave a voicemail', from: 'patient_voicemail_preference'
       check 'patient_referred_to_clinic'
-      check 'patient_completed_ultrasound'
       check 'Pledge Sent'
       fill_in 'Pledge sent at:', with: 75.days.ago.strftime('%m/%d/%Y')
       check 'fetal_patient_special_circumstances'

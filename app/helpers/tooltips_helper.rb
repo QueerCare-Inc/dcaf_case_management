@@ -59,10 +59,6 @@ module TooltipsHelper
     t('tooltips.referred_to_clinic').strip
   end
 
-  def mandatory_ultrasound_help_text
-    t('tooltips.mandatory_ultrasound').strip
-  end
-
   def solidarity_help_text
     t('tooltips.solidarity').strip
   end
