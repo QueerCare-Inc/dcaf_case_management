@@ -16,7 +16,7 @@ ActsAsTenant.without_tenant do
   Clinic.destroy_all
   PaperTrailVersion.destroy_all
   ActiveRecord::SessionStore::Session.destroy_all
-  Line.destroy_all
+  Region.destroy_all
   PracticalSupport.destroy_all
   Fund.destroy_all
 end
@@ -46,10 +46,10 @@ fund2 = Fund.create! name: 'CatFund',
 
 [fund1, fund2].each do |fund|
   ActsAsTenant.with_tenant(fund) do
-    lines = if fund == fund1
-              ['Main', 'Spanish'].map { |line| Line.create! name: line }
+    regions = if fund == fund1
+              ['Main', 'Spanish'].map { |region| Region.create! name: region }
             else
-              ['Maru', 'Guremike'].map { |line| Line.create! name: line }
+              ['Maru', 'Guremike'].map { |region| Region.create! name: region }
             end
 
     # Create test users
@@ -104,7 +104,7 @@ fund2 = Fund.create! name: 'CatFund',
                                 shared_flag: i.even?,
                                 last_menstrual_period_weeks: (i + 1 * 2),
                                 last_menstrual_period_days: 3,
-                                line: lines.first,
+                                region: regions.first,
                                 solidarity: i % 4 == 0
 
       # Create associated objects
@@ -193,7 +193,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{i}0-001#{rand(10)}",
         initial_call_date: 3.days.ago,
         shared_flag: i.even?,
-        line: i.even? ? lines.first : lines.second,
+        region: i.even? ? regions.first : regions.second,
         clinic: Clinic.all.sample,
         appointment_date: 10.days.from_now,
         last_menstrual_period_weeks: 7,
@@ -218,7 +218,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-002#{rand(10)}",
         initial_call_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         appointment_date: 10.days.from_now
       )
@@ -238,7 +238,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-003#{rand(10)}",
         initial_call_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         appointment_date: 10.days.from_now
       )
@@ -255,7 +255,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-004#{rand(10)}",
         initial_call_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         appointment_date: 10.days.from_now,
         pledge_sent: true,
@@ -270,7 +270,7 @@ fund2 = Fund.create! name: 'CatFund',
         name: "Archive Dataful Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-005#{rand(10)}",
         voicemail_preference: 'yes',
-        line: lines.first,
+        region: regions.first,
         language: 'Spanish',
         initial_call_date: 140.days.ago,
         last_menstrual_period_weeks: 6,
@@ -379,7 +379,7 @@ fund2 = Fund.create! name: 'CatFund',
         name: "Archive Dropoff Patient #{patient_number}",
         primary_phone: "867-9#{patient_number}0-004#{rand(10)}",
         voicemail_preference: 'yes',
-        line: lines.first,
+        region: regions.first,
         language: 'Spanish',
         initial_call_date: 640.days.ago,
         last_menstrual_period_weeks: 6,
@@ -442,7 +442,7 @@ fund2 = Fund.create! name: 'CatFund',
 
     # A few specific named cases that reflect common scenarios
     regina = Patient.create! name: 'Regina (SCENARIO)',
-                             line: lines.first,
+                             region: regions.first,
                              primary_phone: "000-000-0001",
                              last_menstrual_period_weeks: 6,
                              initial_call_date: 30.days.ago
@@ -465,7 +465,7 @@ fund2 = Fund.create! name: 'CatFund',
     regina.notes.create! full_text: "SCENARIO: Regina calls us at 6 weeks LMP on 3-12. We call her back and reach the patient. We explain the fund's policies of only funding after 7 weeks LMP. Regina’s options are to either schedule her appointment a week from the day she calls or fund her procedure on her own. We offer her references to clinics who will be able to see her and the number to other funders who may be able to help her. We emphasize although we cannot fund her now financially, we can in the future and she should call us back if that is the case. She says she will make an appointment for two weeks out. Regina calls us back on 3-20. Her funding is completed. We send the pledge to the clinic on Regina's behalf. Regina goes to her appointment on 3-24 and has her abortion. The clinic mails us back the completed pledge form on 4-15. Fund checks the pledge against our system, completes an entry in our ledger, notes the completed pledge on Regina's file in DARIA (which then anon’s her data eventually), writes a check to the clinic and mails the check it to the clinic."
 
     janis = Patient.create! name: 'Janis (SCENARIO)',
-                            line: lines.first,
+                            region: regions.first,
                             primary_phone: "000-000-0002",
                             initial_call_date: 40.days.ago
     janis.calls.create! created_at: 40.days.ago,

@@ -14,15 +14,15 @@ class PatientTest::Exportable < PatientTest
       @archived = create :archived_patient
     end
 
-    describe 'get_line' do
-      it 'should return the line name' do
-        assert_equal @patient.line.name, @patient.get_line
+    describe 'get_region' do
+      it 'should return the region name' do
+        assert_equal @patient.region.name, @patient.get_region
       end
     end
 
     describe 'archived?' do
       it 'should return false if patient' do
-        refute @patient.archived?
+        assert_not @patient.archived?
       end
 
       it 'should return true if archived' do
@@ -66,7 +66,7 @@ class PatientTest::Exportable < PatientTest
         it 'should return fulfillment status' do
           assert @patient.fulfilled
           @patient.fulfillment.update fulfilled: false
-          refute @patient.fulfilled
+          assert_not @patient.fulfilled
         end
       end
 
@@ -105,7 +105,7 @@ class PatientTest::Exportable < PatientTest
       before do
         @patient.calls.create attributes_for(:call, created_at: 5.days.ago, status: :reached_patient)
         @patient.calls.create attributes_for(:call, created_at: 3.days.ago, status: :left_voicemail)
-        @patient.calls.create attributes_for(:call, created_at: 1.days.ago, status: :left_voicemail)
+        @patient.calls.create attributes_for(:call, created_at: 1.day.ago, status: :left_voicemail)
       end
 
       describe 'first_call_timestamp' do
@@ -118,7 +118,7 @@ class PatientTest::Exportable < PatientTest
           assert_equal 5.days.ago.to_date, @patient.first_call_timestamp.to_date
         end
       end
-  
+
       describe 'last_call_timestamp' do
         it 'should be nil if no calls' do
           @patient.calls.destroy_all
@@ -126,21 +126,21 @@ class PatientTest::Exportable < PatientTest
         end
 
         it 'should return datetime of last call' do
-          assert_equal 1.days.ago.to_date, @patient.last_call_timestamp.to_date
+          assert_equal 1.day.ago.to_date, @patient.last_call_timestamp.to_date
         end
-      end  
+      end
 
       describe 'call_count' do
         it 'should return count of calls' do
           assert_equal 3, @patient.call_count
         end
       end
-  
+
       describe 'reached_patient_call_count' do
         it 'should return count of reached calls' do
           assert_equal 1, @patient.reached_patient_call_count
         end
-      end  
+      end
     end
 
     describe 'export_clinic_name' do
@@ -166,7 +166,7 @@ class PatientTest::Exportable < PatientTest
         assert_equal @patient.preferred_language, 'Spanish'
       end
     end
-    
+
     describe 'external pledge related' do
       before do
         @patient.external_pledges.create attributes_for(:external_pledge, amount: 100, source: 'Cat Town')
@@ -184,13 +184,13 @@ class PatientTest::Exportable < PatientTest
         end
       end
 
-      describe "external_pledge_sum" do
-        it "returns 0 if no pledges" do
+      describe 'external_pledge_sum' do
+        it 'returns 0 if no pledges' do
           @patient.external_pledges.destroy_all
           assert_equal @patient.external_pledge_sum, 0
         end
 
-        it "returns sum of pledges when they exist" do
+        it 'returns sum of pledges when they exist' do
           assert_equal @patient.external_pledge_sum, 300
         end
       end
@@ -209,8 +209,10 @@ class PatientTest::Exportable < PatientTest
 
     describe 'all_practical_supports' do
       before do
-        @patient.practical_supports.create attributes_for(:practical_support, confirmed: true, source: 'Friendship', support_type: 'Driving', amount: 50, fulfilled: true, attachment_url: 'google.com', purchase_date: 2.days.from_now)
-        @patient.practical_supports.create attributes_for(:practical_support, confirmed: false, source: 'Friendship', support_type: 'Coffee', amount: 50, fulfilled: false, attachment_url: nil)
+        @patient.practical_supports.create attributes_for(:practical_support, confirmed: true, source: 'Friendship',
+                                                                              support_type: 'Driving', amount: 50, fulfilled: true, attachment_url: 'google.com', purchase_date: 2.days.from_now)
+        @patient.practical_supports.create attributes_for(:practical_support, confirmed: false, source: 'Friendship',
+                                                                              support_type: 'Coffee', amount: 50, fulfilled: false, attachment_url: nil)
       end
 
       it 'should return nil if no practical supports' do
@@ -219,7 +221,8 @@ class PatientTest::Exportable < PatientTest
       end
 
       it 'should return a joined list of practical supports' do
-        assert_equal "Friendship - Driving - Confirmed - $50.00 - google.com - Fulfilled - Purchased on #{2.days.from_now.display_date}; Friendship - Coffee - Unconfirmed - $50.00 - No attachment - Not fulfilled - No purchase date", @patient.all_practical_supports
+        assert_equal "Friendship - Driving - Confirmed - $50.00 - google.com - Fulfilled - Purchased on #{2.days.from_now.display_date}; Friendship - Coffee - Unconfirmed - $50.00 - No attachment - Not fulfilled - No purchase date",
+                     @patient.all_practical_supports
       end
     end
 

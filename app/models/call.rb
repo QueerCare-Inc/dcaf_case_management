@@ -17,21 +17,21 @@ class Call < ApplicationRecord
   belongs_to :can_call, polymorphic: true
 
   # Validations
-  validates :status,  presence: true
+  validates :status, presence: true
 
   # Methods
   def recent?
-    updated_at > 8.hours.ago ? true : false
+    updated_at > 8.hours.ago
   end
 
   def event_params
     user = User.find_by(id: PaperTrail&.request&.whodunnit)
     {
-      event_type:   status.to_s,
-      cm_name:      user&.name || 'System',
+      event_type: status.to_s,
+      cm_name: user&.name || 'System',
       patient_name: can_call.name,
-      patient_id:   can_call.id,
-      line:         can_call.line
+      patient_id: can_call.id,
+      region: can_call.region
     }
   end
 end

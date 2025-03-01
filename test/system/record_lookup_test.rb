@@ -3,8 +3,8 @@ require 'application_system_test_case'
 # Confirm functional search and record lookup
 class RecordLookupTest < ApplicationSystemTestCase
   before do
-    @line = create :line
-    @line2 = create :line
+    @region = create :region
+    @region2 = create :region
     @user = create :user
     log_in_as @user
   end
@@ -15,13 +15,13 @@ class RecordLookupTest < ApplicationSystemTestCase
                                   primary_phone: '111-222-3333',
                                   other_contact: 'Yolo Goat',
                                   other_phone: '222-333-4455',
-                                  line: @line
+                                  region: @region
 
       @patient_2 = create :patient, name: 'Susan Everyteen MD',
                                     primary_phone: '111-222-4444',
                                     other_contact: 'Yolo Goat',
                                     other_phone: '222-333-4455',
-                                    line: @line2
+                                    region: @region2
     end
 
     it 'should have a functional search form' do
@@ -36,7 +36,7 @@ class RecordLookupTest < ApplicationSystemTestCase
 
       assert has_text? 'Search results'
       assert has_text? 'Susan Everyteen DC'
-      refute has_text? 'Susan Everyteen MD'
+      assert_not has_text? 'Susan Everyteen MD'
       assert_text @patient.primary_phone_display
     end
 
@@ -46,7 +46,7 @@ class RecordLookupTest < ApplicationSystemTestCase
 
       assert has_text? 'Search results'
       assert has_text? 'Susan Everyteen DC'
-      refute has_text? 'Susan Everyteen MD'
+      assert_not has_text? 'Susan Everyteen MD'
     end
 
     it 'should be able to retrieve a record based on other phone' do
@@ -55,7 +55,7 @@ class RecordLookupTest < ApplicationSystemTestCase
 
       assert has_text? 'Search results'
       assert has_text? 'Susan Everyteen DC'
-      refute has_text? 'Susan Everyteen MD'
+      assert_not has_text? 'Susan Everyteen MD'
     end
 
     it 'should be able to retrieve a record regardless of phone formatting' do
@@ -67,11 +67,11 @@ class RecordLookupTest < ApplicationSystemTestCase
       assert has_text? 'Add a new patient'
     end
 
-    it 'should not pick up patients on other lines' do
+    it 'should not pick up patients on other regions' do
       fill_in 'search', with: '111-222-4444'
       click_button 'Search'
 
-      refute has_text? 'Susan Everyteen MD'
+      assert_not has_text? 'Susan Everyteen MD'
       within :css, '#search_results_shell' do
         assert has_text? 'Your search produced no results'
         assert has_text? 'Add a new patient'
@@ -81,7 +81,7 @@ class RecordLookupTest < ApplicationSystemTestCase
 
     it 'should limit the number of patients returned' do
       16.times do |num|
-        create :patient, primary_phone: "124-567-78#{num + 10}", line: @line
+        create :patient, primary_phone: "124-567-78#{num + 10}", region: @region
       end
       fill_in 'search', with: '124'
       click_button 'Search'

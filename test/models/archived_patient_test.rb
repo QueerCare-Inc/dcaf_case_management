@@ -4,16 +4,16 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   before do
     @user = create :user
     @user2 = create :user
-    @line = create :line
+    @region = create :region
     with_versioning(@user) do
       @patient = create :patient, other_phone: '111-222-3333',
                                   other_contact: 'Yolo',
-                                  line: @line
+                                  region: @region
 
       @patient.calls.create attributes_for(:call, status: :reached_patient)
       create_language_config
       @archived_patient = create :archived_patient,
-                                 line: @line,
+                                 region: @region,
                                  initial_call_date: 200.days.ago
     end
   end
@@ -23,14 +23,14 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       assert @archived_patient.valid?
     end
 
-    it 'requires a line' do
-      @archived_patient.line = nil
-      refute @archived_patient.valid?
+    it 'requires a region' do
+      @archived_patient.region = nil
+      assert_not @archived_patient.valid?
     end
 
     it 'requires an initial call date' do
       @archived_patient.initial_call_date = nil
-      refute @archived_patient.valid?
+      assert_not @archived_patient.valid?
     end
   end
 
@@ -40,7 +40,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
         @clinic = create :clinic
         @patient = create :patient, primary_phone: '222-222-3336',
                                     other_phone: '222-222-4441',
-                                    line: @line,
+                                    region: @region,
                                     clinic: @clinic,
                                     city: 'Washington',
                                     race_ethnicity: 'Asian',
@@ -65,14 +65,14 @@ class ArchivedPatientTest < ActiveSupport::TestCase
         @patient.external_pledges.create source: 'Metallica Abortion Fund',
                                          amount: 100
         @patient.practical_supports.create support_type: 'Louder Metallica tickets',
-                    source: 'Metallica'
+                                           source: 'Metallica'
         @archived_patient = ArchivedPatient.convert_patient(@patient)
         @archived_patient.save!
       end
     end
 
     it 'should have matching data for Patient and Archive Patient' do
-      assert_equal @archived_patient.line, @patient.line
+      assert_equal @archived_patient.region, @patient.region
       assert_equal @archived_patient.city, @patient.city
       assert_equal @archived_patient.race_ethnicity, @patient.race_ethnicity
       assert_equal @archived_patient.appointment_date,
@@ -128,15 +128,15 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   describe 'archive_audited_patients' do
     before do
       @patient_audited = create :patient, primary_phone: '222-222-3333',
-                                      other_phone: '222-222-4444',
-                                      initial_call_date: 30.days.ago,
-                                      line: @line
+                                          other_phone: '222-222-4444',
+                                          initial_call_date: 30.days.ago,
+                                          region: @region
       @patient_audited.fulfillment.update audited: true
 
       @patient_unaudited = create :patient, primary_phone: '564-222-3333',
-                                      other_phone: '222-222-9074',
-                                      initial_call_date: 120.days.ago,
-                                      line: @line
+                                            other_phone: '222-222-9074',
+                                            initial_call_date: 120.days.ago,
+                                            region: @region
     end
 
     it 'should not convert thirty day old, audited patient to archived patient' do
@@ -153,26 +153,26 @@ class ArchivedPatientTest < ActiveSupport::TestCase
         assert_difference 'Patient.all.count', -1 do
           ArchivedPatient.archive_eligible_patients!
         end
-       end
+      end
     end
   end
 
   describe 'archive_unaudited_year_ago_patients' do
     before do
       @patient_old_unaudited = create :patient, primary_phone: '564-222-3333',
-                                      other_phone: '222-222-9074',
-                                      initial_call_date: 370.days.ago,
-                                      line: @line
+                                                other_phone: '222-222-9074',
+                                                initial_call_date: 370.days.ago,
+                                                region: @region
       @patient_old_unaudited.fulfillment.update audited: false
       @patient_old_unaudited.save!
     end
 
     it 'should convert year+ old unaudited patient to archived patient' do
-       assert_difference 'ArchivedPatient.all.count', 1 do
+      assert_difference 'ArchivedPatient.all.count', 1 do
         assert_difference 'Patient.all.count', -1 do
           ArchivedPatient.archive_eligible_patients!
         end
-       end
+      end
     end
   end
 end

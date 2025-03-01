@@ -22,11 +22,11 @@ class Patient < ApplicationRecord
   before_save :update_fund_pledged_at
   after_create :initialize_fulfillment
   after_update :confirm_still_shared, if: :shared_flag?
-  after_update :update_call_list_lines, if: :saved_change_to_line_id?
+  after_update :update_call_list_regions, if: :saved_change_to_region_id?
   after_destroy :destroy_associated_events
 
   # Relationships
-  belongs_to :line
+  belongs_to :region
   has_many :call_list_entries, dependent: :destroy
   has_many :users, through: :call_list_entries
   belongs_to :clinic, optional: true
@@ -43,12 +43,12 @@ class Patient < ApplicationRecord
   accepts_nested_attributes_for :fulfillment
 
   # Validations
-  # Worry about uniqueness to tenant after porting line info.
+  # Worry about uniqueness to tenant after porting region info.
   # validates_uniqueness_to_tenant :primary_phone
   validates :name,
             :primary_phone,
             :initial_call_date,
-            :line,
+            :region,
             presence: true
   validates :primary_phone, format: /\A\d{10}\z/,
                             length: { is: 10 }
@@ -68,7 +68,8 @@ class Patient < ApplicationRecord
             :naf_pledge,
             :patient_contribution,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
-  validates :household_size_adults, :household_size_children, numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
+  validates :household_size_adults, :household_size_children,
+            numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
   validates :name, :primary_phone, :other_contact, :other_phone, :other_contact_relationship,
             :voicemail_preference, :language, :pronouns, :city, :state, :county, :zipcode,
             :race_ethnicity, :employment_status, :insurance, :income, :referred_by, :solidarity_lead, :procedure_type,
@@ -78,18 +79,21 @@ class Patient < ApplicationRecord
   # validation for standard US zipcodes
   # allow ZIP (NNNNN) or ZIP+4 (NNNNN-NNNN)
   validates :zipcode, format: /\A\d{5}(-\d{4})?\z/,
-            length: {minimum: 5, maximum: 10},
-            allow_blank: true
+                      length: { minimum: 5, maximum: 10 },
+                      allow_blank: true
 
   validate :special_circumstances_length
 
   # Methods
-  def self.pledged_status_summary(line)
+  def self.pledged_status_summary(region)
     plucked_attrs = [:fund_pledge, :pledge_sent, :id, :name, :appointment_date, :fund_pledged_at]
-    start_of_period = Config.start_day.downcase.to_s == "monthly" ? Time.zone.today.beginning_of_month.in_time_zone(Config.time_zone)
-                                                                  : Time.zone.today.beginning_of_week(Config.start_day).in_time_zone(Config.time_zone)
+    start_of_period = if Config.start_day.downcase.to_s == 'monthly'
+                        Time.zone.today.beginning_of_month.in_time_zone(Config.time_zone)
+                      else
+                        Time.zone.today.beginning_of_week(Config.start_day).in_time_zone(Config.time_zone)
+                      end
     # Get patients who have been pledged this week, as a simplified hash
-    base = Patient.where(line: line,
+    base = Patient.where(region: region,
                          resolved_without_fund: [false, nil])
                   .where.not(fund_pledge: [0, nil])
 
@@ -110,8 +114,8 @@ class Patient < ApplicationRecord
   end
 
   def save_identifier
-    #[Line first initial][Phone 6th digit]-[Phone last four]
-    self.identifier = "#{line.name[0].upcase}#{primary_phone[-5]}-#{primary_phone[-4..-1]}"
+    # [Region first initial][Phone 6th digit]-[Phone last four]
+    self.identifier = "#{region.name[0].upcase}#{primary_phone[-5]}-#{primary_phone[-4..-1]}"
   end
 
   def initials
@@ -120,11 +124,11 @@ class Patient < ApplicationRecord
 
   def event_params
     {
-      event_type:    'pledged',
-      cm_name:       updated_by&.name || 'System',
-      patient_name:  name,
-      patient_id:    id,
-      line:          line,
+      event_type: 'pledged',
+      cm_name: updated_by&.name || 'System',
+      patient_name: name,
+      patient_id: id,
+      region: region,
       pledge_amount: fund_pledge
     }
   end
@@ -138,34 +142,32 @@ class Patient < ApplicationRecord
     CallListEntry.where(patient_id: id).destroy_all
   end
 
-  def update_call_list_lines
+  def update_call_list_regions
     CallListEntry.where(patient: self)
-                 .update(line: self.line, order_key: 999)
+                 .update(region: region, order_key: 999)
   end
 
   def confirm_unique_phone_number
     ##
     # This method is preferred over Rail's built-in uniqueness validator
     # so that case managers get a meaningful error message when a patient
-    # exists on a different line than the one the volunteer is serving.
+    # exists on a different region than the one the volunteer is serving.
     #
     # See https://github.com/DCAFEngineering/dcaf_case_management/issues/825
     ##
     phone_match = Patient.where(primary_phone: primary_phone).first
 
-    if phone_match
-      # skip when an existing patient updates and matches itself
-      if phone_match.id == self.id
-        return
-      end
+    return unless phone_match
+    # skip when an existing patient updates and matches itself
+    return if phone_match.id == id
 
-      patients_line = phone_match.line
-      volunteers_line = line
-      if volunteers_line == patients_line
-        errors.add(:this_phone_number_is_already_taken, "on this line.")
-      else
-        errors.add(:this_phone_number_is_already_taken, "on the #{patients_line.name} line. If you need the patient's line changed, please contact the CM directors.")
-      end
+    patients_region = phone_match.region
+    volunteers_region = region
+    if volunteers_region == patients_region
+      errors.add(:this_phone_number_is_already_taken, 'on this region.')
+    else
+      errors.add(:this_phone_number_is_already_taken,
+                 "on the #{patients_region.name} region. If you need the patient's region changed, please contact the CM directors.")
     end
   end
 
@@ -221,10 +223,10 @@ class Patient < ApplicationRecord
 
   def all_versions(include_fulfillment)
     all_versions = versions || []
-    all_versions += (external_pledges.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || [])
-    all_versions += (practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || [])
+    all_versions += external_pledges.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
+    all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
     if include_fulfillment
-      all_versions += (fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || [])
+      all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
     end
     all_versions.sort_by(&:created_at).reverse
   end
@@ -247,7 +249,8 @@ class Patient < ApplicationRecord
   private
 
   def confirm_appointment_after_initial_call
-    if appointment_date.present? && initial_call_date.present? && (initial_call_date - 60.days)&.send(:>, appointment_date)
+    if appointment_date.present? && initial_call_date.present? && (initial_call_date - 60.days)&.send(:>,
+                                                                                                      appointment_date)
       errors.add(:appointment_date, 'must be closer to the date of initial call')
     end
   end
@@ -290,9 +293,9 @@ class Patient < ApplicationRecord
                   updated_at: { '$lte' => datetime })
   end
 
-  def self.unconfirmed_practical_support(line)
+  def self.unconfirmed_practical_support(region)
     Patient.distinct
-           .where(line: line)
+           .where(region: region)
            .joins(:practical_supports)
            .where({ practical_supports: { confirmed: false }, created_at: 3.months.ago.. })
   end

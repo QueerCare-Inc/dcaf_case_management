@@ -9,7 +9,7 @@ class AuthFactorRegistrationTest < ApplicationSystemTestCase
   before do
     @twilio_verify_mock = Minitest::Mock.new
 
-    create :line
+    create :region
     log_in_as create(:user)
   end
 
@@ -158,7 +158,7 @@ class AuthFactorRegistrationTest < ApplicationSystemTestCase
 
   def complete_up_to_registration_step
     visit edit_user_registration_path
-      click_button t('multi_factor.factor_list.enable_button')
+    click_button t('multi_factor.factor_list.enable_button')
   end
 
   def complete_up_to_verification_step

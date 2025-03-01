@@ -3,7 +3,7 @@ require 'application_system_test_case'
 # Test data entry mode input
 class DataEntryTest < ApplicationSystemTestCase
   before do
-    @line = create :line
+    @region = create :region
     @user = create :user
     @clinic = create :clinic
     create_insurance_config
@@ -16,7 +16,7 @@ class DataEntryTest < ApplicationSystemTestCase
   describe 'entering a new patient' do
     before do
       # fill out the form
-      select @line.name, from: 'patient_line_id'
+      select @region.name, from: 'patient_region_id'
       fill_in 'Initial Call Date', with: 2.days.ago.strftime('%m/%d/%Y')
       fill_in 'Name', with: 'Susie Everyteen'
       fill_in 'Phone', with: '111-222-3344'
@@ -112,9 +112,9 @@ class DataEntryTest < ApplicationSystemTestCase
       visit root_path
 
       within :css, '#budget_bar' do
-        assert has_text? "$100 sent (1 patient)"
-        assert has_text? "$0 pledged (0 patients)"
-        refute has_text? "Susie Everyteen - appt on "
+        assert has_text? '$100 sent (1 patient)'
+        assert has_text? '$0 pledged (0 patients)'
+        assert_not has_text? 'Susie Everyteen - appt on '
       end
     end
   end
@@ -122,7 +122,7 @@ class DataEntryTest < ApplicationSystemTestCase
   describe 'entering a new backdated patient' do
     before do
       # fill out the form
-      select @line.name, from: 'patient_line_id'
+      select @region.name, from: 'patient_region_id'
       fill_in 'Initial Call Date', with: 90.days.ago.strftime('%m/%d/%Y')
       fill_in 'Name', with: 'Susie Backdated'
       fill_in 'Phone', with: '111-222-3345'
@@ -165,9 +165,9 @@ class DataEntryTest < ApplicationSystemTestCase
       visit root_path
 
       within :css, '#budget_bar' do
-        assert has_text? "$99 sent (1 patient)"
-        assert has_text? "$0 pledged (0 patients)"
-        refute has_text? "$0 sent"
+        assert has_text? '$99 sent (1 patient)'
+        assert has_text? '$0 pledged (0 patients)'
+        assert_not has_text? '$0 sent'
       end
     end
   end
@@ -177,7 +177,7 @@ class DataEntryTest < ApplicationSystemTestCase
       before do
         create :patient, primary_phone: '111-111-1111'
 
-        select @line.name, from: 'patient_line_id'
+        select @region.name, from: 'patient_region_id'
         fill_in 'Initial Call Date', with: 2.days.ago.strftime('%m/%d/%Y')
         fill_in 'Name', with: 'Susie Everyteen'
         fill_in 'Phone', with: '111-111-1111'
@@ -192,7 +192,7 @@ class DataEntryTest < ApplicationSystemTestCase
 
     describe 'pledge with insufficient other info' do
       before do
-        select @line.name, from: 'patient_line_id'
+        select @region.name, from: 'patient_region_id'
         fill_in 'Initial Call Date', with: 2.days.ago.strftime('%m/%d/%Y')
         fill_in 'Name', with: 'Susie Everyteen'
         fill_in 'Phone', with: '111-222-3344'

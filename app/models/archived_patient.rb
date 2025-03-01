@@ -9,7 +9,7 @@ class ArchivedPatient < ApplicationRecord
 
   # Relationships
   belongs_to :clinic, optional: true
-  belongs_to :line
+  belongs_to :region
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
   has_many :external_pledges, as: :can_pledge
@@ -31,7 +31,7 @@ class ArchivedPatient < ApplicationRecord
 
   # Validations
   validates :initial_call_date,
-            :line,
+            :region,
             presence: true
   validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
@@ -49,11 +49,11 @@ class ArchivedPatient < ApplicationRecord
   # from a year plus ago
   def self.archive_eligible_patients!
     Patient.all.each do |patient|
-      if ( patient.archive_date < Date.today )
-        ActiveRecord::Base.transaction do
-          ArchivedPatient.convert_patient(patient)
-          patient.destroy!
-        end
+      next unless patient.archive_date < Date.today
+
+      ActiveRecord::Base.transaction do
+        ArchivedPatient.convert_patient(patient)
+        patient.destroy!
       end
     end
   end
@@ -69,7 +69,7 @@ class ArchivedPatient < ApplicationRecord
 
   def self.convert_patient(patient)
     archived_patient = new(
-      line: patient.line,
+      region: patient.region,
       city: patient.city,
       state: patient.state,
       county: patient.county,
@@ -112,12 +112,11 @@ class ArchivedPatient < ApplicationRecord
       age_range: patient.age_range,
       has_alt_contact: patient.has_alt_contact,
       notes_count: patient.notes_count,
-      has_special_circumstances: patient.has_special_circumstances,
-
+      has_special_circumstances: patient.has_special_circumstances
     )
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id
-    archived_patient.line_id = patient.line_id
+    archived_patient.region_id = patient.region_id
 
     archived_patient.procedure_cost = procedure_cost_positive patient.procedure_cost
     archived_patient.ultrasound_cost = procedure_cost_positive patient.ultrasound_cost

@@ -5664,9 +5664,9 @@
         "clinic": "Clinic",
         "date_of_check": "Date of check",
         "fund_payout": "%{fund} payout",
-        "line": "Line",
         "pledge_amount": "Pledge amount",
         "pledge_sent": "Pledge sent",
+        "region": "Region",
         "weeks_at_procedure": "Weeks at procedure",
         "weeks_at_procedure_display": "%{gestation} weeks"
       },
@@ -5733,7 +5733,6 @@
           "language": "Language",
           "last_menstrual_period_days": "Last menstrual period days",
           "last_menstrual_period_weeks": "Last menstrual period weeks",
-          "line_id": "Line ID",
           "multiday_appointment": "Multi-day appointment",
           "naf_pledge": "NAF pledge",
           "name": "Name",
@@ -5754,6 +5753,7 @@
           "race_ethnicity": "Race / Ethnicity",
           "referred_by": "Referred by",
           "referred_to_clinic": "Referred to clinic",
+          "region_id": "Region ID",
           "resolved_without_fund": "Resolved without fund",
           "shared_flag": "Shared Flag",
           "solidarity": "Solidarity Pledge",
@@ -5899,7 +5899,7 @@
     },
     "dashboard": {
       "activity_log": {
-        "label": "%{current_line} Line Activity Log"
+        "label": "%{current_region} Region Activity Log"
       },
       "budget_bar": {
         "pledged": "pledged",
@@ -6501,13 +6501,6 @@
         }
       }
     },
-    "lines": {
-      "new": {
-        "start": "Get started",
-        "welcome_to_daria": "Welcome to DARIA (%{fund} edition)!",
-        "what_line": "What line are you working on?"
-      }
-    },
     "multi_factor": {
       "authenticate": "Authenticate",
       "authentication_error": "Authentication error",
@@ -6559,8 +6552,8 @@
       "cm_resources": {
         "label": "CM Resources"
       },
-      "current_line": {
-        "helper": "Your current line"
+      "current_region": {
+        "helper": "Your current region"
       },
       "footer": {
         "national_abortion_federation": "National Abortion Federation",
@@ -6940,6 +6933,13 @@
         }
       }
     },
+    "regions": {
+      "new": {
+        "start": "Get started",
+        "welcome_to_daria": "Welcome to DARIA (%{fund} edition)!",
+        "what_region": "What region are you working in?"
+      }
+    },
     "support": {
       "array": {
         "last_word_connector": ", and ",
@@ -6967,7 +6967,7 @@
       "record_new_external_pledge": "External pledges is our term for pledges by other abortion funds also working with a patient.",
       "referred_to_clinic": "Check this box if you as a case manager referred the patient to a particular clinic.",
       "resolved_without_fund": "This is used to indicate that a patient does not require or want our services any longer.",
-      "shared_cases": "These are patients who require a little more attention. This list is shared across all case managers working on a single line. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
+      "shared_cases": "These are patients who require a little more attention. This list is shared across all case managers working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
       "solidarity": "Indicates a case to which this fund is providing support, but not handling.",
       "solidarity_lead": "This is the fund serving as point-of-contact or coordinating funding for this patient.",
       "status_definition": "Status definition",
@@ -10074,9 +10074,9 @@
         "clinic": "Clínica",
         "date_of_check": "Fecha del cheque",
         "fund_payout": "Pago de %{fund}",
-        "line": "Línea",
         "pledge_amount": "Cantidad de promesa",
         "pledge_sent": "Promesa enviada",
+        "region": "Región",
         "weeks_at_procedure": "Semanas en el procedimiento",
         "weeks_at_procedure_display": "%{gestation} semanas"
       },
@@ -10143,7 +10143,6 @@
           "language": "Idioma",
           "last_menstrual_period_days": "Últimos días del período menstrual",
           "last_menstrual_period_weeks": "Últimas semanas del período menstrual",
-          "line_id": "ID de la línea",
           "multiday_appointment": "Cita de varios días",
           "naf_pledge": "Promesa de la NAF",
           "name": "Nombre",
@@ -10164,6 +10163,7 @@
           "race_ethnicity": "Raza / Etnicidad",
           "referred_by": "Referido por",
           "referred_to_clinic": "Referido a la clínica",
+          "region_id": "ID de la región",
           "resolved_without_fund": "Resuelto sin ayuda de fondo",
           "shared_flag": "Bandera compartida",
           "solidarity": "Promesa solidaria",
@@ -10334,7 +10334,7 @@
     },
     "dashboard": {
       "activity_log": {
-        "label": "Actividad de línea de llamadas %{current_line}"
+        "label": "Actividad de región de llamadas %{current_region}"
       },
       "budget_bar": {
         "pledged": "prometido",
@@ -10837,13 +10837,6 @@
         }
       }
     },
-    "lines": {
-      "new": {
-        "start": "Empezar",
-        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{fund})!",
-        "what_line": "¿En cuál línea estás trabajando?"
-      }
-    },
     "multi_factor": {
       "authenticate": "Autenticar",
       "authentication_error": "Error de autenticación",
@@ -10895,8 +10888,8 @@
       "cm_resources": {
         "label": "Recursos del Administrador de Casos"
       },
-      "current_line": {
-        "helper": "Tu linea actual"
+      "current_region": {
+        "helper": "Tu región actual"
       },
       "footer": {
         "national_abortion_federation": "Federación Nacional de Abortos",
@@ -11277,6 +11270,13 @@
           "pledge_unfulfilled": "Promesa No Cumplida",
           "resolved": "Resuelto Sin %{fund}"
         }
+      }
+    },
+    "regions": {
+      "new": {
+        "start": "Empezar",
+        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{fund})!",
+        "what_region": "¿En cuál región estás trabajando?"
       }
     },
     "support": {

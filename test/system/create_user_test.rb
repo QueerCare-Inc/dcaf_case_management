@@ -3,8 +3,8 @@ require 'application_system_test_case'
 # Behavior and permissioning around creating new users
 class CreateUserTest < ApplicationSystemTestCase
   extend Minitest::OptionalRetry
-  
-  before { create :line }
+
+  before { create :region }
 
   describe 'nonadmin user' do
     before { visit root_path }

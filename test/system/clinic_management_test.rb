@@ -3,7 +3,7 @@ require 'application_system_test_case'
 # Test workflows around administering lists of clinics a fund works with
 class ClinicManagementTest < ApplicationSystemTestCase
   before do
-    create :line
+    create :region
     @clinic = create :clinic, accepts_naf: true,
                               accepts_medicaid: true
 
@@ -44,7 +44,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
       fill_in 'Name', with: invalid_clinic_name
       click_button 'Add clinic'
 
-      refute has_link? 'Add a new clinic'
+      assert_not has_link? 'Add a new clinic'
       assert has_text? 'Errors prevented this clinic from being saved'
     end
   end

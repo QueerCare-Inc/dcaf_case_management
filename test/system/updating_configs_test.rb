@@ -4,9 +4,9 @@ require 'application_system_test_case'
 class UpdatingConfigsTest < ApplicationSystemTestCase
   describe 'non-admin redirect' do
     [:data_volunteer, :cm].each do |role|
-      it "should deny access as a #{role.to_s}" do
+      it "should deny access as a #{role}" do
         user = create :user, role: role
-        create :line
+        create :region
         log_in_as user
         visit configs_path
         assert_equal current_path, authenticated_root_path
@@ -69,8 +69,7 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
            'Voicemail OK, ID OK',
            'Text',
            'Code',
-           'Business'
-          ]
+           'Business']
       end
     end
 
@@ -87,15 +86,15 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
           assert has_content? 'Something'
           assert has_content? 'Travel to the region'
           assert has_content? 'Travel inside the region'
-          assert has_content? "Lodging"
+          assert has_content? 'Lodging'
           assert has_content? 'Companion'
         end
 
         # Requires view implementation
-        #visit edit_patient_path(@patient)
-        #assert has_select? 'Patient insurance', options: ['', 'Yolo', 'Goat', 'Something',
-                                                          #'No insurance', "Don't know",
-                                                          #'Other (add to notes)']
+        # visit edit_patient_path(@patient)
+        # assert has_select? 'Patient insurance', options: ['', 'Yolo', 'Goat', 'Something',
+        # 'No insurance', "Don't know",
+        # 'Other (add to notes)']
       end
     end
 
@@ -203,11 +202,11 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         fill_in 'config_options_hide_budget_bar', with: 'yes'
         click_button 'Update options for Hide budget bar'
         visit authenticated_root_path
-        refute has_content? 'Budget for'
+        assert_not has_content? 'Budget for'
 
         visit configs_path
         fill_in 'config_options_hide_budget_bar', with: ''
-        click_button 'Update options for Hide budget bar'        
+        click_button 'Update options for Hide budget bar'
         visit authenticated_root_path
         within :css, '#overview' do
           assert has_content? 'Budget for'
@@ -226,7 +225,7 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         click_button 'Update options for Display practical support attachment url'
         visit edit_patient_path @patient
         click_link 'Practical Support'
-        refute has_content? 'Attachment URL'
+        assert_not has_content? 'Attachment URL'
 
         visit configs_path
         fill_in 'config_options_display_practical_support_attachment_url', with: 'yes'
@@ -242,18 +241,18 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         fill_in 'config_options_aggregate_statistics', with: 'yes'
         click_button 'Update options for Aggregate statistics'
         visit authenticated_root_path
-        within :css, "#overview" do
-          assert has_content? "$0 spent (0 patients, 0%)"
-          assert has_content? "$1,000 remaining (100%)"
+        within :css, '#overview' do
+          assert has_content? '$0 spent (0 patients, 0%)'
+          assert has_content? '$1,000 remaining (100%)'
         end
 
         visit configs_path
         fill_in 'config_options_aggregate_statistics', with: 'no'
         click_button 'Update options for Aggregate statistics'
         visit authenticated_root_path
-        within :css, "#overview" do
-          refute has_content? "spent"
-          refute has_content? "remaining"
+        within :css, '#overview' do
+          assert_not has_content? 'spent'
+          assert_not has_content? 'remaining'
         end
       end
     end
@@ -265,10 +264,10 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
 
         fill_in 'config_options_county', with: 'Dog, Cat, Turtle'
         click_button 'Update options for County'
-        
+
         visit edit_patient_path @patient
 
-        within :css, "#patient_information_form" do
+        within :css, '#patient_information_form' do
           assert has_select? with_options: %w[Dog Cat Turtle Bird],
                              selected: 'Bird'
         end
@@ -281,10 +280,10 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         # no config, so we should get a text box
         fill_in 'config_options_county', with: ''
         click_button 'Update options for County'
-        
+
         visit edit_patient_path @patient
 
-        within :css, "#patient_information_form" do
+        within :css, '#patient_information_form' do
           assert has_field? type: 'text', with: 'Bear'
         end
       end
@@ -301,7 +300,7 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         visit edit_patient_path @patient
         click_link 'Abortion Information'
 
-        within :css, "#abortion-information-form-1" do
+        within :css, '#abortion-information-form-1' do
           assert has_select? with_options: %w[Dog Cat Turtle],
                              selected: 'Dog'
         end
@@ -315,8 +314,8 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         visit edit_patient_path @patient
         click_link 'Abortion Information'
 
-        within :css, "#abortion-information-form-1" do
-          refute has_content? 'Procedure type'
+        within :css, '#abortion-information-form-1' do
+          assert_not has_content? 'Procedure type'
         end
       end
     end

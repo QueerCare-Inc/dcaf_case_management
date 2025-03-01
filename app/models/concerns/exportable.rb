@@ -6,79 +6,78 @@ module Exportable
   include ActionView::Helpers::NumberHelper
 
   CSV_EXPORT_FIELDS = {
-    "BSON ID" => :id,
+    'BSON ID' => :id,
     # "Identifier" => :identifier,
-    "Archived?" => :archived?,
-    "Has Alt Contact?" => :has_alt_contact,
-    "Voicemail Preference" => :voicemail_preference,
-    "Line" => :get_line,
-    "Language" => :preferred_language,
-    "Age" => :age_range,
-    "State" => :state,
-    "County" => :county,
-    "City" => :city,
-    "Race or Ethnicity" => :race_ethnicity,
-    "Employment Status" => :employment_status,
-    "Minors in Household" => :get_household_size_children,
-    "Adults in Household" => :get_household_size_adults,
-    "Insurance" => :insurance,
-    "Procedure Type" => :procedure_type,
-    "Income" => :income,
-    "Referred By" => :referred_by,
-    "Referred to clinic by fund" => :referred_to_clinic,
-    "Appointment Date" => :appointment_date,
-    "Initial Call Date" => :initial_call_date,
-    "Shared?" => :shared_flag,
-    "Has Special Circumstances" => :has_special_circumstances,
-    "LMP at intake (weeks)" => :last_menstrual_period_weeks,
-    "LMP at appointment (weeks)" => :last_menstrual_period_at_appt_weeks,
-    "Abortion cost" => :procedure_cost,
-    "Ultrasound cost" => :ultrasound_cost,
-    "Patient contribution" => :patient_contribution,
-    "NAF pledge" => :naf_pledge,
-    "Fund pledge" => :fund_pledge,
-    "Clinic" => :export_clinic_name,
-    "Pledge sent" => :pledge_sent,
-    "Resolved without fund assistance" => :resolved_without_fund,
-    "Pledge generated time" => :pledge_generated_at,
-    "Pledge sent at" => :pledge_sent_at, 
-    "Fund pledged at" => :fund_pledged_at,
-    "Solidarity pledge" => :solidarity,
-    "Solidarity lead" => :solidarity_lead,
-    "Multi-day appointment" => :multiday_appointment,
-    "Practical Support Waiver" => :practical_support_waiver,
+    'Archived?' => :archived?,
+    'Has Alt Contact?' => :has_alt_contact,
+    'Voicemail Preference' => :voicemail_preference,
+    'Region' => :get_region,
+    'Language' => :preferred_language,
+    'Age' => :age_range,
+    'State' => :state,
+    'County' => :county,
+    'City' => :city,
+    'Race or Ethnicity' => :race_ethnicity,
+    'Employment Status' => :employment_status,
+    'Minors in Household' => :get_household_size_children,
+    'Adults in Household' => :get_household_size_adults,
+    'Insurance' => :insurance,
+    'Procedure Type' => :procedure_type,
+    'Income' => :income,
+    'Referred By' => :referred_by,
+    'Referred to clinic by fund' => :referred_to_clinic,
+    'Appointment Date' => :appointment_date,
+    'Initial Call Date' => :initial_call_date,
+    'Shared?' => :shared_flag,
+    'Has Special Circumstances' => :has_special_circumstances,
+    'LMP at intake (weeks)' => :last_menstrual_period_weeks,
+    'LMP at appointment (weeks)' => :last_menstrual_period_at_appt_weeks,
+    'Abortion cost' => :procedure_cost,
+    'Ultrasound cost' => :ultrasound_cost,
+    'Patient contribution' => :patient_contribution,
+    'NAF pledge' => :naf_pledge,
+    'Fund pledge' => :fund_pledge,
+    'Clinic' => :export_clinic_name,
+    'Pledge sent' => :pledge_sent,
+    'Resolved without fund assistance' => :resolved_without_fund,
+    'Pledge generated time' => :pledge_generated_at,
+    'Pledge sent at' => :pledge_sent_at,
+    'Fund pledged at' => :fund_pledged_at,
+    'Solidarity pledge' => :solidarity,
+    'Solidarity lead' => :solidarity_lead,
+    'Multi-day appointment' => :multiday_appointment,
+    'Practical Support Waiver' => :practical_support_waiver,
 
     # Call related
-    "Timestamp of first call" => :first_call_timestamp,
-    "Timestamp of last call" => :last_call_timestamp,
-    "Call count" => :call_count,
-    "Reached Patient call count" => :reached_patient_call_count,
+    'Timestamp of first call' => :first_call_timestamp,
+    'Timestamp of last call' => :last_call_timestamp,
+    'Call count' => :call_count,
+    'Reached Patient call count' => :reached_patient_call_count,
 
     # Fulfillment related
-    "Fulfilled" => :fulfilled,
-    "Procedure date" => :procedure_date,
-    "Gestation at procedure in weeks" => :gestation_at_procedure,
-    "Fund payout" => :fund_payout,
-    "Check number" => :check_number,
-    "Date of Check" => :date_of_check,
+    'Fulfilled' => :fulfilled,
+    'Procedure date' => :procedure_date,
+    'Gestation at procedure in weeks' => :gestation_at_procedure,
+    'Fund payout' => :fund_payout,
+    'Check number' => :check_number,
+    'Date of Check' => :date_of_check,
 
     # Notes
-    "Notes Count" => :notes_count,
+    'Notes Count' => :notes_count,
 
-    # TODO clinic stuff
+    # TODO: clinic stuff
 
     # External Pledges
-    "External Pledge Count" => :external_pledge_count,
-    "External Pledges Sum" => :external_pledge_sum,
-    "All External Pledges" => :all_external_pledges,
-    "Practical Supports" => :all_practical_supports
+    'External Pledge Count' => :external_pledge_count,
+    'External Pledges Sum' => :external_pledge_sum,
+    'All External Pledges' => :all_external_pledges,
+    'Practical Supports' => :all_practical_supports
 
-
-    # TODO test to confirm that specific blacklisted fields aren't being exported
+    # TODO: test to confirm that specific blacklisted fields aren't being exported
   }.freeze
 
-  def get_line
-    line.try :name
+  def get_region
+    region.try :name
   end
 
   def fulfilled
@@ -195,37 +194,37 @@ module Exportable
       typ = ps.support_type
       confirmed = ps.confirmed? ? 'Confirmed' : 'Unconfirmed'
       amt = ps.amount.present? ? number_to_currency(ps.amount) : '$0'
-      url = ps.attachment_url.present? ? ps.attachment_url : 'No attachment'
+      url = ps.attachment_url.presence || 'No attachment'
       fulfilled = ps.fulfilled? ? 'Fulfilled' : 'Not fulfilled'
-      purchased_on = ps.purchase_date ? "Purchased on #{ps.purchase_date.display_date}" : "No purchase date"
+      purchased_on = ps.purchase_date ? "Purchased on #{ps.purchase_date.display_date}" : 'No purchase date'
       "#{src} - #{typ} - #{confirmed} - #{amt} - #{url} - #{fulfilled} - #{purchased_on}"
     end
     shaped_supports.join('; ')
   end
 
-  PATIENT_RELATIONS = [:line, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
-  ARCHIVED_PATIENT_RELATIONS = [:line, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
+  PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
+  ARCHIVED_PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
 
   class_methods do
     def csv_header
       Enumerator.new do |y|
-        y << CSV.generate_line(CSV_EXPORT_FIELDS.keys, encoding: 'utf-8')
+        y << CSV.generate_region(CSV_EXPORT_FIELDS.keys, encoding: 'utf-8')
       end
     end
 
     def to_csv
-      relations = if self.name == "Patient"
+      relations = if name == 'Patient'
                     PATIENT_RELATIONS
-                  elsif self.name == "ArchivedPatient"
+                  elsif name == 'ArchivedPatient'
                     ARCHIVED_PATIENT_RELATIONS
                   else
-                    raise "Trying to export something other than a Patient or ArchivedPatient"
+                    raise 'Trying to export something other than a Patient or ArchivedPatient'
                   end
 
       Enumerator.new do |y|
         includes(relations).each do |export|
-          row = CSV_EXPORT_FIELDS.values.map{ |field| export.get_field_value_for_serialization(field) }
-          y << CSV.generate_line(row, encoding: 'utf-8')
+          row = CSV_EXPORT_FIELDS.values.map { |field| export.get_field_value_for_serialization(field) }
+          y << CSV.generate_region(row, encoding: 'utf-8')
         end
       end
     end

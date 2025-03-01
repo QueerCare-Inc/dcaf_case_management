@@ -6,12 +6,12 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
   before do
     @user = create :user, role: :admin
     @clinic = create :clinic, name: 'a real clinic'
-    @line = create :line
+    @region = create :region
     @another_clinic = create :clinic, name: 'alternative clinic'
 
     @nonpledged_patient = create :patient, name: 'Eileene Zarha',
                                            initial_call_date: 5.weeks.ago,
-                                           line: @line
+                                           region: @region
 
     @pledged_patient = create :patient, name: 'Olga Zarha',
                                         fund_pledge: 100,
@@ -19,7 +19,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                                         pledge_sent: true,
                                         appointment_date: 2.weeks.ago,
                                         initial_call_date: 5.weeks.ago,
-                                        line: @line
+                                        region: @region
 
     @fulfilled_patient = create :patient, name: 'Thorny Zarha',
                                           fund_pledge: 200,
@@ -27,7 +27,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                                           pledge_sent: true,
                                           appointment_date: 2.weeks.ago,
                                           initial_call_date: 5.weeks.ago,
-                                          line: @line
+                                          region: @region
     @fulfilled_patient.fulfillment.update fulfilled: true,
                                           procedure_date: 1.week.ago,
                                           gestation_at_procedure: '3 weeks',
@@ -41,10 +41,9 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                                              fund_pledge: 123,
                                              appointment_date: 2.weeks.ago,
                                              initial_call_date: 5.weeks.ago,
-                                             line: @line
+                                             region: @region
 
-
-    log_in_as @user, @line
+    log_in_as @user, @region
     visit accountants_path
   end
 
@@ -56,7 +55,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
         log_in_as @nonadmin_user
 
         visit accountants_path
-        refute has_text? 'Accountant Dashboard'
+        assert_not has_text? 'Accountant Dashboard'
       end
     end
   end
@@ -65,7 +64,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
     it 'should show only pledged patients on page load' do
       assert has_content? @fulfilled_patient.name
       assert has_content? @pledged_patient.name
-      refute has_content? @nonpledged_patient.name
+      assert_not has_content? @nonpledged_patient.name
     end
 
     it 'should properly display counts' do
@@ -79,7 +78,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                         clinic: @clinic,
                         fund_pledge: 100,
                         initial_call_date: 3.days.ago,
-                        line: @line,
+                        region: @region,
                         naf_pledge: 200,
                         patient_contribution: 100,
                         pledge_sent: true,
@@ -104,9 +103,9 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
       wait_for_ajax
 
       assert has_content? @fulfilled_patient.name
-      refute has_content? @pledged_patient.name
-      refute has_content? @other_clinic_patient.name
-      refute has_content? @nonpledged_patient.name
+      assert_not has_content? @pledged_patient.name
+      assert_not has_content? @other_clinic_patient.name
+      assert_not has_content? @nonpledged_patient.name
 
       assert has_content? 'Displaying 1 patient'
     end
@@ -123,7 +122,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
       assert has_content? @fulfilled_patient.name
       assert has_content? @pledged_patient.name
       assert has_content? @other_clinic_patient.name
-      refute has_content? @nonpledged_patient.name
+      assert_not has_content? @nonpledged_patient.name
 
       assert has_content? 'Displaying all 3 patients'
     end
@@ -135,9 +134,9 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
       wait_for_ajax
 
       assert has_content? @other_clinic_patient.name
-      refute has_content? @fulfilled_patient.name
-      refute has_content? @pledged_patient.name
-      refute has_content? @nonpledged_patient.name
+      assert_not has_content? @fulfilled_patient.name
+      assert_not has_content? @pledged_patient.name
+      assert_not has_content? @nonpledged_patient.name
 
       assert has_content? 'Displaying 1 patient'
     end
@@ -151,7 +150,7 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
       assert has_content? @fulfilled_patient.name
       assert has_content? @pledged_patient.name
       assert has_content? @other_clinic_patient.name
-      refute has_content? @nonpledged_patient.name
+      assert_not has_content? @nonpledged_patient.name
 
       assert has_content? 'Displaying all 3 patients'
     end

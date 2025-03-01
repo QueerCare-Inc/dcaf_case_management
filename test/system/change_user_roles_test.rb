@@ -3,7 +3,7 @@ require 'application_system_test_case'
 # Test that the buttons to change user roles work
 class ChangeUserRolesTest < ApplicationSystemTestCase
   before do
-    create :line
+    create :region
     @user = create :user, role: 'admin', name: 'Billy'
     @user2 = create :user, role: 'cm', name: 'Susie'
     log_in_as @user
@@ -26,7 +26,7 @@ class ChangeUserRolesTest < ApplicationSystemTestCase
   describe 'trying to change your own role' do
     it 'should not show you the options to do that' do
       visit edit_user_path @user
-      refute has_content? "Change Billy's role to Data Volunteer"
+      assert_not has_content? "Change Billy's role to Data Volunteer"
     end
   end
 end

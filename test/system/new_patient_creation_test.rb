@@ -3,18 +3,18 @@ require 'application_system_test_case'
 # Confirm that new patients can be created
 class NewPatientCreationTest < ApplicationSystemTestCase
   before do
-    @line1 = create :line
-    @line2 = create :line
-    @line3 = create :line
+    @region1 = create :region
+    @region2 = create :region
+    @region3 = create :region
     @user = create :user
-    log_in_as @user, @line2
+    log_in_as @user, @region2
 
     fill_in 'search', with: 'Nobody Real Here'
     click_button 'Search'
     fill_in 'Phone', with: '555-666-7777'
     fill_in 'Name', with: 'Susan Everyteen 2'
     fill_in 'Initial Call Date', with: '03/04/2016'
-    select @line2.name, from: 'Line'
+    select @region2.name, from: 'Region'
     click_button 'Add new patient'
     wait_for_ajax
   end
@@ -49,14 +49,14 @@ class NewPatientCreationTest < ApplicationSystemTestCase
       end
     end
 
-    it 'should only be viewable on that line' do
-      [@line1, @line3].each do |line|
+    it 'should only be viewable on that region' do
+      [@region1, @region3].each do |region|
         sign_out
-        log_in_as @user, line
+        log_in_as @user, region
 
         fill_in 'search', with: 'Susan Everyteen 2'
         click_button 'Search'
-        refute has_text? '555-666-7777'
+        assert_not has_text? '555-666-7777'
         assert has_text? 'Your search produced no results'
       end
     end

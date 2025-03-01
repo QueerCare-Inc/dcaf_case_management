@@ -32,20 +32,20 @@ class PatientsHelperTest < ActionView::TestCase
 
       it 'should include the option set' do
         expected_insurance_options_array = [nil, 'DC Medicaid', 'Other state Medicaid',
-                                    [ 'No insurance', 'No insurance' ],
-                                    [ 'Don\'t know', 'Don\'t know' ],
-                                    [ 'Prefer not to answer', 'Prefer not to answer'],
-                                    [ 'Other (add to notes)', 'Other (add to notes)'] ]
+                                            ['No insurance', 'No insurance'],
+                                            ['Don\'t know', 'Don\'t know'],
+                                            ['Prefer not to answer', 'Prefer not to answer'],
+                                            ['Other (add to notes)', 'Other (add to notes)']]
         assert_same_elements insurance_options, expected_insurance_options_array
       end
 
       it 'should append any non-nil passed options to the end' do
         expected_insurance_options_array = [nil, 'DC Medicaid', 'Other state Medicaid',
-                                    [ 'No insurance', 'No insurance' ],
-                                    [ 'Don\'t know', 'Don\'t know' ],
-                                    [ 'Prefer not to answer', 'Prefer not to answer'],
-                                    [ 'Other (add to notes)', 'Other (add to notes)'],
-                                    'Friendship' ]
+                                            ['No insurance', 'No insurance'],
+                                            ['Don\'t know', 'Don\'t know'],
+                                            ['Prefer not to answer', 'Prefer not to answer'],
+                                            ['Other (add to notes)', 'Other (add to notes)'],
+                                            'Friendship']
         assert_same_elements expected_insurance_options_array,
                              insurance_options('Friendship')
       end
@@ -60,17 +60,17 @@ class PatientsHelperTest < ActionView::TestCase
       before do
         create_hide_defaults_config should_hide: false
       end
-      
+
       it 'should create a config and return proper options' do
         assert_difference 'Config.count', 1 do
           @options = insurance_options
         end
 
         expected_insurance_array = [nil,
-                                   [ 'No insurance', 'No insurance' ],
-                                   [ 'Don\'t know', 'Don\'t know' ],
-                                   [ 'Prefer not to answer', 'Prefer not to answer'],
-                                   [ 'Other (add to notes)', 'Other (add to notes)'] ]
+                                    ['No insurance', 'No insurance'],
+                                    ['Don\'t know', 'Don\'t know'],
+                                    ['Prefer not to answer', 'Prefer not to answer'],
+                                    ['Other (add to notes)', 'Other (add to notes)']]
         assert_same_elements expected_insurance_array, @options
         assert Config.find_by(config_key: 'insurance')
       end
@@ -86,9 +86,10 @@ class PatientsHelperTest < ActionView::TestCase
       @inactive = create :clinic, name: 'closed clinic', active: false
       expected_clinic_array = [
         nil,
-        ["#{@active.name} (#{@active.city}, #{@active.state})", @active.id, { data: { naf: false, medicaid: false }}],
+        ["#{@active.name} (#{@active.city}, #{@active.state})", @active.id, { data: { naf: false, medicaid: false } }],
         ['--- INACTIVE CLINICS ---', nil, { disabled: true }],
-        ["(Not currently working with CATF) - #{@inactive.name}", @inactive.id, { data: { naf: false, medicaid: false }}]
+        ["(Not currently working with CATF) - #{@inactive.name}", @inactive.id,
+         { data: { naf: false, medicaid: false } }]
       ]
 
       assert_same_elements clinic_options, expected_clinic_array
@@ -97,15 +98,15 @@ class PatientsHelperTest < ActionView::TestCase
     it 'should skip inactive clinics section if there are not any' do
       expected_clinic_array = [
         nil,
-        ["#{@active.name} (#{@active.city}, #{@active.state})", @active.id, { data: { naf: false, medicaid: false }}]
+        ["#{@active.name} (#{@active.city}, #{@active.state})", @active.id, { data: { naf: false, medicaid: false } }]
       ]
 
       assert_same_elements clinic_options, expected_clinic_array
     end
   end
 
-  %w(race_ethnicity employment_status insurance income referred_by
-     household_size).each do |array|
+  %w[race_ethnicity employment_status insurance income referred_by
+     household_size].each do |array|
     describe "#{array}_options" do
       it "should be a usable array - #{array}_options" do
         options_array = send("#{array}_options".to_sym)
@@ -118,60 +119,60 @@ class PatientsHelperTest < ActionView::TestCase
   describe 'state options' do
     it 'should return all states and current value' do
       expected_state_array = [[nil, nil],
-	["AL", "AL"],
-	["AK", "AK"],
-	["AZ", "AZ"],
-	["AR", "AR"],
-        ["CA", "CA"],
-	["CO", "CO"],
-	["CT", "CT"],
-	["DE", "DE"],
-	["DC", "DC"],
-	["FL", "FL"],
-        ["GA", "GA"],
-	["HI", "HI"],
-	["ID", "ID"],
-	["IL", "IL"],
-	["IN", "IN"],
-	["IA", "IA"],
-        ["KS", "KS"],
-	["KY", "KY"],
-	["LA", "LA"],
-	["ME", "ME"],
-	["MD", "MD"],
-	["MA", "MA"],
-        ["MI", "MI"],
-	["MN", "MN"],
-	["MS", "MS"],
-	["MO", "MO"],
-	["MT", "MT"],
-	["NE", "NE"],
-        ["NV", "NV"],
-	["NH", "NH"],
-	["NJ", "NJ"],
-	["NM", "NM"],
-	["NY", "NY"],
-	["NC", "NC"],
-        ["ND", "ND"],
-	["OH", "OH"],
-	["OK", "OK"],
-	["OR", "OR"],
-	["PA", "PA"],
-	["RI", "RI"],
-        ["SC", "SC"],
-	["SD", "SD"],
-	["TN", "TN"],
-	["TX", "TX"],
-	["UT", "UT"],
-	["VT", "VT"],
-        ["VA", "VA"],
-	["WA", "WA"],
-	["WV", "WV"],
-	["WI", "WI"],
-	["WY", "WY"],
-	["virginia","virginia"]]
+                              %w[AL AL],
+                              %w[AK AK],
+                              %w[AZ AZ],
+                              %w[AR AR],
+                              %w[CA CA],
+                              %w[CO CO],
+                              %w[CT CT],
+                              %w[DE DE],
+                              %w[DC DC],
+                              %w[FL FL],
+                              %w[GA GA],
+                              %w[HI HI],
+                              %w[ID ID],
+                              %w[IL IL],
+                              %w[IN IN],
+                              %w[IA IA],
+                              %w[KS KS],
+                              %w[KY KY],
+                              %w[LA LA],
+                              %w[ME ME],
+                              %w[MD MD],
+                              %w[MA MA],
+                              %w[MI MI],
+                              %w[MN MN],
+                              %w[MS MS],
+                              %w[MO MO],
+                              %w[MT MT],
+                              %w[NE NE],
+                              %w[NV NV],
+                              %w[NH NH],
+                              %w[NJ NJ],
+                              %w[NM NM],
+                              %w[NY NY],
+                              %w[NC NC],
+                              %w[ND ND],
+                              %w[OH OH],
+                              %w[OK OK],
+                              %w[OR OR],
+                              %w[PA PA],
+                              %w[RI RI],
+                              %w[SC SC],
+                              %w[SD SD],
+                              %w[TN TN],
+                              %w[TX TX],
+                              %w[UT UT],
+                              %w[VT VT],
+                              %w[VA VA],
+                              %w[WA WA],
+                              %w[WV WV],
+                              %w[WI WI],
+                              %w[WY WY],
+                              %w[virginia virginia]]
 
-      assert_same_elements state_options("virginia"), expected_state_array
+      assert_same_elements state_options('virginia'), expected_state_array
     end
   end
 
@@ -179,8 +180,8 @@ class PatientsHelperTest < ActionView::TestCase
     before { create_voicemail_config }
     # stock options
     it 'should return an array based on patient voicemail_options' do
-      ['no', 'yes', 'not_specified'].each do |pref|
-        refute_empty voicemail_options.select { |opt| opt[1] == pref }
+      %w[no yes not_specified].each do |pref|
+        assert_not_empty(voicemail_options.select { |opt| opt[1] == pref })
       end
     end
 
@@ -198,8 +199,7 @@ class PatientsHelperTest < ActionView::TestCase
          ['Do not leave a voicemail', 'no'],
          ['Voicemail OK, ID OK', 'yes'],
          ['No instructions; no ID VM', 'not_specified'],
-          'ID as coworker'
-        ]
+         'ID as coworker']
       assert_same_elements expected_vm_options_array,
                            voicemail_options('ID as coworker')
     end
@@ -215,7 +215,7 @@ class PatientsHelperTest < ActionView::TestCase
         'French',
         'Korean'
       ]
-      assert_same_elements expected_lang_options, language_options()
+      assert_same_elements expected_lang_options, language_options
     end
 
     it 'should append extra options' do
@@ -237,28 +237,28 @@ class PatientsHelperTest < ActionView::TestCase
     # Metal band is added by create_referred_by_config
     expected_referrals_base = [
       nil,
-      ["Clinic", "Clinic"],
-      ["Crime victim advocacy center", "Crime victim advocacy center"],
-      ["CATF website or social media", "CATF website or social media"],
-      ["Domestic violence crisis/intervention org", "Domestic violence crisis/intervention org"],
-      ["Family member", "Family member"],
-      ["Friend", "Friend"],
-      ["Google/Web search", "Google/Web search"],
-      ["Homeless shelter", "Homeless shelter"],
-      ["Legal clinic", "Legal clinic"],
-      ["NAF", "NAF"],
-      ["NNAF", "NNAF"],
-      ["Other abortion fund", "Other abortion fund"],
-      ["Previous patient", "Previous patient"],
-      ["School", "School"],
-      ["Sexual assault crisis org", "Sexual assault crisis org"],
-      ["Youth outreach", "Youth outreach"],
+      %w[Clinic Clinic],
+      ['Crime victim advocacy center', 'Crime victim advocacy center'],
+      ['CATF website or social media', 'CATF website or social media'],
+      ['Domestic violence crisis/intervention org', 'Domestic violence crisis/intervention org'],
+      ['Family member', 'Family member'],
+      %w[Friend Friend],
+      ['Google/Web search', 'Google/Web search'],
+      ['Homeless shelter', 'Homeless shelter'],
+      ['Legal clinic', 'Legal clinic'],
+      %w[NAF NAF],
+      %w[NNAF NNAF],
+      ['Other abortion fund', 'Other abortion fund'],
+      ['Previous patient', 'Previous patient'],
+      %w[School School],
+      ['Sexual assault crisis org', 'Sexual assault crisis org'],
+      ['Youth outreach', 'Youth outreach'],
       ['Prefer not to answer', 'Prefer not to answer'],
-      "Metal band"
+      'Metal band'
     ]
 
     it 'should return default referral options' do
-      assert_same_elements expected_referrals_base, referred_by_options()
+      assert_same_elements expected_referrals_base, referred_by_options
     end
 
     it 'should append extra options' do
@@ -274,16 +274,16 @@ class PatientsHelperTest < ActionView::TestCase
     end
   end
 
-  describe 'line_options' do
+  describe 'region_options' do
     before do
-      @line1 = create :line, name: 'JJ'
-      @line2 = create :line, name: 'Sage'
-      @line3 = create :line, name: 'Lomky Jr'
+      @region1 = create :region, name: 'JJ'
+      @region2 = create :region, name: 'Sage'
+      @region3 = create :region, name: 'Lomky Jr'
     end
 
-    it 'should return line names and ids' do
-      expected = [['JJ', @line1.id], ['Lomky Jr', @line3.id], ['Sage', @line2.id]]
-      assert_equal expected, line_options
+    it 'should return region names and ids' do
+      expected = [['JJ', @region1.id], ['Lomky Jr', @region3.id], ['Sage', @region2.id]]
+      assert_equal expected, region_options
     end
   end
 
@@ -293,9 +293,9 @@ class PatientsHelperTest < ActionView::TestCase
 
       it 'should include custom counties as well as current' do
         expected_counties = [nil, 'Arlington', 'Fairfax', 'Montgomery',
-                              "Prince George's"]
+                             "Prince George's"]
         assert_same_elements expected_counties,
-                            county_options("Prince George's")
+                             county_options("Prince George's")
       end
     end
 
@@ -320,7 +320,7 @@ class PatientsHelperTest < ActionView::TestCase
         expected_procedure_types = [nil, [custom_procedure_types], current_option].flatten
 
         assert_same_elements expected_procedure_types,
-                            procedure_type_options(current_option)
+                             procedure_type_options(current_option)
       end
     end
     describe 'without configured options' do

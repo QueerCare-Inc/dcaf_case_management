@@ -4,12 +4,12 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   extend Minitest::OptionalRetry
 
   before do
-    @line = create :line
-    @line2 = create :line
+    @region = create :region
+    @region2 = create :region
     @user = create :user
     @admin = create :user, role: :admin
     @clinic = create :clinic
-    @patient = create :patient, line: @line
+    @patient = create :patient, region: @region
     @patient.external_pledges.create source: 'Metallica Abortion Fund',
                                      amount: 100
     @ext_pledge = @patient.external_pledges.first
@@ -162,9 +162,9 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       # updateBalance()
       find('#outstanding-balance').has_text?('$0')
 
-      fill_in 'Abortion cost', :with => '20000'
+      fill_in 'Abortion cost', with: '20000'
       find('#outstanding-balance').has_text?('$19720')
-      fill_in 'Ultrasound cost', :with => '0'
+      fill_in 'Ultrasound cost', with: '0'
       find('#outstanding-balance').has_text?('$19700')
       fill_in 'Patient contribution', with: '0'
       find('#outstanding-balance').has_text?('$19900')
@@ -263,7 +263,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         assert_equal 'Spanish', find('#patient_language').value
         assert has_checked_field? 'Homelessness'
         assert has_checked_field? 'Prison'
-        assert has_no_css? '#patient_line'
+        assert has_no_css? '#patient_region'
       end
     end
 
@@ -275,14 +275,14 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         visit edit_patient_path @patient
         wait_for_element 'Patient Information'
 
-        select @line2.name, from: 'patient_line_id'
+        select @region2.name, from: 'patient_region_id'
         click_away_from_field
         reload_page_and_click_link 'Patient Information'
       end
 
       it 'should alter the information' do
         within :css, '#patient_information' do
-          assert_equal @line2.id.to_s, find('#patient_line_id').value
+          assert_equal @region2.id.to_s, find('#patient_region_id').value
         end
       end
     end
@@ -356,7 +356,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   describe 'clicking around' do
     it 'should let you click back to abortion information' do
       click_link 'Notes'
-      within(:css, '#sections') { refute has_text? 'Abortion information' }
+      within(:css, '#sections') { assert_not has_text? 'Abortion information' }
       click_link 'Abortion Information'
       within(:css, '#sections') { assert has_text? 'Abortion information' }
     end

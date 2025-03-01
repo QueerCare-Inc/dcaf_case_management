@@ -1,24 +1,22 @@
 # Helpers for browser junk
 module IntegrationHelper
-  def t(string)
-    I18n.t(string)
-  end
-  
+  delegate :t, to: :I18n
+
   def sign_in(user)
     post user_session_path \
       'user[email]' => user.email,
       'user[password]' => user.password
   end
 
-  def choose_line(line)
-    post lines_path, params: { line_id: line.id }
+  def choose_region(region)
+    post regions_path, params: { region_id: region.id }
   end
 
-  def log_in_as(user, line = nil)
+  def log_in_as(user, region = nil)
     log_in user
-    if Line.count > 1
-      select_line line || Line.first
-    end
+    return unless Region.count > 1
+
+    select_region region || Region.first
   end
 
   def log_in(user)
@@ -28,9 +26,9 @@ module IntegrationHelper
     click_on 'Sign in with password'
   end
 
-  def select_line(line)
-    wait_for_element line.name
-    choose line.name
+  def select_region(region)
+    wait_for_element region.name
+    choose region.name
     click_on 'Get started'
   end
 

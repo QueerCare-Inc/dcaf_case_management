@@ -4,9 +4,9 @@ class PracticalSupportBehaviorsTest < ApplicationSystemTestCase
   extend Minitest::OptionalRetry
 
   before do
-    @line = create :line
+    @region = create :region
     @user = create :user
-    @patient = create :patient, line: @line
+    @patient = create :patient, region: @region
     create_display_practical_support_attachment_url_config
     create_display_practical_support_waiver_config
   end

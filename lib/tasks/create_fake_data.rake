@@ -19,7 +19,7 @@ namespace :db do
 
           has_pledge = gen.rand < 0.5
 
-          lines = Line.all # need to add Spanish maybe? 
+          regions = Region.all # need to add Spanish maybe? 
 
           patient = Patient.create!(
             name: 'Randomized Patient',
@@ -27,7 +27,7 @@ namespace :db do
             initial_call_date: initial_call,
             created_by: users.sample,
             shared_flag: flag,
-            line: lines[gen.rand(3)], # thank you seeds.rb! 
+            region: regions[gen.rand(3)], # thank you seeds.rb! 
             clinic: has_appt ? clinics.sample : nil,
             appointment_date: has_appt ? initial_call + gen.rand(15) : nil,
             last_menstrual_period_weeks: gen.rand(15) + 3,

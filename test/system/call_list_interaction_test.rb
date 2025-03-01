@@ -4,11 +4,11 @@ class CallListInteractionTest < ApplicationSystemTestCase
   include ActiveSupport::Testing::TimeHelpers
 
   before do
-    @line = create :line
-    @line2 = create :line
-    @patient = create :patient, name: 'Susan Everyteen', line: @line
-    @patient_2 = create :patient, name: 'Thorny', line: @line
-    @va_patient = create :patient, name: 'James Hetfield', line: @line2
+    @region = create :region
+    @region2 = create :region
+    @patient = create :patient, name: 'Susan Everyteen', region: @region
+    @patient_2 = create :patient, name: 'Thorny', region: @region
+    @va_patient = create :patient, name: 'James Hetfield', region: @region2
     @user = create :user
     @user.add_patient @va_patient
     log_in_as @user
@@ -23,7 +23,7 @@ class CallListInteractionTest < ApplicationSystemTestCase
       end
     end
 
-    it 'should scope the call list to a particular line' do
+    it 'should scope the call list to a particular region' do
       within :css, '#call_list_content' do
         assert has_no_text? @va_patient.name
       end
@@ -114,26 +114,26 @@ class CallListInteractionTest < ApplicationSystemTestCase
       accept_confirm { click_link 'Clear your call list' }
       wait_for_ajax
       within :css, '#call_list_content' do
-        refute has_text? @patient_2.name
+        assert_not has_text? @patient_2.name
       end
     end
   end
 
-  describe 'line switching' do
+  describe 'region switching' do
     before { @user.update role: :admin }
 
-    it 'should move patients on call lists when switching lines' do
+    it 'should move patients on call lists when switching regions' do
       visit edit_patient_path @patient
-      select @line2.name, from: 'patient_line_id'
+      select @region2.name, from: 'patient_region_id'
       wait_for_ajax
 
       visit authenticated_root_path
       within :css, '#call_list_content' do
-        refute has_text? @patient.name
+        assert_not has_text? @patient.name
       end
       log_out
 
-      log_in_as @user, @line2
+      log_in_as @user, @region2
       within :css, '#call_list_content' do
         assert has_text? @patient.name
       end

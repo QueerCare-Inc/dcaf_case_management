@@ -15,7 +15,7 @@ if (isOnDashboard) {
     '<%= escape_javascript(render partial: "dashboards/table_content",
                                   locals: { title: t("dashboard.partial_titles.call_list"),
                                             table_type: "call_list",
-                                            patients: current_user.call_list_patients(current_line),
+                                            patients: current_user.call_list_patients(current_region),
                                             sortable: true,
                                             autosortable: true }) %>'
   );
@@ -24,7 +24,7 @@ if (isOnDashboard) {
     '<%= escape_javascript(render partial: "dashboards/table_content",
                                   locals: { title: t('dashboard.partial_titles.completed_calls'),
                                             table_type: 'completed_calls',
-                                            patients: current_user.recently_called_patients(current_line), 
+                                            patients: current_user.recently_called_patients(current_region), 
                                             utosortable: true }) %>'
   );
 
@@ -32,7 +32,7 @@ if (isOnDashboard) {
     '<%= escape_javascript( render partial: "dashboards/table_content",
                                   locals: { title: t('dashboard.partial_titles.shared_cases'),
                                             table_type: 'shared_cases',
-                                            patients: Patient.shared_patients(current_line),
+                                            patients: Patient.shared_patients(current_region),
                                             autosortable: true }) %>'
   );
   $(".new-call").modal('hide')
