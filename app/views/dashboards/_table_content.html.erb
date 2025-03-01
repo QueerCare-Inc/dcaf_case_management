@@ -38,12 +38,6 @@
 
           <td><%= patient.initial_call_date.display_date %></td>
 
-          <td>
-            <%= t 'common.weeks_days_short',
-                  weeks: patient.last_menstrual_period_now_weeks,
-                  days: patient.last_menstrual_period_now_days %>
-          </td>
-
           <td><%= patient.status %></td>
           <td><%= appointment_date_display patient %></td>
           <td><%= patient.most_recent_note_display_text %> </td>

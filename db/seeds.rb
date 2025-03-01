@@ -102,8 +102,6 @@ fund2 = Fund.create! name: 'CatFund',
                                 primary_phone: "123-123-123#{i}",
                                 initial_call_date: 3.days.ago,
                                 shared_flag: i.even?,
-                                last_menstrual_period_weeks: (i + 1 * 2),
-                                last_menstrual_period_days: 3,
                                 region: regions.first,
                                 solidarity: i % 4 == 0
 
@@ -196,8 +194,6 @@ fund2 = Fund.create! name: 'CatFund',
         region: i.even? ? regions.first : regions.second,
         clinic: Clinic.all.sample,
         appointment_date: 10.days.from_now,
-        last_menstrual_period_weeks: 7,
-        last_menstrual_period_days: 7,
         naf_pledge: 300,
         fund_pledge: 50,
         procedure_cost: 600,
@@ -273,8 +269,6 @@ fund2 = Fund.create! name: 'CatFund',
         region: regions.first,
         language: 'Spanish',
         initial_call_date: 140.days.ago,
-        last_menstrual_period_weeks: 6,
-        last_menstrual_period_days: 5,
         created_at: 140.days.ago
       )
 
@@ -382,8 +376,6 @@ fund2 = Fund.create! name: 'CatFund',
         region: regions.first,
         language: 'Spanish',
         initial_call_date: 640.days.ago,
-        last_menstrual_period_weeks: 6,
-        last_menstrual_period_days: 5,
         created_at: 640.days.ago
       )
 
@@ -444,7 +436,6 @@ fund2 = Fund.create! name: 'CatFund',
     regina = Patient.create! name: 'Regina (SCENARIO)',
                              region: regions.first,
                              primary_phone: "000-000-0001",
-                             last_menstrual_period_weeks: 6,
                              initial_call_date: 30.days.ago
     regina.calls.create! created_at: 30.days.ago,
                          status: 'reached_patient'

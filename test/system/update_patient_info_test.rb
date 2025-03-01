@@ -40,38 +40,6 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       end
     end
 
-    describe 'updating LMP weeks' do
-      before do
-        select '5 weeks', from: 'patient_last_menstrual_period_weeks'
-        click_away_from_field
-        wait_for_ajax
-        reload_page_and_click_link 'Patient Information'
-      end
-
-      it 'should update LMP weeks' do
-        within :css, '#patient_dashboard' do
-          lmp_weeks = find('#patient_last_menstrual_period_weeks')
-          assert_equal '5', lmp_weeks.value
-        end
-      end
-    end
-
-    describe 'updating LMP days' do
-      before do
-        select '2 days', from: 'patient_last_menstrual_period_days'
-        click_away_from_field
-        wait_for_ajax
-        reload_page_and_click_link 'Patient Information'
-      end
-
-      it 'should update LMP days' do
-        within :css, '#patient_dashboard' do
-          lmp_days = find('#patient_last_menstrual_period_days')
-          assert_equal '2', lmp_days.value
-        end
-      end
-    end
-
     describe 'updating appointment date' do
       before do
         fill_in 'Appointment date', with: 5.days.from_now.strftime('%m/%d/%Y')
@@ -89,9 +57,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
 
     describe 'updating appointment date counter' do
       before do
-        @patient.update last_menstrual_period_weeks: 5,
-                        last_menstrual_period_days: 2,
-                        appointment_date: 5.days.from_now.strftime('%Y-%m-%d')
+        @patient.update appointment_date: 5.days.from_now.strftime('%Y-%m-%d')
         visit edit_patient_path @patient
       end
 
@@ -99,7 +65,6 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         assert has_content? 'Currently: 5w 4d'
         assert has_content? 'Approx gestation at appt: 6 weeks 2 days'
 
-        select '1 day', from: 'patient_last_menstrual_period_days'
         assert has_content? 'Currently: 5w 3d'
         assert has_content? 'Approx gestation at appt: 6 weeks 1 day'
       end

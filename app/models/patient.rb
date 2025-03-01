@@ -60,9 +60,7 @@ class Patient < ApplicationRecord
                                allow_blank: true
   validate :confirm_appointment_after_initial_call
   validate :pledge_sent, :pledge_info_presence, if: :updating_pledge_sent?
-  validates :last_menstrual_period_weeks,
-            :last_menstrual_period_days,
-            :age,
+  validates :age,
             :procedure_cost,
             :fund_pledge,
             :naf_pledge,
@@ -238,10 +236,6 @@ class Patient < ApplicationRecord
   def as_json
     super.merge(
       status: status,
-      last_menstrual_period_at_appt_weeks: last_menstrual_period_at_appt_weeks,
-      last_menstrual_period_at_appt_days: last_menstrual_period_at_appt_days,
-      last_menstrual_period_now_weeks: last_menstrual_period_now_weeks,
-      last_menstrual_period_now_days: last_menstrual_period_now_days,
       primary_phone_display: primary_phone_display
     )
   end

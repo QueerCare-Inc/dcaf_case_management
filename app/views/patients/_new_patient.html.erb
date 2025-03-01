@@ -17,19 +17,6 @@
     </div>
 
     <div class="col">
-      <%= f.select :last_menstrual_period_weeks,
-                   options_for_select(weeks_options, patient.last_menstrual_period_weeks),
-                   label: t('patient.dashboard.weeks_along'),
-                   autocomplete: 'off' %>
-    </div>
-    <div class="col">
-      <%= f.select :last_menstrual_period_days,
-                   options_for_select(days_options, patient.last_menstrual_period_days),
-                   label: t('common.days_along'),
-                   autocomplete: 'off' %>
-    </div>
-
-    <div class="col">
       <%= f.select :language,
                    options_for_select(language_options, patient.language),
                    label: t('patient.information.language'),

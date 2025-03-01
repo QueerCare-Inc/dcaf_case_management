@@ -24,8 +24,6 @@ class DataEntryTest < ApplicationSystemTestCase
       fill_in 'Other contact name', with: 'Billy Everyteen'
       fill_in 'Other phone', with: '111-555-9999'
       fill_in 'Relationship to other contact', with: 'Friend'
-      select '1 week', from: 'patient_last_menstrual_period_weeks'
-      select '2 days', from: 'patient_last_menstrual_period_days'
       fill_in 'City', with: 'Washington'
       select 'DC', from: 'patient_state'
       fill_in 'County', with: 'Wash'
@@ -57,11 +55,7 @@ class DataEntryTest < ApplicationSystemTestCase
 
     it 'should log a new patient ready for further editing: dashboard' do
       within :css, '#patient_dashboard' do
-        lmp_weeks = find('#patient_last_menstrual_period_weeks')
-        lmp_days = find('#patient_last_menstrual_period_days')
         assert has_field? 'First and last name', with: 'Susie Everyteen'
-        assert_equal '1', lmp_weeks.value
-        assert_equal '2', lmp_days.value
         assert has_field? 'Pronouns', with: 'she/they'
         assert has_text? "Called on: #{2.days.ago.strftime('%m/%d/%Y')}"
         assert has_field?('Appointment date',
@@ -129,8 +123,6 @@ class DataEntryTest < ApplicationSystemTestCase
       fill_in 'Other contact name', with: 'Billy Everyteen'
       fill_in 'Other phone', with: '111-555-8888'
       fill_in 'Relationship to other contact', with: 'Friend'
-      select '1 week', from: 'patient_last_menstrual_period_weeks'
-      select '2 days', from: 'patient_last_menstrual_period_days'
       fill_in 'City', with: 'Washington'
       select 'DC', from: 'patient_state'
       fill_in 'County', with: 'Wash'

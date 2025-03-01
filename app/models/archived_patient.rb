@@ -35,9 +35,7 @@ class ArchivedPatient < ApplicationRecord
             presence: true
   validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
-  validates :last_menstrual_period_weeks,
-            :last_menstrual_period_days,
-            :procedure_cost,
+  validates :procedure_cost,
             :ultrasound_cost,
             :fund_pledge,
             :naf_pledge,
@@ -81,9 +79,6 @@ class ArchivedPatient < ApplicationRecord
       shared_flag: patient.shared_flag,
       referred_by: patient.referred_by,
       referred_to_clinic: patient.referred_to_clinic,
-
-      last_menstrual_period_weeks: patient.last_menstrual_period_weeks,
-      last_menstrual_period_days: patient.last_menstrual_period_days,
 
       race_ethnicity: patient.race_ethnicity,
       employment_status: patient.employment_status,

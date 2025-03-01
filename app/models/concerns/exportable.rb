@@ -30,8 +30,6 @@ module Exportable
     'Initial Call Date' => :initial_call_date,
     'Shared?' => :shared_flag,
     'Has Special Circumstances' => :has_special_circumstances,
-    'LMP at intake (weeks)' => :last_menstrual_period_weeks,
-    'LMP at appointment (weeks)' => :last_menstrual_period_at_appt_weeks,
     'Abortion cost' => :procedure_cost,
     'Ultrasound cost' => :ultrasound_cost,
     'Patient contribution' => :patient_contribution,

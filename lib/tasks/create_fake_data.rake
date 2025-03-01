@@ -30,8 +30,6 @@ namespace :db do
             region: regions[gen.rand(3)], # thank you seeds.rb! 
             clinic: has_appt ? clinics.sample : nil,
             appointment_date: has_appt ? initial_call + gen.rand(15) : nil,
-            last_menstrual_period_weeks: gen.rand(15) + 3,
-            last_menstrual_period_days: gen.rand(7),
             procedure_cost: has_appt ? gen.rand(600) : nil,
             pledge_sent: has_appt && has_pledge,
             patient_contribution: gen.rand(400),

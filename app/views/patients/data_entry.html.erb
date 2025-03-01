@@ -31,24 +31,9 @@
                    label: t('patient.information.other_contact.relationship'),
                    autocomplete: 'off'%>
 
-  <div class="row">
-    <div class="col">
-      <%= f.select :last_menstrual_period_weeks,
-                   options_for_select(weeks_options),
-                   label: t('patient.dashboard.weeks_along'),
-                   autocomplete: 'off' %>
-    </div>
-    <div class="col">
-      <%= f.select :last_menstrual_period_days,
-                   options_for_select(days_options, @patient.last_menstrual_period_days),
-                   autocomplete: 'off',
-                   label: t('common.days_along') %>
-    </div>
-  </div>
 
   <%= f.text_field :city, autocomplete: 'off' %>
   <%= f.select :state, options_for_select(state_options(nil)), autocomplete: 'off' %>
-  <%= f.text_field :county, autocomplete: 'off' %>
   <%= f.number_field :zipcode, autocomplete: 'off' %>
   
 

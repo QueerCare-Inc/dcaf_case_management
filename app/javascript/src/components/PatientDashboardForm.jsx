@@ -30,8 +30,6 @@ export default PatientDashboardForm = ({
 
     const putData = {
       name: updatedPatientData.name,
-      last_menstrual_period_days: updatedPatientData.last_menstrual_period_days,
-      last_menstrual_period_weeks: updatedPatientData.last_menstrual_period_weeks,
       appointment_date: updatedPatientData.appointment_date,
       primary_phone: updatedPatientData.primary_phone,
       pronouns: updatedPatientData.pronouns,
@@ -71,40 +69,11 @@ export default PatientDashboardForm = ({
         onChange={(e) => debouncedAutosave({ name: e.target.value })}
       />
 
-      <div className="grid grid-columns-2">
-        <Select
-          id="patient_last_menstrual_period_weeks"
-          name="patient[last_menstrual_period_weeks]"
-          label={i18n.t('patient.dashboard.weeks_along')}
-          options={weeksOptions}
-          value={weeksOptions.find(opt => opt.value === patientData.last_menstrual_period_weeks)?.value}
-          help={i18n.t('patient.dashboard.currently', { weeks: patientData.last_menstrual_period_now_weeks, days: patientData.last_menstrual_period_now_days })}
-          onChange={e => autosave({ last_menstrual_period_weeks: e.target.value })}
-        />
-
-        <Select
-          id="patient_last_menstrual_period_days"
-          name="patient[last_menstrual_period_days]"
-          label={i18n.t('common.days_along')}
-          labelClassName="sr-only"
-          options={daysOptions}
-          value={weeksOptions.find(opt => opt.value === patientData.last_menstrual_period_days)?.value}
-          help={i18n.t('patient.dashboard.called_on', { date: initialCallDate })}
-          onChange={e => autosave({ last_menstrual_period_days: e.target.value })}
-        />
-      </div>
-
       <Input
         id="patient_appointment_date"
         name="patient[appointment_date]"
         label={i18n.t('patient.shared.appt_date')}
         type="date"
-        help={
-          i18n.t('patient.dashboard.approx_gestation', {
-            weeks: patientData.last_menstrual_period_at_appt_weeks,
-            days: patientData.last_menstrual_period_at_appt_days
-          })
-        }
         value={patientData.appointment_date}
         onChange={e => debouncedAutosave({ appointment_date: e.target.value })}
       />
