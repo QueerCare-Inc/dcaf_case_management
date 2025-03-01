@@ -4,5 +4,5 @@ class Region < ApplicationRecord
   # Validations
   validates_uniqueness_to_tenant :name
   validates :name, presence: true, length: { maximum: 150 }
-  #  validates :state, presence: false, length: { maximum: 30 }
+  validates :state, presence: false, length: { maximum: 30 }
 end
