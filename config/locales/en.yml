@@ -232,6 +232,7 @@ en:
       search_results: Search results
       shared_cases: Shared cases
       unconfirmed_support: Unconfirmed Practical Support
+      coordinator_cr: Your Care Recipient Shifts
     search:
       header: Build your call list
       input_placeholder: Name (Susan Smith) or Phone (555-555-5555)
