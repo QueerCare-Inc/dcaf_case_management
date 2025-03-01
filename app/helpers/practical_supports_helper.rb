@@ -54,9 +54,16 @@ module PracticalSupportsHelper
     content.push "(#{t('activerecord.attributes.practical_support.fulfilled')})" if practical_support.fulfilled?
     content.push practical_support.support_type
     content.push "#{t('common.from')} #{practical_support.source}"
-    content.push "#{t('common.on_')} #{practical_support.support_date.display_date}" if practical_support.support_date.present?
-    content.push "#{t('common.for')} #{number_to_currency(practical_support.amount)}" if practical_support.amount.present?
-    content.push "(#{t('common.purchased_on')} #{practical_support.purchase_date.display_date})" if practical_support.purchase_date.present?
+    if practical_support.start_time.present?
+      content.push "#{t('common.on_')} #{practical_support.start_time.display_date}"
+    end
+    content.push "#{t('common.on_')} #{practical_support.end_time.display_date}" if practical_support.end_time.present?
+    if practical_support.amount.present?
+      content.push "#{t('common.for')} #{number_to_currency(practical_support.amount)}"
+    end
+    if practical_support.purchase_date.present?
+      content.push "(#{t('common.purchased_on')} #{practical_support.purchase_date.display_date})"
+    end
     content.join(' ')
   end
 end

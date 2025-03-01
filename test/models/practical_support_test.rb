@@ -9,7 +9,8 @@ class PracticalSupportTest < ActiveSupport::TestCase
     @patient.practical_supports.create support_type: 'Swag',
                                        source: 'YOLO AF',
                                        confirmed: true,
-                                       support_date: 2.days.from_now
+                                       start_time: 2.days.from_now,
+                                       end_time: 3.days.from_now
     @patient.practical_supports.create support_type: 'Companion',
                                        source: 'Cat',
                                        amount: 32

@@ -100,7 +100,8 @@ en:
         source: Source
         special_circumstances: Special circumstances
         state: State
-        support_date: Support date
+        start_time: Start time
+        end_time: End time
         support_type: Support type
         textable: Textable
         ultrasound_cost: Ultrasound cost
@@ -112,7 +113,8 @@ en:
         fulfilled: Fulfilled
         purchase_date: Purchase date
         source: Source
-        support_date: Support date
+        start_time: Start time
+        end_time: End time
         support_type: Support type
       user:
         current_password: Current password

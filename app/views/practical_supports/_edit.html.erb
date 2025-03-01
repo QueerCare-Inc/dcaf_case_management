@@ -39,7 +39,8 @@
                             autocomplete: 'off',
                             prepend: '$',
                             step: '0.01' %>
-        <%= f.date_field :support_date, autocomplete: 'off' %>
+        <%= f.date_field :start_time, autocomplete: 'off' %>
+        <%= f.date_field :end_time, autocomplete: 'off' %>
         <%= f.date_field :purchase_date, autocomplete: 'off' %>
 
         <% if Config.display_practical_support_attachment_url? %>

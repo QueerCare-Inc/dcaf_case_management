@@ -59,7 +59,8 @@ class PracticalSupportBehaviorsTest < ApplicationSystemTestCase
         assert_equal 'Other (see notes)', find('#practical_support_source').value
         assert_equal '500.10', find('#practical_support_amount').value
         assert_equal 'www.google.com', find('#practical_support_attachment_url').value
-        assert_equal 5.days.from_now.strftime('%Y-%m-%d'), find('#practical_support_support_date').value
+        assert_equal 5.days.from_now.strftime('%Y-%m-%d'), find('#practical_support_start_time').value
+        assert_equal 6.days.from_now.strftime('%Y-%m-%d'), find('#practical_support_end_time').value
         assert_equal 6.days.from_now.strftime('%Y-%m-%d'), find('#practical_support_purchase_date').value
         assert has_checked_field? 'Confirmed'
         assert has_checked_field? 'Fulfilled'

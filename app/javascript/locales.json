@@ -5719,6 +5719,7 @@
           "county": "County",
           "date_of_check": "Date of check",
           "employment_status": "Employment status",
+          "end_time": "End time",
           "fulfilled": "Fulfilled",
           "fund_id": "Fund ID",
           "fund_payout": "Fund payout",
@@ -5759,8 +5760,8 @@
           "solidarity": "Solidarity Pledge",
           "source": "Source",
           "special_circumstances": "Special circumstances",
+          "start_time": "Start time",
           "state": "State",
-          "support_date": "Support date",
           "support_type": "Support type",
           "textable": "Textable",
           "ultrasound_cost": "Ultrasound cost",
@@ -5770,10 +5771,11 @@
         "practical_support": {
           "attachment_url": "Attachment URL",
           "confirmed": "Confirmed",
+          "end_time": "End time",
           "fulfilled": "Fulfilled",
           "purchase_date": "Purchase date",
           "source": "Source",
-          "support_date": "Support date",
+          "start_time": "Start time",
           "support_type": "Support type"
         },
         "user": {
@@ -10129,6 +10131,7 @@
           "county": "Condado",
           "date_of_check": "Fecha del cheque",
           "employment_status": "Estatus de empleo",
+          "end_time": "Tiempo de finalización del supporte",
           "fulfilled": "Cumplida",
           "fund_id": "ID del fondo",
           "fund_payout": "Pago de fondos",
@@ -10169,8 +10172,8 @@
           "solidarity": "Promesa solidaria",
           "source": "Fuente",
           "special_circumstances": "Circunstancias Especiales",
+          "start_time": "Tiempo de inicio del supporte",
           "state": "Estado",
-          "support_date": "Fecha del soporte",
           "support_type": "Tipo de soporte",
           "textable": "Textable",
           "ultrasound_cost": "Costo del ultrasonido",
@@ -10180,10 +10183,11 @@
         "practical_support": {
           "attachment_url": "URL adjunta",
           "confirmed": "Confirmado",
+          "end_time": "Tiempo de finalización del apoyo",
           "fulfilled": "Cumplida",
           "purchase_date": "Día de compra",
           "source": "Fuente",
-          "support_date": "Día de el apoyo",
+          "start_time": "Tiempo de inicio del apoyo",
           "support_type": "Tipo de apoyo"
         },
         "user": {

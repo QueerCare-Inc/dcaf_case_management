@@ -48,7 +48,8 @@ class PracticalSupportsControllerTest < ActionDispatch::IntegrationTest
                                          source: 'Transit',
                                          amount: 10
       @support = @patient.practical_supports.first
-      @support_edits = { support_type: 'Lodging', support_date: 3.days.from_now.to_date }
+      @support_edits = { support_type: 'Lodging', start_time: 3.days.from_now.to_datetime,
+                         end_time: 4.days.from_now.to_datetime }
       patch patient_practical_support_path(@patient, @support),
             params: { practical_support: @support_edits },
             xhr: true
@@ -63,8 +64,9 @@ class PracticalSupportsControllerTest < ActionDispatch::IntegrationTest
       assert_equal @support.support_type, 'Lodging'
     end
 
-    it 'should update the support_date field' do
-      assert_equal @support.support_date, 3.days.from_now.to_date
+    it 'should update the start and end times fields' do
+      assert_equal @support.start_time, 3.days.from_now.to_date
+      assert_equal @support.end_time, 4.days.from_now.to_date
     end
 
     [:source, :support_type].each do |field|
@@ -89,8 +91,9 @@ class PracticalSupportsControllerTest < ActionDispatch::IntegrationTest
       assert response.body.include? 'saved'
     end
 
-    it 'should allow blank support_date' do
-      @support_edits[:support_date] = nil
+    it 'should allow blank start and end times' do
+      @support_edits[:start_time] = nil
+      @support_edits[:end_time] = nil
       patch patient_practical_support_path(@patient, @support),
             params: { practical_support: @support_edits },
             xhr: true
