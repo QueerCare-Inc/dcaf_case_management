@@ -5,7 +5,6 @@ class ArchivedPatient < ApplicationRecord
   # Concerns
   include PaperTrailable
   include Exportable
-  include LastMenstrualPeriodMeasureable
 
   # Relationships
   belongs_to :clinic, optional: true

@@ -9,7 +9,6 @@ class Patient < ApplicationRecord
   include Notetakeable
   include PatientSearchable
   include AttributeDisplayable
-  include LastMenstrualPeriodMeasureable
   include Pledgeable
   include Statusable
   include Exportable
