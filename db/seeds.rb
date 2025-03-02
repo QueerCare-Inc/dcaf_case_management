@@ -134,7 +134,6 @@ fund2 = Fund.create! name: 'CatFund',
                         procedure_cost: 400,
                         fund_pledge: 100,
                         pledge_sent: true,
-                        patient_contribution: 100,
                         zipcode: "06222",
                         pronouns: 'ze/zir',
                         name: 'Pledge submitted - 3'
@@ -197,8 +196,7 @@ fund2 = Fund.create! name: 'CatFund',
         naf_pledge: 300,
         fund_pledge: 50,
         procedure_cost: 600,
-        pledge_sent: true,
-        patient_contribution: 100
+        pledge_sent: true
       )
 
       next unless i.even?
@@ -328,7 +326,6 @@ fund2 = Fund.create! name: 'CatFund',
       # abortion info - pledges - hand filled in
       patient.update!(
         procedure_cost: 555,
-        patient_contribution: 120,
         naf_pledge: 120,
         fund_pledge: 115,
         pledge_sent: true,

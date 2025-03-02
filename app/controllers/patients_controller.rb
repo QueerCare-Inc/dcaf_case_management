@@ -73,7 +73,6 @@ class PatientsController < ApplicationController
           appointment_date: @patient.appointment_date.display_date,
           fund_pledge: @patient.fund_pledge,
           procedure_cost: @patient.procedure_cost,
-          patient_contribution: @patient.patient_contribution,
           naf_pledge: @patient.naf_pledge
         },
         clinic: {
@@ -225,7 +224,7 @@ class PatientsController < ApplicationController
 
   ABORTION_INFORMATION_PARAMS = [
     :clinic_id, :resolved_without_fund, :referred_to_clinic,
-    :procedure_cost, :patient_contribution, :naf_pledge, :fund_pledge,
+    :procedure_cost, :naf_pledge, :fund_pledge,
     :fund_pledged_at, :pledge_sent_at, :solidarity, :solidarity_lead, :appointment_time,
     :multiday_appointment
   ].freeze

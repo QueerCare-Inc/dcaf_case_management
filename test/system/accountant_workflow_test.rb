@@ -80,7 +80,6 @@ class AccountantWorkflowTest < ApplicationSystemTestCase
                         initial_call_date: 3.days.ago,
                         region: @region,
                         naf_pledge: 200,
-                        patient_contribution: 100,
                         pledge_sent: true,
                         primary_phone: "999-888-#{1000 + i}",
                         procedure_cost: 400

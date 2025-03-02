@@ -32,7 +32,6 @@ namespace :db do
             appointment_date: has_appt ? initial_call + gen.rand(15) : nil,
             procedure_cost: has_appt ? gen.rand(600) : nil,
             pledge_sent: has_appt && has_pledge,
-            patient_contribution: gen.rand(400),
             fund_pledge: has_appt ? gen.rand(300) : nil
           )
 

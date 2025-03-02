@@ -63,7 +63,6 @@ class Patient < ApplicationRecord
             :procedure_cost,
             :fund_pledge,
             :naf_pledge,
-            :patient_contribution,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }

@@ -37,7 +37,6 @@ class ArchivedPatient < ApplicationRecord
   validates :procedure_cost,
             :fund_pledge,
             :naf_pledge,
-            :patient_contribution,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates_associated :fulfillment
 
@@ -86,7 +85,6 @@ class ArchivedPatient < ApplicationRecord
       language: patient.language,
       voicemail_preference: patient.voicemail_preference,
 
-      patient_contribution: patient.patient_contribution,
       naf_pledge: patient.naf_pledge,
       fund_pledge: patient.fund_pledge,
       fund_pledged_at: patient.fund_pledged_at,
