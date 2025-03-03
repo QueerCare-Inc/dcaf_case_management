@@ -240,12 +240,6 @@ describe("PatientDashboardForm", () => {
       />
     );
 
-    const select = screen.queryByLabelText("Weeks along at intake");
-    await user.selectOptions(
-      select,
-      screen.getByRole("option", { name: "1 week" })
-    );
-
     expect(mockPut).toHaveBeenCalledWith(patientPath, {
       authenticity_token: formAuthenticityToken,
     });

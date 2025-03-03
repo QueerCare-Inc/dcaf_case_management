@@ -24,7 +24,7 @@ class DashboardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   describe 'search method' do
-    it 'should return on name, primary phone, and other phone' do
+    it 'should return on name, primary phone, and emergency contact phone' do
       ['Susie Everyteen', '123-456-7890', '333-444-5555'].each do |searcher|
         post search_path, params: { search: searcher }, xhr: true
         assert_response :success
