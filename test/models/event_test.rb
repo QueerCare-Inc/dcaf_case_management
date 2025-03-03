@@ -21,22 +21,13 @@ class EventTest < ActiveSupport::TestCase
         @event.event_type = status
         assert @event.valid?
       end
-      @event.update event_type: :pledged, pledge_amount: 100
-      assert @event.valid?
     end
 
     [:patient_name, :patient_id, :cm_name, :event_type].each do |req_field|
       it "requires #{req_field}" do
         @event[req_field] = nil
-        refute @event.valid?
+        assert_not @event.valid?
       end
-    end
-
-    it 'requires a pledge amount if pledged type' do
-      @event.event_type = :pledged
-      refute @event.valid?
-      @event.pledge_amount = 100
-      assert @event.valid?
     end
   end
 
@@ -45,7 +36,6 @@ class EventTest < ActiveSupport::TestCase
       it 'should render the correct icon' do
         assert_equal 'phone-alt', build(:event, event_type: :couldnt_reach_patient).icon
         assert_equal 'comment', build(:event, event_type: :reached_patient).icon
-        assert_equal 'thumbs-up', build(:event, event_type: :pledged).icon
         assert_equal 'phone-alt', build(:event, event_type: :left_voicemail).icon
       end
     end

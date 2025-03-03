@@ -27,20 +27,10 @@ module Exportable
     'Referred By' => :referred_by,
     'Referred to clinic by fund' => :referred_to_clinic,
     'Appointment Date' => :appointment_date,
-    'Initial Call Date' => :initial_call_date,
+    'Intake Date' => :intake_date,
     'Shared?' => :shared_flag,
     'Has Special Circumstances' => :has_special_circumstances,
-    'Abortion cost' => :procedure_cost,
-    'NAF pledge' => :naf_pledge,
-    'Fund pledge' => :fund_pledge,
     'Clinic' => :export_clinic_name,
-    'Pledge sent' => :pledge_sent,
-    'Resolved without fund assistance' => :resolved_without_fund,
-    'Pledge generated time' => :pledge_generated_at,
-    'Pledge sent at' => :pledge_sent_at,
-    'Fund pledged at' => :fund_pledged_at,
-    'Solidarity pledge' => :solidarity,
-    'Solidarity lead' => :solidarity_lead,
     'Multi-day appointment' => :multiday_appointment,
     'Practical Support Waiver' => :practical_support_waiver,
 
@@ -53,20 +43,12 @@ module Exportable
     # Fulfillment related
     'Fulfilled' => :fulfilled,
     'Procedure date' => :procedure_date,
-    'Gestation at procedure in weeks' => :gestation_at_procedure,
-    'Fund payout' => :fund_payout,
-    'Check number' => :check_number,
-    'Date of Check' => :date_of_check,
 
     # Notes
     'Notes Count' => :notes_count,
 
     # TODO: clinic stuff
 
-    # External Pledges
-    'External Pledge Count' => :external_pledge_count,
-    'External Pledges Sum' => :external_pledge_sum,
-    'All External Pledges' => :all_external_pledges,
     'Practical Supports' => :all_practical_supports
 
     # TODO: test to confirm that specific blacklisted fields aren't being exported
@@ -106,22 +88,6 @@ module Exportable
 
   def procedure_date
     fulfillment.try :procedure_date
-  end
-
-  def gestation_at_procedure
-    fulfillment.try :gestation_at_procedure
-  end
-
-  def fund_payout
-    fulfillment.try :fund_payout
-  end
-
-  def check_number
-    fulfillment.try :check_number
-  end
-
-  def date_of_check
-    fulfillment.try :date_of_check
   end
 
   def first_call_timestamp
@@ -172,18 +138,6 @@ module Exportable
     end
   end
 
-  def external_pledge_count
-    external_pledges.size
-  end
-
-  def external_pledge_sum
-    external_pledges.sum(:amount)
-  end
-
-  def all_external_pledges
-    external_pledges.map { |x| "#{x.source} - #{x.amount}" }.join('; ')
-  end
-
   def all_practical_supports
     shaped_supports = practical_supports.map do |ps|
       src = ps.source
@@ -198,8 +152,8 @@ module Exportable
     shaped_supports.join('; ')
   end
 
-  PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
-  ARCHIVED_PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :external_pledges, :calls, :practical_supports]
+  PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :calls, :practical_supports]
+  ARCHIVED_PATIENT_RELATIONS = [:region, :clinic, :fulfillment, :calls, :practical_supports]
 
   class_methods do
     def csv_header

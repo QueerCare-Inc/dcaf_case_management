@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.string "voicemail_preference", default: "not_specified"
     t.string "line_legacy"
     t.string "language"
-    t.date "initial_call_date"
+    t.date "intake_date"
     t.boolean "shared_flag"
     t.string "city"
     t.string "state"
@@ -36,23 +36,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.string "referred_by"
     t.boolean "referred_to_clinic"
     t.date "appointment_date"
-    t.integer "procedure_cost"
-    t.integer "naf_pledge"
-    t.integer "fund_pledge"
-    t.datetime "fund_pledged_at", precision: nil
-    t.boolean "pledge_sent"
-    t.boolean "resolved_without_fund"
-    t.datetime "pledge_generated_at", precision: nil
-    t.datetime "pledge_sent_at", precision: nil
     t.boolean "textable"
     t.bigint "clinic_id"
-    t.bigint "pledge_generated_by_id"
-    t.bigint "pledge_sent_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.boolean "solidarity"
-    t.string "solidarity_lead"
     t.string "procedure_type"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
@@ -60,8 +48,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.index ["clinic_id"], name: "index_archived_patients_on_clinic_id"
     t.index ["fund_id"], name: "index_archived_patients_on_fund_id"
     t.index ["line_legacy"], name: "index_archived_patients_on_line_legacy"
-    t.index ["pledge_generated_by_id"], name: "index_archived_patients_on_pledge_generated_by_id"
-    t.index ["pledge_sent_by_id"], name: "index_archived_patients_on_pledge_sent_by_id"
     t.index ["region_id"], name: "index_archived_patients_on_region_id"
   end
 
@@ -119,38 +105,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.boolean "active", default: true, null: false
     t.boolean "accepts_naf"
     t.boolean "accepts_medicaid"
-    t.integer "gestational_limit"
     t.decimal "coordinates", array: true
-    t.integer "costs_5wks"
-    t.integer "costs_6wks"
-    t.integer "costs_7wks"
-    t.integer "costs_8wks"
-    t.integer "costs_9wks"
-    t.integer "costs_10wks"
-    t.integer "costs_11wks"
-    t.integer "costs_12wks"
-    t.integer "costs_13wks"
-    t.integer "costs_14wks"
-    t.integer "costs_15wks"
-    t.integer "costs_16wks"
-    t.integer "costs_17wks"
-    t.integer "costs_18wks"
-    t.integer "costs_19wks"
-    t.integer "costs_20wks"
-    t.integer "costs_21wks"
-    t.integer "costs_22wks"
-    t.integer "costs_23wks"
-    t.integer "costs_24wks"
-    t.integer "costs_25wks"
-    t.integer "costs_26wks"
-    t.integer "costs_27wks"
-    t.integer "costs_28wks"
-    t.integer "costs_29wks"
-    t.integer "costs_30wks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.string "email_for_pledges"
     t.index ["fund_id"], name: "index_clinics_on_fund_id"
     t.index ["name", "fund_id"], name: "index_clinics_on_name_and_fund_id", unique: true
   end
@@ -171,7 +129,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.string "line_legacy"
     t.string "patient_name"
     t.string "patient_id"
-    t.integer "pledge_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
@@ -182,26 +139,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.index ["region_id"], name: "index_events_on_region_id"
   end
 
-  create_table "external_pledges", force: :cascade do |t|
-    t.string "source", null: false
-    t.integer "amount"
-    t.boolean "active"
-    t.string "can_pledge_type", null: false
-    t.bigint "can_pledge_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "fund_id"
-    t.index ["can_pledge_type", "can_pledge_id"], name: "index_external_pledges_on_can_pledge_type_and_can_pledge_id"
-    t.index ["fund_id"], name: "index_external_pledges_on_fund_id"
-  end
-
   create_table "fulfillments", force: :cascade do |t|
     t.boolean "fulfilled", default: false, null: false
     t.date "procedure_date"
-    t.integer "gestation_at_procedure"
-    t.integer "fund_payout"
-    t.string "check_number"
-    t.date "date_of_check"
     t.boolean "audited"
     t.string "can_fulfill_type", null: false
     t.bigint "can_fulfill_id", null: false
@@ -258,7 +198,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.string "line_legacy"
     t.string "language"
     t.string "pronouns"
-    t.date "initial_call_date", null: false
+    t.date "intake_date", null: false
     t.boolean "shared_flag"
     t.integer "age"
     t.string "city"
@@ -275,24 +215,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.string "referred_by"
     t.boolean "referred_to_clinic"
     t.date "appointment_date"
-    t.integer "procedure_cost"
-    t.integer "naf_pledge"
-    t.integer "fund_pledge"
-    t.datetime "fund_pledged_at", precision: nil
-    t.boolean "pledge_sent"
-    t.boolean "resolved_without_fund"
-    t.datetime "pledge_generated_at", precision: nil
-    t.datetime "pledge_sent_at", precision: nil
     t.boolean "textable"
     t.bigint "clinic_id"
-    t.bigint "pledge_generated_by_id"
-    t.bigint "pledge_sent_by_id"
     t.bigint "last_edited_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.boolean "solidarity"
-    t.string "solidarity_lead"
     t.string "procedure_type"
     t.time "appointment_time", comment: "A patient's appointment time"
     t.boolean "multiday_appointment"
@@ -306,9 +234,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
     t.index ["name"], name: "index_patients_on_name"
     t.index ["other_contact"], name: "index_patients_on_other_contact"
     t.index ["other_phone"], name: "index_patients_on_other_phone"
-    t.index ["pledge_generated_by_id"], name: "index_patients_on_pledge_generated_by_id"
-    t.index ["pledge_sent"], name: "index_patients_on_pledge_sent"
-    t.index ["pledge_sent_by_id"], name: "index_patients_on_pledge_sent_by_id"
     t.index ["primary_phone", "fund_id"], name: "index_patients_on_primary_phone_and_fund_id", unique: true
     t.index ["region_id"], name: "index_patients_on_region_id"
     t.index ["shared_flag"], name: "index_patients_on_shared_flag"
@@ -413,8 +338,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
   add_foreign_key "archived_patients", "clinics"
   add_foreign_key "archived_patients", "funds"
   add_foreign_key "archived_patients", "regions"
-  add_foreign_key "archived_patients", "users", column: "pledge_generated_by_id"
-  add_foreign_key "archived_patients", "users", column: "pledge_sent_by_id"
   add_foreign_key "auth_factors", "users"
   add_foreign_key "call_list_entries", "funds"
   add_foreign_key "call_list_entries", "patients"
@@ -425,15 +348,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_02_232052) do
   add_foreign_key "configs", "funds"
   add_foreign_key "events", "funds"
   add_foreign_key "events", "regions"
-  add_foreign_key "external_pledges", "funds"
   add_foreign_key "fulfillments", "funds"
   add_foreign_key "notes", "funds"
   add_foreign_key "patients", "clinics"
   add_foreign_key "patients", "funds"
   add_foreign_key "patients", "regions"
   add_foreign_key "patients", "users", column: "last_edited_by_id"
-  add_foreign_key "patients", "users", column: "pledge_generated_by_id"
-  add_foreign_key "patients", "users", column: "pledge_sent_by_id"
   add_foreign_key "practical_supports", "funds"
   add_foreign_key "regions", "funds"
   add_foreign_key "users", "funds"

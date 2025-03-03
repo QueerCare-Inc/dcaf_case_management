@@ -98,53 +98,6 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
       end
     end
 
-    describe 'updating a config - external pledge' do
-      it 'should update and be available' do
-        fill_in 'config_options_external_pledge_source', with: 'Yolo, Goat, Something'
-        click_button 'Update options for External pledge source'
-
-        assert_equal 'Yolo, Goat, Something',
-                     find('#config_options_external_pledge_source').value
-        within :css, '#external_pledge_source_options_list' do
-          assert has_content? 'Yolo'
-          assert has_content? 'Goat'
-          assert has_content? 'Something'
-          assert has_content? 'Clinic discount'
-          assert has_content? 'Other funds (see notes)'
-        end
-
-        visit edit_patient_path(@patient)
-        click_link 'Abortion Information'
-        assert has_select? 'Source', options: ['', 'Yolo', 'Goat', 'Something',
-                                               'Clinic discount',
-                                               'Other funds (see notes)']
-      end
-    end
-
-    describe 'updating a config - Pledge limit help text' do
-      it 'should update and be available' do
-        fill_in 'config_options_pledge_limit_help_text',
-                with: 'Pledge guidelines, 13 weeks $100'
-        click_button 'Update options for Pledge limit help text'
-
-        assert_equal 'Pledge guidelines, 13 weeks $100',
-                     find('#config_options_pledge_limit_help_text').value
-        within :css, '#pledge_limit_help_text_options_list' do
-          assert has_content? 'Pledge guidelines'
-          assert has_content? '13 weeks $100'
-        end
-
-        # Can't get this to work quite right
-        # visit edit_patient_path @patient
-        # click_link 'Abortion Information'
-        # within :css, 'label[for=patient_fund_pledge]' do
-        #   find('.tooltip-header-help').hover
-        # end
-        # assert has_text? 'Pledge guidelines'
-        # assert has_text? '13 weeks $100'
-      end
-    end
-
     describe 'updating a config - referred by' do
       it 'should update and be available' do
         fill_in 'config_options_referred_by', with: 'Metallica'
@@ -197,23 +150,6 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
       end
     end
 
-    describe 'updating a config - hide budget bar' do
-      it 'should toggle the budget bar on the dashboard' do
-        fill_in 'config_options_hide_budget_bar', with: 'yes'
-        click_button 'Update options for Hide budget bar'
-        visit authenticated_root_path
-        assert_not has_content? 'Budget for'
-
-        visit configs_path
-        fill_in 'config_options_hide_budget_bar', with: ''
-        click_button 'Update options for Hide budget bar'
-        visit authenticated_root_path
-        within :css, '#overview' do
-          assert has_content? 'Budget for'
-        end
-      end
-    end
-
     describe 'updating a config - display_practical_support_attachment_url' do
       before do
         @patient = create :patient
@@ -233,27 +169,6 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         visit edit_patient_path @patient
         click_link 'Practical Support'
         assert has_content? 'Attachment URL'
-      end
-    end
-
-    describe 'updating a config - aggregate statistics' do
-      it 'should toggle aggregate statistics on budget bar' do
-        fill_in 'config_options_aggregate_statistics', with: 'yes'
-        click_button 'Update options for Aggregate statistics'
-        visit authenticated_root_path
-        within :css, '#overview' do
-          assert has_content? '$0 spent (0 patients, 0%)'
-          assert has_content? '$1,000 remaining (100%)'
-        end
-
-        visit configs_path
-        fill_in 'config_options_aggregate_statistics', with: 'no'
-        click_button 'Update options for Aggregate statistics'
-        visit authenticated_root_path
-        within :css, '#overview' do
-          assert_not has_content? 'spent'
-          assert_not has_content? 'remaining'
-        end
       end
     end
 

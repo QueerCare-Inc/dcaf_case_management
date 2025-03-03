@@ -43,36 +43,4 @@ class EventLogInteractionTest < ApplicationSystemTestCase
       end
     end
   end
-
-  describe 'sending pledges' do
-    it 'should log sent pledges' do
-      @patient.update clinic: create(:clinic),
-                      fund_pledge: 100,
-                      appointment_date: 3.days.from_now
-      visit edit_patient_path @patient
-
-      find('#submit-pledge-button').click
-      wait_for_element 'Patient name'
-      assert has_text? 'Confirm the following information is correct'
-      find('#pledge-next').click
-      wait_for_ajax
-
-      wait_for_no_element 'Confirm the following information is correct'
-      assert has_text? 'Generate your pledge form'
-      find('#pledge-next').click
-      wait_for_no_element 'Review this preview of your pledge'
-
-      assert has_text? 'Submit and send your pledge'
-      check 'I sent the pledge'
-      wait_for_ajax
-      find('#pledge-next').click
-      wait_for_no_element 'Submit and send your pledge'
-
-      visit authenticated_root_path
-      within :css, '#activity_log_content' do
-        assert has_content? "#{@user.name} sent a $100 pledge for " \
-                            "#{@patient.name}"
-      end
-    end
-  end
 end

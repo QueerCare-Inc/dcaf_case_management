@@ -60,11 +60,9 @@ class FundTest < ActiveSupport::TestCase
           @patient = create :patient
           @patient.notes.create attributes_for(:note)
           @patient.calls.create attributes_for(:call)
-          @patient.external_pledges.create attributes_for(:external_pledge)
           @patient.practical_supports.create attributes_for(:practical_support)
           @archived_patient = create :archived_patient
           @archived_patient.calls.create attributes_for(:call)
-          @archived_patient.external_pledges.create attributes_for(:external_pledge)
           @archived_patient.practical_supports.create attributes_for(:practical_support)
         end
       end
@@ -76,7 +74,6 @@ class FundTest < ActiveSupport::TestCase
          ArchivedPatient,
          Note,
          Fulfillment,
-         ExternalPledge,
          PracticalSupport,
          Call].each do |model|
           assert_equal 0, model.count
@@ -90,9 +87,10 @@ class FundTest < ActiveSupport::TestCase
          Fulfillment].each do |model|
           assert_equal 1, model.count
         end
-        [ExternalPledge,
-         PracticalSupport,
-         Call].each do |model|
+        [
+          PracticalSupport,
+          Call
+        ].each do |model|
           assert_equal 2, model.count
         end
       end

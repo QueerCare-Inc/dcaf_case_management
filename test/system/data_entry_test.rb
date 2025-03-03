@@ -28,7 +28,6 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'DC', from: 'patient_state'
       fill_in 'County', with: 'Wash'
       fill_in 'Zipcode', with: '20009'
-      fill_in 'CATF pledge', with: '100'
       fill_in 'Age', with: '30'
       select 'Other', from: 'patient_race_ethnicity'
       select @clinic.name, from: 'patient_clinic_id'
@@ -41,11 +40,9 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'Clinic', from: 'patient_referred_by'
       fill_in 'Procedure Cost', with: '200'
       fill_in 'Patient contribution', with: '150'
-      fill_in 'National Abortion Federation pledge', with: '50'
       select 'English', from: 'patient_language'
       select 'Do not leave a voicemail', from: 'patient_voicemail_preference'
       check 'patient_referred_to_clinic'
-      check 'Pledge Sent'
       check 'fetal_patient_special_circumstances'
       check 'home_patient_special_circumstances'
       click_button 'Create Patient'
@@ -92,21 +89,7 @@ class DataEntryTest < ApplicationSystemTestCase
       click_link 'Abortion Information'
       within :css, '#abortion_information' do
         assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
-        assert has_field? 'Abortion cost', with: '200'
-        assert has_field? 'Patient contribution', with: '150'
-        assert has_field? 'National Abortion Federation pledge', with: '50'
-        assert has_field? 'CATF pledge', with: '100'
         assert has_checked_field? 'Referred to clinic'
-      end
-    end
-
-    it 'should show new patients pledge in the budget bar' do
-      visit root_path
-
-      within :css, '#budget_bar' do
-        assert has_text? '$100 sent (1 patient)'
-        assert has_text? '$0 pledged (0 patients)'
-        assert_not has_text? 'Susie Everyteen - appt on '
       end
     end
   end
@@ -124,8 +107,6 @@ class DataEntryTest < ApplicationSystemTestCase
       fill_in 'City', with: 'Washington'
       select 'DC', from: 'patient_state'
       fill_in 'County', with: 'Wash'
-      fill_in 'CATF pledge', with: '99'
-      fill_in 'Fund pledged at', with: 80.days.ago.strftime('%m/%d/%Y')
       fill_in 'Age', with: '30'
       select 'Other', from: 'patient_race_ethnicity'
       select @clinic.name, from: 'patient_clinic_id'
@@ -138,26 +119,13 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'Clinic', from: 'patient_referred_by'
       fill_in 'Procedure Cost', with: '200'
       fill_in 'Patient contribution', with: '51'
-      fill_in 'National Abortion Federation pledge', with: '50'
       select 'English', from: 'patient_language'
       select 'Do not leave a voicemail', from: 'patient_voicemail_preference'
       check 'patient_referred_to_clinic'
-      check 'Pledge Sent'
-      fill_in 'Pledge sent at:', with: 75.days.ago.strftime('%m/%d/%Y')
       check 'fetal_patient_special_circumstances'
       check 'home_patient_special_circumstances'
       click_button 'Create Patient'
       has_text? 'Patient information' # wait for redirect
-    end
-
-    it 'should show backdated new patient in the budget bar' do
-      visit root_path
-
-      within :css, '#budget_bar' do
-        assert has_text? '$99 sent (1 patient)'
-        assert has_text? '$0 pledged (0 patients)'
-        assert_not has_text? '$0 sent'
-      end
     end
   end
 
@@ -175,22 +143,6 @@ class DataEntryTest < ApplicationSystemTestCase
 
       it 'should return an error on a duplicate phone' do
         assert has_text? 'This phone number is already taken'
-        assert_equal current_path, data_entry_path
-      end
-    end
-
-    describe 'pledge with insufficient other info' do
-      before do
-        select @region.name, from: 'patient_region_id'
-        fill_in 'Initial Call Date', with: 2.days.ago.strftime('%m/%d/%Y')
-        fill_in 'Name', with: 'Susie Everyteen'
-        fill_in 'Phone', with: '111-222-3344'
-        check 'Pledge Sent'
-        click_button 'Create Patient'
-      end
-
-      it 'should return an error on insufficient pledge sent data' do
-        assert has_text? 'Errors prevented this patient from being saved'
         assert_equal current_path, data_entry_path
       end
     end

@@ -5,17 +5,17 @@ module PracticalSupportsHelper
   def practical_support_options(current_value = nil)
     standard_options = [
       nil,
-      [ t('patient.helper.practical_support.travel_to_region'), 'Travel to the region' ],
-      [ t('patient.helper.practical_support.travel_inside_region'), 'Travel inside the region' ],
-      [ t('patient.helper.practical_support.lodging'), 'Lodging' ],
-      [ t('patient.helper.practical_support.companion'), 'Companion' ],
+      [t('patient.helper.practical_support.travel_to_region'), 'Travel to the region'],
+      [t('patient.helper.practical_support.travel_inside_region'), 'Travel inside the region'],
+      [t('patient.helper.practical_support.lodging'), 'Lodging'],
+      [t('patient.helper.practical_support.companion'), 'Companion']
     ]
 
     options =
       Config.find_or_create_by(config_key: 'practical_support').options +
-        [
-          [ t('patient.helper.practical_support.other'), 'Other (see notes)' ]
-        ]
+      [
+        [t('patient.helper.practical_support.other'), 'Other (see notes)']
+      ]
 
     options.push(*standard_options) unless Config.hide_standard_dropdown?
 
@@ -23,14 +23,13 @@ module PracticalSupportsHelper
   end
 
   def practical_support_source_options(current_value = nil)
-    options = [nil, ActsAsTenant.current_tenant.full_name] +
-      Config.find_or_create_by(config_key: 'external_pledge_source').options
+    options = [nil, ActsAsTenant.current_tenant.full_name]
 
     standard_options = [
-      [ t('common.patient'), 'Patient' ],
-      [ t('common.clinic'), 'Clinic' ],
-      [ t('patient.helper.practical_support.other'), 'Other (see notes)' ],
-      [ t('patient.helper.practical_support.not_sure_yet'), 'Not sure yet (see notes)' ]
+      [t('common.patient'), 'Patient'],
+      [t('common.clinic'), 'Clinic'],
+      [t('patient.helper.practical_support.other'), 'Other (see notes)'],
+      [t('patient.helper.practical_support.not_sure_yet'), 'Not sure yet (see notes)']
     ]
 
     options.push(*standard_options) unless Config.hide_standard_dropdown?
@@ -44,7 +43,9 @@ module PracticalSupportsHelper
     url = UriService.new(maybe_url).uri
 
     return unless url.present?
-    link_to t('patient.practical_support.guidance_link', fund: ActsAsTenant.current_tenant.name), url.to_s, target: '_blank'
+
+    link_to t('patient.practical_support.guidance_link', fund: ActsAsTenant.current_tenant.name), url.to_s,
+            target: '_blank', rel: 'noopener'
     # "For guidance on practical support, view the #{link_content}."
   end
 

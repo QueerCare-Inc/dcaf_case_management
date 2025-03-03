@@ -7,7 +7,7 @@ class PaperTrailVersionTest < ActiveSupport::TestCase
       @patient = create :patient, name: 'Susie Everyteen',
                                   primary_phone: '111-222-3333',
                                   appointment_date: Time.zone.now + 5.days,
-                                  initial_call_date: Time.zone.now + 3.days
+                                  intake_date: Time.zone.now + 3.days
     end
   end
 
@@ -31,8 +31,7 @@ class PaperTrailVersionTest < ActiveSupport::TestCase
                         appointment_date: Time.zone.now.to_date + 10.days,
                         city: 'Canada',
                         clinic: @clinic,
-                        special_circumstances: ['A', '', 'C', ''],
-                        pledge_generated_at: Time.zone.now + 5.days
+                        special_circumstances: ['A', '', 'C', '']
 
         @track = @patient.versions.first
       end
@@ -50,22 +49,21 @@ class PaperTrailVersionTest < ActiveSupport::TestCase
     it 'should know whether the actual changed fields are relevant' do
       assert @track.has_changed_fields?
       @track.object_changes = {
-        "updated_at" => [1.day.ago, Time.zone.now],
-        "identifier" => "D1-1111"
+        'updated_at' => [1.day.ago, Time.zone.now],
+        'identifier' => 'D1-1111'
       }
-      refute @track.has_changed_fields?
+      assert_not @track.has_changed_fields?
     end
 
     it 'should return shaped changes as a single dict' do
       assert_equal @track.shaped_changes,
                    { 'name' => { original: 'Susie Everyteen', modified: 'Yolo' },
                      'primary_phone' => { original: '1112223333', modified: '1234569999' },
-                     'appointment_date' => { original: (Time.zone.now + 5.days).display_date, modified: (Time.zone.now + 10.days).display_date },
+                     'appointment_date' => { original: (Time.zone.now + 5.days).display_date,
+                                             modified: (Time.zone.now + 10.days).display_date },
                      'special_circumstances' => { original: '(empty)', modified: 'A, C' },
                      'city' => { original: '(empty)', modified: 'Canada' },
-                     'clinic_id' => { original: '(empty)', modified: @clinic.name },
-                     'pledge_generated_at' => { original: '(empty)', modified: (Time.zone.now + 5.days).strftime('%m/%d/%Y') }
-                   }
+                     'clinic_id' => { original: '(empty)', modified: @clinic.name } }
     end
 
     it 'should delete old objects' do
@@ -73,7 +71,7 @@ class PaperTrailVersionTest < ActiveSupport::TestCase
         # create a patient in the past... will create a papertrail version
         Timecop.freeze(2.years.ago) do
           create :patient, name: 'Patient from long ago',
-                            primary_phone: '444-555-6666'
+                           primary_phone: '444-555-6666'
         end
 
         # come back to the present and remove old records
@@ -94,7 +92,7 @@ class PaperTrailVersionTest < ActiveSupport::TestCase
       end
     end
 
-    it "should attach versions to config" do
+    it 'should attach versions to config' do
       assert_equal 1, @config.versions.count
       assert_difference '@config.versions.count', 1 do
         with_versioning do

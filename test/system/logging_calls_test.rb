@@ -53,13 +53,13 @@ class LoggingCallsTest < ApplicationSystemTestCase
   ['Left voicemail', "Couldn't reach patient"].each do |call_status|
     describe "logging #{call_status}" do
       before do
-        @link_text =  if call_status == 'Left voicemail'
-                        'I left a voicemail for the patient'
-                      elsif call_status == "Couldn't reach patient"
-                        "I couldn't reach the patient"
-                      else
-                        raise 'Not a recognized call status'
-                      end
+        @link_text = if call_status == 'Left voicemail'
+                       'I left a voicemail for the patient'
+                     elsif call_status == "Couldn't reach patient"
+                       "I couldn't reach the patient"
+                     else
+                       raise 'Not a recognized call status'
+                     end
         @timestamp = Time.zone.now
         find('a', text: @link_text).click
         wait_for_no_element @link_text
@@ -87,11 +87,5 @@ class LoggingCallsTest < ApplicationSystemTestCase
         end
       end
     end
-  end
-
-  private
-
-  def wait_for_page_to_load
-    has_text? 'Submit pledge'
   end
 end

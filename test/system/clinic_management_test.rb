@@ -4,8 +4,7 @@ require 'application_system_test_case'
 class ClinicManagementTest < ApplicationSystemTestCase
   before do
     create :region
-    @clinic = create :clinic, accepts_naf: true,
-                              accepts_medicaid: true
+    @clinic = create :clinic, accepts_medicaid: true
 
     @user = create :user, role: 'admin'
     @nonadmin = create :user, role: 'cm'
@@ -101,11 +100,6 @@ class ClinicManagementTest < ApplicationSystemTestCase
     fill_in 'Fax', with: '222-333-4444'
     check 'Accepts NAF'
     check 'Accepts Medicaid'
-    fill_in 'Gestational limit (in days)', with: '30'
-    (5..30).each do |i|
-      fill_in "Costs at #{i} weeks", with: i
-    end
-    fill_in 'Email for Pledges', with: 'pledges@gdqtabaf.net'
     new_clinic_name
   end
 
@@ -119,10 +113,5 @@ class ClinicManagementTest < ApplicationSystemTestCase
     assert has_field? 'Fax', with: '222-333-4444'
     assert has_checked_field? 'Accepts NAF'
     assert has_checked_field? 'Accepts Medicaid'
-    assert has_field? 'Gestational limit (in days)', with: '30'
-    (5..30).each do |i|
-      assert has_field? "Costs at #{i} weeks", with: i
-    end
-    assert has_field? 'Email for Pledges', with: 'pledges@gdqtabaf.net'
   end
 end

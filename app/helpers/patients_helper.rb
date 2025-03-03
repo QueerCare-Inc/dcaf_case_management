@@ -146,7 +146,7 @@ module PatientsHelper
         t('patient.abortion_information.clinic_section.clinic_display', clinic_name: clinic.name,
                                                                         city: clinic.city, state: clinic.state),
         clinic.id,
-        { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
+        { data: { medicaid: !!clinic.accepts_medicaid } }
       ]
     end
                             .unshift nil
@@ -158,7 +158,7 @@ module PatientsHelper
         t('patient.abortion_information.clinic_section.not_currently_working_with_fund',
           fund: ActsAsTenant.current_tenant.name, clinic_name: clinic.name),
         clinic.id,
-        { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
+        { data: { medicaid: !!clinic.accepts_medicaid } }
       ]
     end
     if inactive_clinics.count > 0
@@ -167,14 +167,6 @@ module PatientsHelper
     end
 
     active_clinics | inactive_clinics
-  end
-
-  def disable_continue?(patient)
-    patient.pledge_info_present? ? 'disabled="disabled"' : ''
-  end
-
-  def pledge_limit_help_text_options
-    Config.find_or_create_by(config_key: 'pledge_limit_help_text').options
   end
 
   def state_options(current_state)

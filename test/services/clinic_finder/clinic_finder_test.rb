@@ -10,46 +10,25 @@ class ClinicFinderTest < ActiveSupport::TestCase
                     city: 'Oakland',
                     state: 'CA',
                     zip: '94607',
-                    accepts_naf: false,
-                    accepts_medicaid: false,
-                    gestational_limit: 139,
-                    costs_9wks: 425,
-                    costs_12wks: 475,
-                    costs_18wks: 975
+                    accepts_medicaid: false
     create :clinic, name: 'PP SF',
                     street_address: '2430 Folsom',
                     city: 'San Francisco',
                     state: 'CA',
                     zip: '94110',
-                    accepts_naf: false,
-                    accepts_medicaid: false,
-                    gestational_limit: 111,
-                    costs_9wks: 300,
-                    costs_12wks: 325
+                    accepts_medicaid: false
     create :clinic, name: 'Out of state clinic',
                     street_address: '1801 Mountain NW',
                     city: 'Albuquerque',
                     state: 'NM',
                     zip: '87104',
-                    accepts_naf: true,
-                    accepts_medicaid: true,
-                    gestational_limit: 210,
-                    costs_9wks: 300,
-                    costs_12wks: 325,
-                    costs_18wks: 1100,
-                    costs_24wks: 4000,
-                    costs_30wks: 9500
+                    accepts_medicaid: true
     create :clinic, name: 'Monterey Clinic',
                     street_address: '570 Pacific',
                     city: 'Monterey',
                     state: 'CA',
                     zip: '93940',
-                    accepts_naf: false,
-                    accepts_medicaid: false,
-                    gestational_limit: 154,
-                    costs_9wks: 400,
-                    costs_12wks: 400,
-                    costs_18wks: 1150
+                    accepts_medicaid: false
   end
 
   describe 'initialization with clinics' do
@@ -59,7 +38,7 @@ class ClinicFinderTest < ActiveSupport::TestCase
     end
 
     it 'should initialize with clinics' do
-      assert @abortron.clinic_structs.find { |c| c.name == 'PP SF' }
+      assert(@abortron.clinic_structs.find { |c| c.name == 'PP SF' })
       assert_equal Clinic.all.count, @abortron.clinic_structs.count
     end
 
@@ -79,78 +58,4 @@ class ClinicFinderTest < ActiveSupport::TestCase
       assert_equal 'goat', @abortron.patient_context.yolo
     end
   end
-
-  # TODO do better mocking
-  # describe 'locate_nearest_clinics' do
-  #   before do
-  #     @abortron = ClinicFinder::Locator.new @clinics, gestational_age: 150
-  #   end
-
-  #   it 'should return closest clinics' do
-  #     # This should return the two closest clinics out of the three eligible:
-  #     # One in NM, and the one in LA. It should exclude the one in Monterey CA.
-  #     closest_two_clinics = @abortron.locate_nearest_clinics '73301', limit: 2
-  #     assert closest_two_clinics[0].distance < closest_two_clinics[1].distance
-  #     assert_equal 'Albuquerque medical center', closest_two_clinics[0].name
-  #     assert_equal 'La medical center', closest_two_clinics[1].name
-
-  #     # It should not return discreet treatment centers in Monterey CA
-  #     # because we're limiting to just the first two
-  #     furthest_clinic = 'Discreet treatment centers of ca'
-  #     assert_nil(closest_two_clinics.find { |c| c.name == furthest_clinic })
-  #   end
-  # end
 end
-  # def test_that_initialize_sets_clinic_variable
-  # 	assert_kind_of Hash, @abortron.clinics
-  # end
-
-  # def test_that_full_addresses_created
-  # 	assert_kind_of Array, @abortron.create_full_address(100)
-  # end
-
-  # def test_that_full_address_has_needed_fields
-  # 	assert_equal [{:name=>"planned_parenthood_oakland", :address=>"1001 Broadway, Oakland, CA"}, {:name=>"planned_parenthood_san_fran", :address=>"2430 Folsom, San Francisco, CA"}, {:name=>"castro_family_planning", :address=>"517 Castro, San Francisco, CA"}, {:name=>"discreet_treatment_centers_of_ca", :address=>"570 Pacific, Monterey, CA"}, {:name=>"albuquerque_medical_center", :address=>"1801 Mountain NW, Albuquerque, NM"}, {:name=>"butte_health_clinic", :address=>"7473 Humboldt, Butte Meadows, CA"}, {:name=>"womens_health_of_venice_beach", :address=>"2025 Pacific, Los Angeles, CA"}, {:name=>"planned_parenthood_la", :address=>"3900 W Manchester, Los Angeles, CA"}, {:name=>"la_medical_center", :address=>"5905 Wilshire, Los Angeles, CA"}], @abortron.create_full_address(100)
-  # end
-
-  # def test_that_clinic_coordinates_are_hashes
-  # 	addresses = @abortron.create_full_address(100)
-  # 	assert_kind_of Hash, @abortron.clinics_coordinates_conversion
-  # end
-
-  # def test_that_clinic_coordinates_are_found
-  #   @abortron.create_full_address(100)
-  #   information = @abortron.clinics_coordinates_conversion
-  #   assert_equal [37.8021736,-122.2729171], information["planned_parenthood_oakland"]
-  # end
-
-  # def test_that_patient_coordinates_are_found
-		# pt_address = "88 Colin P Kelly Jr St, San Francisco, CA"
-  # 	pt_mock = MiniTest::Mock.new
-  # 	pt_mock.expect(:ll, [37.78226710000001, -122.3912479])
-		# Geokit::Geocoders::GoogleGeocoder.stub(:geocode, pt_mock) do
-		# 	@abortron.patient_coordinates_conversion(pt_address)
-		# end
-  # end
-
-  # def test_that_distances_calculated_between_clinics_and_patient
-  #   @abortron.create_full_address(100)
-  #   @abortron.clinics_coordinates_conversion
-  #   @abortron.patient_coordinates_conversion("94117")
-  #   first_clinic = {name: "castro_family_planning", distance: 0.92356303468274}
-  #   assert_equal first_clinic, @abortron.calculate_distance.first
-  # end
-
-  # def test_that_returns_top_3_closest_clinics
-  #   @abortron.create_full_address(100)
-  #   @abortron.clinics_coordinates_conversion
-  #   @abortron.patient_coordinates_conversion("94117")
-  #   @abortron.calculate_distance
-  #   assert_equal [{:name=>"castro_family_planning", :distance=>0.92356303468274}, {:name=>"planned_parenthood_san_fran", :distance=>1.8319683663768311}, {:name=>"planned_parenthood_oakland", :distance=>9.580895789655901}], @abortron.find_closest_clinics
-  # end
-
-  # def test_locate_cheapest_clinic_locates
-  #   clinic_result = {name: 'planned_parenthood_oakland', cost: 975}
-  #   assert_equal clinic_result, @abortron.locate_cheapest_clinic(gestational_age: 100)[0]
-  # end
-# end

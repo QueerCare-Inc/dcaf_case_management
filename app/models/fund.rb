@@ -3,7 +3,6 @@ class Fund < ApplicationRecord
 
   # Relations
   has_many :regions
-  has_one :pledge_config
 
   # Validations
   validates :name,
@@ -20,7 +19,6 @@ class Fund < ApplicationRecord
      ArchivedPatient,
      Note,
      Fulfillment,
-     ExternalPledge,
      PracticalSupport,
      Call].each do |model|
       model.destroy_all

@@ -4,7 +4,6 @@ class PatientsController < ApplicationController
   before_action :confirm_admin_user, only: [:destroy]
   before_action :confirm_data_access, only: [:index]
   before_action :find_patient, if: :should_preload_patient_with_versions?
-  before_action :find_patient_minimal, if: :should_preload_patient_minimally?
   rescue_from ActiveRecord::RecordNotFound,
               with: -> { redirect_to root_path }
 
@@ -30,75 +29,6 @@ class PatientsController < ApplicationController
     redirect_to root_path
   end
 
-  def pledge
-    @patient = Patient.find params[:patient_id]
-    respond_to do |format|
-      format.js
-    end
-  end
-
-  # download a filled out pledge form based on patient record
-  def download
-    if params[:case_manager_name].blank?
-      flash[:alert] = t('flash.pledge_download_alert')
-      redirect_to edit_patient_path @patient
-    else
-      now = Time.zone.now.strftime('%Y%m%d')
-      pdf_filename = "#{@patient.name}_pledge_form_#{now}.pdf"
-      pdf = PledgeFormGenerator.new(current_user,
-                                    @patient,
-                                    params[:case_manager_name].to_s,
-                                    current_tenant)
-                               .generate_pledge_pdf
-      @patient.update pledge_generated_at: Time.zone.now,
-                      pledge_generated_by: current_user
-      send_data pdf.render, filename: pdf_filename, type: 'application/pdf'
-    end
-  end
-
-  def fetch_pledge
-    endpoint = ENV.fetch('PLEDGE_GENERATOR_ENDPOINT', 'http://localhost:3001/generate')
-    basic_auth = { username: ENV.fetch('PLEDGE_GENERATOR_USER', 'apiuser'),
-                   password: ENV.fetch('PLEDGE_GENERATOR_TOKEN', 'PLEDGETOKEN') }
-    extra_params = params.permit(:case_manager_name, *current_tenant.pledge_config.remote_pledge_extras.map do |x, y|
-      x.to_sym
-    end)
-    payload = {
-      fund: Rails.env.development? ? 'test' : current_tenant.name.downcase,
-      base: {
-        patient: {
-          name: @patient.name,
-          identifier: @patient.identifier,
-          phone: @patient.primary_phone_display,
-          appointment_date: @patient.appointment_date.display_date,
-          fund_pledge: @patient.fund_pledge,
-          procedure_cost: @patient.procedure_cost,
-          naf_pledge: @patient.naf_pledge
-        },
-        clinic: {
-          name: @patient.clinic.name,
-          location: @patient.clinic.display_location
-        },
-        external_pledges: @patient.external_pledges.where(active: true).map do |x|
-          { source: x.source, amount: x.amount.to_i }
-        end || []
-      },
-      extra: extra_params.to_h
-    }
-    encrypted_payload = { encrypted: encrypt_payload(payload.to_json) }
-    result = HTTParty.post(endpoint, body: encrypted_payload, headers: {}, basic_auth: basic_auth)
-
-    if result.ok?
-      now = Time.zone.now.strftime('%Y%m%d')
-      @patient.update pledge_generated_at: Time.zone.now,
-                      pledge_generated_by: current_user
-      send_data result.body, filename: "#{@patient.name}_pledge_form_#{now}.pdf", type: 'application/pdf'
-    else
-      flash[:alert] = t('flash.fetch_pledge_error')
-      redirect_to edit_patient_path @patient
-    end
-  end
-
   def edit
     # i18n-tasks-use t('activerecord.attributes.practical_support.confirmed')
     # i18n-tasks-use t('activerecord.attributes.practical_support.source')
@@ -106,19 +36,11 @@ class PatientsController < ApplicationController
     # i18n-tasks-use t('activerecord.attributes.practical_support.end_time')
     # i18n-tasks-use t('activerecord.attributes.practical_support.purchase_date')
     # i18n-tasks-use t('activerecord.attributes.practical_support.support_type')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.active')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.amount')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.source')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.audited')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.check_number')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.date_of_check')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.fulfilled')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.fund_payout')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.gestation_at_procedure')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.procedure_date')
     # i18n-tasks-use t('activerecord.attributes.practical_support.fulfilled')
     @note = @patient.notes.new
-    @external_pledge = @patient.external_pledges.new
   end
 
   def update
@@ -169,12 +91,6 @@ class PatientsController < ApplicationController
     action_name.to_sym == :edit || (action_name.to_sym == :update && !request.format.json?)
   end
 
-  # preload patient minimally for fetch_pledge, download, destroy, and json format update requests
-  def should_preload_patient_minimally?
-    [:fetch_pledge, :download,
-     :destroy].include?(action_name.to_sym) || (action_name.to_sym == :update && request.format.json?)
-  end
-
   def find_patient
     @patient = Patient.includes(versions: [:item, :user])
                       .find params[:id]
@@ -223,18 +139,16 @@ class PatientsController < ApplicationController
   ].freeze
 
   ABORTION_INFORMATION_PARAMS = [
-    :clinic_id, :resolved_without_fund, :referred_to_clinic,
-    :procedure_cost, :naf_pledge, :fund_pledge,
-    :fund_pledged_at, :pledge_sent_at, :solidarity, :solidarity_lead, :appointment_time,
+    :clinic_id, :referred_to_clinic,
+    :appointment_time,
     :multiday_appointment
   ].freeze
 
   FULFILLMENT_PARAMS = [
-    fulfillment_attributes: [:id, :fulfilled, :procedure_date, :gestation_at_procedure,
-                             :fund_payout, :check_number, :date_of_check, :audited]
+    fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
   ].freeze
 
-  OTHER_PARAMS = [:shared_flag, :initial_call_date, :pledge_sent, :practical_support_waiver].freeze
+  OTHER_PARAMS = [:shared_flag, :intake_date, :practical_support_waiver].freeze
 
   def patient_params
     permitted_params = [].concat(
@@ -243,11 +157,6 @@ class PatientsController < ApplicationController
     )
     permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:patient).permit(permitted_params)
-  end
-
-  def encrypt_payload(payload)
-    encryptor = ActiveSupport::MessageEncryptor.new(ENV.fetch('PLEDGE_GENERATOR_ENCRYPTOR', '0' * 32))
-    encryptor.encrypt_and_sign(payload)
   end
 
   def render_csv

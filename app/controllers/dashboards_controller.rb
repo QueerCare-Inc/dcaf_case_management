@@ -1,7 +1,6 @@
 # Controller for rendering the home view and patient search.
 class DashboardsController < ApplicationController
   include RegionsHelper
-  include BudgetBarCalculable
 
   before_action :pick_region_if_not_set, only: [:index, :search]
 
@@ -24,14 +23,6 @@ class DashboardsController < ApplicationController
     @name = searched_for_name?(params[:search]) ? params[:search] : ''
 
     respond_to { |format| format.js }
-  end
-
-  def budget_bar
-    # We call these by interpolation in the view; these comments are to let i18n-health know we're using them
-    # i18n-tasks-use t('dashboard.budget_bar.pledged_item')
-    # i18n-tasks-use t('dashboard.budget_bar.sent_item')
-    render partial: 'dashboards/budget_bar',
-           locals: budget_bar_calculations(current_region)
   end
 
   private

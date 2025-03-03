@@ -41,7 +41,6 @@ task multitenant_db_merge: :environment do
   @region_mappings = {}
   @user_mappings = {}
   @call_mappings = {}
-  @external_pledge_mappings = {}
   @fulfillment_mappings = {}
   @practical_support_mappings = {}
   @note_mappings = {}
@@ -134,15 +133,13 @@ task multitenant_db_merge: :environment do
 
   # Port patients
   patient_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id', 'pledge_generated_by_id', 'pledge_sent_by_id', 'last_edited_by_id')
+    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id', 'last_edited_by_id')
      .merge({
        'fund_id' => @fund_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
        'region_id' => @region_mappings[x['region_id']],
        'clinic_id' => @clinic_mappings[x['clinic_id']],
-       'pledge_generated_by_id' => @user_mappings[x['pledge_generated_by_id']],
-       'pledge_sent_by_id' => @user_mappings[x['pledge_sent_by_id']],
        'last_edited_by_id' => @user_mappings[x['last_edited_by_id']]
      })
   }
@@ -150,15 +147,13 @@ task multitenant_db_merge: :environment do
 
   # Port archived patients
   archived_patient_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id', 'pledge_generated_by_id', 'pledge_sent_by_id')
+    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id')
      .merge({
        'fund_id' => @fund_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
        'region_id' => @region_mappings[x['region_id']],
-       'clinic_id' => @clinic_mappings[x['clinic_id']],
-       'pledge_generated_by_id' => @user_mappings[x['pledge_generated_by_id']],
-       'pledge_sent_by_id' => @user_mappings[x['pledge_sent_by_id']],
+       'clinic_id' => @clinic_mappings[x['clinic_id']]
      })
   }
   @archived_patient_mappings = easy_mass_insert ArchivedPatient, 'archived_patients', archived_patient_map
@@ -183,25 +178,6 @@ task multitenant_db_merge: :environment do
     res['can_call_id'].nil? ? nil : res
   }
   @call_mappings = easy_mass_insert Call, 'calls', call_map, false
-
-  # Port ext pledges
-  ext_pledge_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'can_pledge_id', 'fund_id')
-      .merge({
-        'fund_id' => @fund_id,
-        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
-        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
-        'can_pledge_id' => if x['can_pledge_type'] == 'Patient'
-                           @patient_mappings[x['can_pledge_id']]
-                         elsif x['can_pledge_type'] == 'ArchivedPatient'
-                           @archived_patient_mappings[x['can_pledge_id']]
-                         else
-                           raise "unexpected type - row #{x}"
-                         end
-      })
-    res['can_pledge_id'].nil? ? nil : res
-  }
-  @external_pledge_mappings = easy_mass_insert ExternalPledge, 'external_pledges', ext_pledge_map, false
 
   # Port fulfillments
   fulfillment_map = -> (x) {
@@ -291,14 +267,11 @@ task multitenant_db_merge: :environment do
   @fkey_mappings = {
     'fund_id' => {@fund_id => @fund_id},
     'clinic_id' => @clinic_mappings,
-    'pledge_generated_by_id' => @user_mappings,
-    'pledge_sent_by_id' => @user_mappings,
     'last_edited_by_id' => @user_mappings,
     'user_id' => @user_mappings,
     'region_id' => @region_mappings,
     'patient_id' => @patient_mappings,
     'can_call_id' => @patient_mappings,
-    'can_pledge_id' => @patient_mappings,
     'can_fulfill_id' => @patient_mappings,
     'can_support_id' => @patient_mappings
   }
@@ -308,7 +281,6 @@ task multitenant_db_merge: :environment do
     'CallListEntry' => @call_list_entry_mappings,
     'Clinic' => @clinic_mappings,
     'Config' => @config_mappings,
-    'ExternalPledge' => @external_pledge_mappings,
     'Event' => @event_mappings,
     'Fulfillment' => @fulfillment_mappings,
     'Region' => @region_mappings,
@@ -331,8 +303,6 @@ task multitenant_db_merge: :environment do
       if _is_an_obj_key? k
         polymorphic_aware_mappings = if k == 'can_call_id'
                                        obj['can_call_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings
-                                     elsif k == 'can_pledge_id'
-                                       obj[k] = obj['can_pledge_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings
                                      elsif k == 'can_fulfill_id'
                                        obj[k] = obj['can_fulfill_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings
                                      elsif k == 'can_support_id'

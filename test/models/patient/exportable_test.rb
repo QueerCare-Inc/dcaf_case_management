@@ -55,11 +55,7 @@ class PatientTest::Exportable < PatientTest
     describe 'fulfillments related' do
       before do
         @patient.fulfillment.update fulfilled: true,
-                                    procedure_date: 2.days.ago,
-                                    gestation_at_procedure: 50,
-                                    fund_payout: 30,
-                                    check_number: 'A10',
-                                    date_of_check: 3.days.ago
+                                    procedure_date: 2.days.ago
       end
 
       describe 'fulfilled' do
@@ -73,30 +69,6 @@ class PatientTest::Exportable < PatientTest
       describe 'procedure_date' do
         it 'should show procedure_date when fulfillment is set' do
           assert_equal 2.days.ago.to_date, @patient.procedure_date
-        end
-      end
-
-      describe 'gestation_at_procedure' do
-        it 'should show gestation_at_procedure when fulfillment is set' do
-          assert_equal 50, @patient.gestation_at_procedure
-        end
-      end
-
-      describe 'fund_payout' do
-        it 'should show fund_payout when fulfillment is set' do
-          assert_equal 30, @patient.fund_payout
-        end
-      end
-
-      describe 'check_number' do
-        it 'should show fund_payout when fulfillment is set' do
-          assert_equal 'A10', @patient.check_number
-        end
-      end
-
-      describe 'date_of_check' do
-        it 'should show date_of_check when fulfillment is set' do
-          assert_equal 3.days.ago.to_date, @patient.date_of_check
         end
       end
     end
@@ -164,46 +136,6 @@ class PatientTest::Exportable < PatientTest
 
         @patient.update language: 'Spanish'
         assert_equal @patient.preferred_language, 'Spanish'
-      end
-    end
-
-    describe 'external pledge related' do
-      before do
-        @patient.external_pledges.create attributes_for(:external_pledge, amount: 100, source: 'Cat Town')
-        @patient.external_pledges.create attributes_for(:external_pledge, amount: 200, source: 'Dog Town')
-      end
-
-      describe 'external_pledge_count' do
-        it 'should return 0 if no pledges' do
-          @patient.external_pledges.destroy_all
-          assert_equal 0, @patient.external_pledge_count
-        end
-
-        it 'should return count of pledges when they exist' do
-          assert_equal 2, @patient.external_pledge_count
-        end
-      end
-
-      describe 'external_pledge_sum' do
-        it 'returns 0 if no pledges' do
-          @patient.external_pledges.destroy_all
-          assert_equal @patient.external_pledge_sum, 0
-        end
-
-        it 'returns sum of pledges when they exist' do
-          assert_equal @patient.external_pledge_sum, 300
-        end
-      end
-
-      describe 'all_external_pledges' do
-        it 'should return nil if no external pledges' do
-          @patient.external_pledges.destroy_all
-          assert_equal '', @patient.all_external_pledges
-        end
-
-        it 'should return a joined list of practical supports' do
-          assert_equal 'Cat Town - 100; Dog Town - 200', @patient.all_external_pledges
-        end
       end
     end
 

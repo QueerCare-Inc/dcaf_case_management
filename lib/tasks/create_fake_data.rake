@@ -17,33 +17,18 @@ namespace :db do
           
           has_appt = gen.rand < 0.8
 
-          has_pledge = gen.rand < 0.5
-
           regions = Region.all # need to add Spanish maybe? 
 
           patient = Patient.create!(
             name: 'Randomized Patient',
             primary_phone: "#{idx}".rjust(10, "0"),
-            initial_call_date: initial_call,
+            intake_date: initial_call,
             created_by: users.sample,
             shared_flag: flag,
             region: regions[gen.rand(3)], # thank you seeds.rb! 
             clinic: has_appt ? clinics.sample : nil,
-            appointment_date: has_appt ? initial_call + gen.rand(15) : nil,
-            procedure_cost: has_appt ? gen.rand(600) : nil,
-            pledge_sent: has_appt && has_pledge,
-            fund_pledge: has_appt ? gen.rand(300) : nil
+            appointment_date: has_appt ? initial_call + gen.rand(15) : nil
           )
-
-          # create external_pledges, the conditional below simply attempts to 
-          # maintain that not all callers will have an external pledge 
-          if gen.rand < 0.3 && has_appt
-            patient.external_pledges.create!(
-            source: 'Metallica Abortion Fund',
-            amount: 100,
-            created_by: users.sample
-            )
-          end
 
           # create calls, where every patient will have at least one call made
           call_status = [:left_voicemail, :reached_patient, :couldnt_reach_patient]
@@ -60,7 +45,7 @@ namespace :db do
             'Travel inside the region', 
             'Other (see notes)']
           
-          if has_appt && patient.procedure_cost > 500 && has_pledge
+          if has_appt
             patient.practical_supports.create!(
               source: 'Metallica Abortion Fund',
               support_type: support_types[gen.rand(5)],
@@ -68,19 +53,6 @@ namespace :db do
             )
           end 
           
-          # create pledge fulfillments, with 75 percent probability!?
-          if gen.rand < 0.75 && patient.pledge_sent 
-            patient.build_fulfillment(
-              created_by_id: User.first.id,
-              fulfilled: true,
-              fund_payout: patient.fund_pledge,
-              procedure_date: patient.appointment_date
-            ).save
-          end 
-
-          # removing shared flag if pledge sent, as I think this is what CMs typically do 
-          patient.update(shared_flag: false) unless !patient.pledge_sent
-        
         end
 
         puts "Fake patients created! The database now has #{Patient.count} patients."

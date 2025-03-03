@@ -11,10 +11,7 @@ class ArchivedPatient < ApplicationRecord
   belongs_to :region
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
-  has_many :external_pledges, as: :can_pledge
   has_many :practical_supports, as: :can_support
-  belongs_to :pledge_generated_by, class_name: 'User', inverse_of: nil, optional: true
-  belongs_to :pledge_sent_by, class_name: 'User', inverse_of: nil, optional: true
 
   # Enums
   enum :age_range, {
@@ -29,15 +26,11 @@ class ArchivedPatient < ApplicationRecord
   }
 
   # Validations
-  validates :initial_call_date,
+  validates :intake_date,
             :region,
             presence: true
   validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                                allow_blank: true
-  validates :procedure_cost,
-            :fund_pledge,
-            :naf_pledge,
-            numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates_associated :fulfillment
 
   # Archive & delete audited patients who called a several months ago, or any
@@ -53,22 +46,13 @@ class ArchivedPatient < ApplicationRecord
     end
   end
 
-  # enforce procedure cost must be positive - otherwise nil
-  def self.procedure_cost_positive(c)
-    if c.present? and c >= 0
-      c
-    else
-      nil
-    end
-  end
-
   def self.convert_patient(patient)
     archived_patient = new(
       region: patient.region,
       city: patient.city,
       state: patient.state,
       county: patient.county,
-      initial_call_date: patient.initial_call_date,
+      intake_date: patient.intake_date,
       appointment_date: patient.appointment_date,
       multiday_appointment: patient.multiday_appointment,
       practical_support_waiver: patient.practical_support_waiver,
@@ -85,20 +69,7 @@ class ArchivedPatient < ApplicationRecord
       language: patient.language,
       voicemail_preference: patient.voicemail_preference,
 
-      naf_pledge: patient.naf_pledge,
-      fund_pledge: patient.fund_pledge,
-      fund_pledged_at: patient.fund_pledged_at,
-      solidarity: patient.solidarity,
-      solidarity_lead: patient.solidarity_lead,
-
-      pledge_sent: patient.pledge_sent,
-      resolved_without_fund: patient.resolved_without_fund,
-      pledge_generated_at: patient.pledge_generated_at,
-      pledge_sent_at: patient.pledge_sent_at,
       textable: patient.textable,
-
-      pledge_generated_by: patient.pledge_generated_by,
-      pledge_sent_by: patient.pledge_sent_by,
 
       age_range: patient.age_range,
       has_alt_contact: patient.has_alt_contact,
@@ -108,8 +79,6 @@ class ArchivedPatient < ApplicationRecord
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id
     archived_patient.region_id = patient.region_id
-
-    archived_patient.procedure_cost = procedure_cost_positive patient.procedure_cost
 
     PaperTrail.request(whodunnit: patient.created_by_id) do
       archived_patient.save!
@@ -121,9 +90,6 @@ class ArchivedPatient < ApplicationRecord
 
     patient.calls.each do |call|
       call.update! can_call: archived_patient
-    end
-    patient.external_pledges.each do |ext_pledge|
-      ext_pledge.update! can_pledge: archived_patient
     end
     patient.practical_supports.each do |support|
       support.update! can_support: archived_patient

@@ -67,7 +67,7 @@ en:
         household_size_adults: Adults in household
         household_size_children: Minors in household
         income: Income
-        initial_call_date: Initial call date
+        intake_date: Intake date
         insurance: Insurance
         language: Language
         region_id: Region ID
@@ -527,7 +527,7 @@ en:
       submit_pledge: Submit pledge
     new:
       add_button: Add new patient
-      initial_call_date: Initial Call Date
+      intake_date: Intake Date
       title: 'Add a new patient:'
     notes:
       placeholder: Enter notes here

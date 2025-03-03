@@ -5,7 +5,7 @@ class TableContentTest < ApplicationSystemTestCase
   # problematic test
   before do
     @user = create :user
-    @patient = create :patient, initial_call_date: 3.days.ago,
+    @patient = create :patient, intake_date: 3.days.ago,
                                 appointment_date: 3.days.from_now.utc,
                                 shared_flag: true
 

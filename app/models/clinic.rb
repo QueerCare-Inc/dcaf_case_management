@@ -16,27 +16,6 @@ class Clinic < ApplicationRecord
   encrypts :zip
   encrypts :phone
   encrypts :fax
-  encrypts :email_for_pledges
-
-  # Scopes
-  # Is gestational_limit either nil or above x?
-  scope :gestational_limit_above, ->(gestation) {
-    where(gestational_limit: nil).or(where(gestational_limit: gestation..))
-  }
-
-  # Validations
-  COSTS = [
-    :costs_5wks, :costs_6wks, :costs_7wks, :costs_8wks, :costs_9wks,
-    :costs_10wks, :costs_11wks, :costs_12wks, :costs_13wks, :costs_14wks,
-    :costs_15wks, :costs_16wks, :costs_17wks, :costs_18wks, :costs_19wks,
-    :costs_20wks, :costs_21wks, :costs_22wks, :costs_23wks, :costs_24wks,
-    :costs_25wks, :costs_26wks, :costs_27wks, :costs_28wks, :costs_29wks,
-    :costs_30wks
-  ].freeze
-
-  validates :gestational_limit, *COSTS, numericality: { only_integer: true,
-                                                        allow_nil: true,
-                                                        greater_than_or_equal_to: 0 }
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
@@ -45,12 +24,12 @@ class Clinic < ApplicationRecord
   validates :name, :street_address, :city, :state, :zip, presence: true
   validates :name, :street_address, :city, :state, :zip, :phone, :fax,
             length: { maximum: 150 }
-  validates :email_for_pledges, length: { maximum: 500 }
   validates_uniqueness_to_tenant :name
 
   # Methods
   def display_location
     return nil if city.blank? || state.blank?
+
     "#{city}, #{state}"
   end
 
@@ -60,6 +39,7 @@ class Clinic < ApplicationRecord
 
   def full_address
     return nil if display_location.blank? || street_address.blank? || zip.blank?
+
     "#{street_address}, #{display_location} #{zip}"
   end
 
@@ -78,6 +58,7 @@ class Clinic < ApplicationRecord
 
   def self.update_all_coordinates
     raise Exceptions::NoGoogleGeoApiKeyError.new unless Geokit::Geocoders::GoogleGeocoder.try(:api_key)
+
     all.each { |clinic| clinic.update_coordinates && clinic.save }
   end
 end

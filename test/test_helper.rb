@@ -2,7 +2,7 @@ require 'simplecov'
 SimpleCov.start 'rails'
 
 ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rails/test_help'
 require 'minitest/autorun'
 require 'capybara/rails'
@@ -14,7 +14,7 @@ require 'rack/test'
 # CI only
 if ENV['CI']
   # Save screenshots if system tests fail
-  Capybara.save_path = Rails.root.join('tmp', 'capybara')
+  Capybara.save_path = Rails.root.join('tmp/capybara')
 end
 
 # Convenience methods around config creation, and database cleaning
@@ -54,23 +54,15 @@ class ActiveSupport::TestCase
   end
 
   def create_county_config
-    county_options = ['Arlington', 'Fairfax', 'Montgomery']
-      create :config, config_key: 'county',
-                      config_value: { options: county_options }
+    county_options = %w[Arlington Fairfax Montgomery]
+    create :config, config_key: 'county',
+                    config_value: { options: county_options }
   end
 
   def create_practical_support_config
     practical_support_options = ['Metallica Tickets', 'Clothing']
     create :config, config_key: 'practical_support',
                     config_value: { options: practical_support_options }
-  end
-
-  def create_external_pledge_source_config
-    ext_pledge_options = ['Metallica Abortion Fund',
-                          'Texas Amalgamated Abortion Services (TAAS)',
-                          'Cat Town Abortion Fund (CTAF)']
-    create :config, config_key: 'external_pledge_source',
-                    config_value: { options: ext_pledge_options }
   end
 
   def create_language_config
@@ -80,9 +72,9 @@ class ActiveSupport::TestCase
   end
 
   def create_voicemail_config
-      vm_options = ['Text Message Only', 'Use Codename', 'Only During Business Hours']
-      create :config, config_key: 'voicemail',
-                      config_value: { options: vm_options }
+    vm_options = ['Text Message Only', 'Use Codename', 'Only During Business Hours']
+    create :config, config_key: 'voicemail',
+                    config_value: { options: vm_options }
   end
 
   def create_referred_by_config
@@ -98,32 +90,30 @@ class ActiveSupport::TestCase
 
   def create_hide_defaults_config(should_hide: true)
     c = Config.find_or_create_by(config_key: 'hide_standard_dropdown_values')
-    c.config_value = { options: [should_hide ? 'yes' : 'no']}
+    c.config_value = { options: [should_hide ? 'yes' : 'no'] }
     c.save!
   end
 
   def create_display_practical_support_attachment_url_config(on: true)
     c = Config.find_or_create_by(config_key: 'display_practical_support_attachment_url')
-    c.config_value = { options: [on ? 'yes' : 'no']}
+    c.config_value = { options: [on ? 'yes' : 'no'] }
     c.save!
   end
 
   def create_display_practical_support_waiver_config(on: true)
     c = Config.find_or_create_by(config_key: 'display_practical_support_waiver')
-    c.config_value = { options: [on ? 'yes' : 'no']}
+    c.config_value = { options: [on ? 'yes' : 'no'] }
     c.save!
   end
 
-  def with_versioning(user = nil)
+  def with_versioning(user = nil, &block)
     was_enabled = PaperTrail.enabled?
     was_enabled_for_request = PaperTrail.request.enabled?
     PaperTrail.enabled = true
     PaperTrail.request.enabled = true
     begin
       if user
-        PaperTrail.request(whodunnit: user.id) do
-          yield
-        end
+        PaperTrail.request(whodunnit: user.id, &block)
       else
         yield
       end

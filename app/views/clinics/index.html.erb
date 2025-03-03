@@ -14,7 +14,6 @@
         <th><%= t 'activerecord.attributes.clinic.zip' %></th>
         <th><%= t 'common.naf' %></th>
         <th><%= t 'common.medicaid' %></th>
-        <th><%= t 'activerecord.attributes.clinic.gestational_limit' %></th>
       </tr>
     </thead>
 
@@ -28,24 +27,11 @@
           <td><%= clinic.state %></td>
           <td><%= clinic.zip %></td>
           <td>
-            <div class="accepts-naf clinic-detail-group">
-              <p class="blush">
-                <%= clinic.accepts_naf ? t('common.yes')
-                                       : t('common.no') %>
-              </p>
-            </div>
-          </td>
-          <td>
             <div class="accepts_medicaid clinic-detail-group">
               <p class="blush">
                 <%= clinic.accepts_medicaid ? t('common.yes')
                                             : t('common.no') %>
               </p>
-            </div>
-          </td>
-          <td>
-            <div class="gestational-limit clinic-detail-group">
-              <p class="blush"><%= clinic.gestational_limit %></p>
             </div>
           </td>
         </tr>

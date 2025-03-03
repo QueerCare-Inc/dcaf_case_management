@@ -14,7 +14,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       create_language_config
       @archived_patient = create :archived_patient,
                                  region: @region,
-                                 initial_call_date: 200.days.ago
+                                 intake_date: 200.days.ago
     end
   end
 
@@ -29,7 +29,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     end
 
     it 'requires an initial call date' do
-      @archived_patient.initial_call_date = nil
+      @archived_patient.intake_date = nil
       assert_not @archived_patient.valid?
     end
   end
@@ -44,26 +44,20 @@ class ArchivedPatientTest < ActiveSupport::TestCase
                                     clinic: @clinic,
                                     city: 'Washington',
                                     race_ethnicity: 'Asian',
-                                    initial_call_date: 16.days.ago,
+                                    intake_date: 16.days.ago,
                                     appointment_date: 6.days.ago,
                                     multiday_appointment: true,
                                     practical_support_waiver: true
         @patient.calls.create status: :couldnt_reach_patient
-        @patient.external_pledges.create source: 'Friendship Abortion Fund',
-                                         amount: 100
         @patient.practical_supports.create support_type: 'Metallica tickets',
                                            source: 'My mom'
         @patient.fulfillment.update fulfilled: true,
                                     updated_at: 3.days.ago,
-                                    date_of_check: 3.days.ago,
-                                    procedure_date: 6.days.ago,
-                                    check_number: '123'
+                                    procedure_date: 6.days.ago
       end
 
       with_versioning(@user2) do
         @patient.calls.create status: :reached_patient
-        @patient.external_pledges.create source: 'Metallica Abortion Fund',
-                                         amount: 100
         @patient.practical_supports.create support_type: 'Louder Metallica tickets',
                                            source: 'Metallica'
         @archived_patient = ArchivedPatient.convert_patient(@patient)
@@ -94,7 +88,6 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     it 'should have matching subobject data Patient and Archive Patient' do
       # and that includes ids
       call_ids = @patient.calls.pluck('id')
-      ext_pledge_ids = @patient.external_pledges.pluck('id')
       psup_ids = @patient.practical_supports.pluck('id')
       fulfillment_id = @patient.fulfillment.id
       @archived_patient.reload
@@ -107,15 +100,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       assert_equal @user2, @archived_patient.calls.last.created_by
 
       assert_equal fulfillment_id, @archived_patient.fulfillment.id
-      assert_equal @archived_patient.fulfillment.date_of_check,
-                   3.days.ago.to_date
       assert_nil @patient.fulfillment
-
-      assert_equal 2, @archived_patient.external_pledges.count
-      assert_equal ext_pledge_ids, @archived_patient.external_pledges.pluck('id')
-      assert_equal 0, @patient.external_pledges.count
-      assert_equal @user, @archived_patient.external_pledges.first.created_by
-      assert_equal @user2, @archived_patient.external_pledges.last.created_by
 
       assert_equal 2, @archived_patient.practical_supports.count
       assert_equal psup_ids, @archived_patient.practical_supports.pluck('id')
@@ -129,13 +114,13 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     before do
       @patient_audited = create :patient, primary_phone: '222-222-3333',
                                           other_phone: '222-222-4444',
-                                          initial_call_date: 30.days.ago,
+                                          intake_date: 30.days.ago,
                                           region: @region
       @patient_audited.fulfillment.update audited: true
 
       @patient_unaudited = create :patient, primary_phone: '564-222-3333',
                                             other_phone: '222-222-9074',
-                                            initial_call_date: 120.days.ago,
+                                            intake_date: 120.days.ago,
                                             region: @region
     end
 
@@ -147,7 +132,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       end
     end
     it 'should convert four months old, audited patient to archived patient' do
-      @patient_audited.update initial_call_date: 120.days.ago
+      @patient_audited.update intake_date: 120.days.ago
       @patient_audited.save!
       assert_difference 'ArchivedPatient.all.count', 1 do
         assert_difference 'Patient.all.count', -1 do
@@ -161,7 +146,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     before do
       @patient_old_unaudited = create :patient, primary_phone: '564-222-3333',
                                                 other_phone: '222-222-9074',
-                                                initial_call_date: 370.days.ago,
+                                                intake_date: 370.days.ago,
                                                 region: @region
       @patient_old_unaudited.fulfillment.update audited: false
       @patient_old_unaudited.save!

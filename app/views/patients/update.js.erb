@@ -16,34 +16,6 @@ $('#change_log').html(
 // Rerack shared flag status
 $('#patient_shared_flag').prop('checked', <%= @patient.shared_flag? %>);
 
-// if pledge is sent, re-rack fulfillment info
-<% if current_user.allowed_data_access? && @patient.pledge_sent? %>
-  // populate the fulfillment form if it's supposed to be there and not there already
-  if ($('#pledge_fulfillment-menu-item').length == 0) {
-    $('#pledge_fulfillment').empty()
-                            .append('<%= escape_javascript(render partial: "patients/fulfillment", locals: { patient: @patient })%>');
-    $('#menu-list').append(
-      '<%= escape_javascript(render "patients/menu_item", link_for: "pledge_fulfillment", active: false) %>'
-    );
-  }
-<% else %>
-  // ensure fulfillment form is cleared out
-  $('#pledge_fulfillment').empty();
-  $('#pledge_fulfillment-menu-item').remove();
-<% end %>
-
-// Rerack pledge button
-$('#menu-pledge-button').html(
-  '<%= escape_javascript(render "patients/menu_pledge_button", patient: @patient) %>'
-);
-
-// If updating the accountants view, refresh the row
-if($('#row-<%= @patient.id %>')) {
-  $('#row-<%= @patient.id %>').html(
-    '<%= escape_javascript(render "accountants/table_content_row", patient: @patient) %>'
-  );
-}
-
 // Update the archive date on audit
 $('#patient_fulfillment_attributes_audited')
   .parent()

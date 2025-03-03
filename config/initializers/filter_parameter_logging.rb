@@ -23,7 +23,6 @@ Rails.application.config.filter_parameters += [
   :shared_flag,
   :income,
   :special_circumstances,
-  :procedure_cost,
   :procedure_date,
   :procedure_completed_date,
   :household_size,

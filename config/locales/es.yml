@@ -67,7 +67,7 @@ es:
         household_size_adults: Adultos en el Hogar
         household_size_children: Menores en el Hogar
         income: Ingresos
-        initial_call_date: Fecha de llamada inicial
+        intake_date: Fecha de llamada inicial
         insurance: Seguro médico
         language: Idioma
         region_id: ID de la región
@@ -526,7 +526,7 @@ es:
       submit_pledge: Crear Promesa
     new:
       add_button: Añadir nuevo paciente
-      initial_call_date: Fecha de llamada inicial
+      intake_date: Fecha de llamada inicial
       title: 'Su búsqueda no produjo resultados, así que agregue un nuevo paciente:'
     notes:
       placeholder: Ingresa notas aquí
