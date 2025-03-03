@@ -18,11 +18,11 @@ class Patient < ApplicationRecord
   before_save :save_identifier
   after_create :initialize_fulfillment
   after_update :confirm_still_shared, if: :shared_flag?
-  after_update :update_call_list_lines, if: :saved_change_to_line_id?
+  after_update :update_call_list_regions, if: :saved_change_to_region_id?
   after_destroy :destroy_associated_events
 
   # Relationships
-  belongs_to :line
+  belongs_to :region
   has_many :call_list_entries, dependent: :destroy
   has_many :users, through: :call_list_entries
   belongs_to :clinic, optional: true
@@ -36,24 +36,23 @@ class Patient < ApplicationRecord
   accepts_nested_attributes_for :fulfillment
 
   # Validations
-  # Worry about uniqueness to tenant after porting line info.
+  # Worry about uniqueness to tenant after porting region info.
   # validates_uniqueness_to_tenant :primary_phone
   validates :name,
             :primary_phone,
             :intake_date,
-            :line,
+            :region,
             presence: true
   validates :primary_phone, format: /\A\d{10}\z/,
                             length: { is: 10 }
   validate :confirm_unique_phone_number
   validates :emergency_contact_phone, format: /\A\d{10}\z/,
-                          length: { is: 10 },
-                          allow_blank: true
+                                      length: { is: 10 },
+                                      allow_blank: true
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
-                               allow_blank: true
+                             allow_blank: true
   validate :confirm_appointment_after_initial_call
-
-  validates  :age,
+  validates :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
@@ -70,12 +69,12 @@ class Patient < ApplicationRecord
                       allow_blank: true
 
   validate :special_circumstances_length
-  validate :in_case_of_emergency
+  validate :in_case_of_emergency_length
 
   # Methods
   def save_identifier
-    # [Line first initial][Phone 6th digit]-[Phone last four]
-    self.identifier = "#{line.name[0].upcase}#{primary_phone[-5]}-#{primary_phone[-4..-1]}"
+    # [Region first initial][Phone 6th digit]-[Phone last four]
+    self.identifier = "#{region.name[0].upcase}#{primary_phone[-5]}-#{primary_phone[-4..-1]}"
   end
 
   def initials
@@ -84,17 +83,15 @@ class Patient < ApplicationRecord
 
   def event_params
     {
-      event_type: 'pledged',
       cm_name: updated_by&.name || 'System',
       patient_name: name,
       patient_id: id,
-      line: line,
-      pledge_amount: fund_pledge
+      region: region
     }
   end
 
   def okay_to_destroy?
-    !pledge_sent?
+    false
   end
 
   def destroy_associated_events
@@ -102,16 +99,16 @@ class Patient < ApplicationRecord
     CallListEntry.where(patient_id: id).destroy_all
   end
 
-  def update_call_list_lines
+  def update_call_list_regions
     CallListEntry.where(patient: self)
-                 .update(line: line, order_key: 999)
+                 .update(region: region, order_key: 999)
   end
 
   def confirm_unique_phone_number
     ##
     # This method is preferred over Rail's built-in uniqueness validator
     # so that case managers get a meaningful error message when a patient
-    # exists on a different line than the one the volunteer is serving.
+    # exists on a different region than the one the volunteer is serving.
     #
     # See https://github.com/DCAFEngineering/dcaf_case_management/issues/825
     ##
@@ -121,13 +118,13 @@ class Patient < ApplicationRecord
     # skip when an existing patient updates and matches itself
     return if phone_match.id == id
 
-    patients_line = phone_match.line
-    volunteers_line = line
-    if volunteers_line == patients_line
-      errors.add(:this_phone_number_is_already_taken, 'on this line.')
+    patients_region = phone_match.region
+    volunteers_region = region
+    if volunteers_region == patients_region
+      errors.add(:this_phone_number_is_already_taken, 'on this region.')
     else
       errors.add(:this_phone_number_is_already_taken,
-                 "on the #{patients_line.name} line. If you need the patient's line changed, please contact the CM directors.")
+                 "on the #{patients_region.name} region. If you need the patient's region changed, please contact the CM directors.")
     end
   end
 
@@ -234,9 +231,9 @@ class Patient < ApplicationRecord
                   updated_at: { '$lte' => datetime })
   end
 
-  def self.unconfirmed_practical_support(line)
+  def self.unconfirmed_practical_support(region)
     Patient.distinct
-           .where(line: line)
+           .where(region: region)
            .joins(:practical_supports)
            .where({ practical_supports: { confirmed: false }, created_at: 3.months.ago.. })
   end

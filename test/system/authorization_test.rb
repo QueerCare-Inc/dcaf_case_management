@@ -2,14 +2,14 @@ require 'application_system_test_case'
 
 class AuthorizationTest < ApplicationSystemTestCase
   before do
-    create :line
+    create :region
     @user = create :user
     log_in_as @user
   end
 
   describe 'logging in successfully' do
     it 'should display a success message after successful login' do
-      refute has_text? 'Signed in successfully.'
+      assert_not has_text? 'Signed in successfully.'
     end
   end
 
@@ -39,14 +39,14 @@ class AuthorizationTest < ApplicationSystemTestCase
     it 'should send you back to the sign in path' do
       sign_out
       assert_equal current_path, new_user_session_path
-      refute has_text? 'You need to sign in or sign up before continuing.'
+      assert_not has_text? 'You need to sign in or sign up before continuing.'
     end
 
     it 'should prevent you from being able to get to data afterwards' do
       sign_out
       visit dashboard_path
       assert_equal current_path, new_user_session_path
-      refute has_text? 'You need to sign in or sign up before continuing.'
+      assert_not has_text? 'You need to sign in or sign up before continuing.'
     end
   end
 end

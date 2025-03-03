@@ -7,9 +7,7 @@ class TableContentTest < ApplicationSystemTestCase
     @user = create :user
     @patient = create :patient, intake_date: 3.days.ago,
                                 procedure_date: 3.days.from_now.utc,
-                                shared_flag: true,
-                                last_menstrual_period_weeks: 6,
-                                last_menstrual_period_days: 3
+                                shared_flag: true
 
     @patient.calls.create status: :left_voicemail,
                           created_at: 3.days.ago,
@@ -26,7 +24,6 @@ class TableContentTest < ApplicationSystemTestCase
         assert has_content? @patient.primary_phone_display
         assert has_content? @patient.name
         assert has_content? 3.days.from_now.utc.strftime('%m/%d/%Y')
-        assert has_content? "#{@patient.last_menstrual_period_now_weeks}w #{@patient.last_menstrual_period_now_days}d"
         # TODO: has remove, phone clicky
       end
     end

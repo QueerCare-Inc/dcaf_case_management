@@ -15,7 +15,7 @@ ActsAsTenant.without_tenant do
   Clinic.destroy_all
   PaperTrailVersion.destroy_all
   ActiveRecord::SessionStore::Session.destroy_all
-  Line.destroy_all
+  Region.destroy_all
   PracticalSupport.destroy_all
   Fund.destroy_all
 end
@@ -45,10 +45,10 @@ fund2 = Fund.create! name: 'CatFund',
 
 [fund1, fund2].each do |fund|
   ActsAsTenant.with_tenant(fund) do
-    lines = if fund == fund1
-              ['Main', 'Spanish'].map { |line| Line.create! name: line }
+    regions = if fund == fund1
+              ['Main', 'Spanish'].map { |region| Region.create! name: region }
             else
-              ['Maru', 'Guremike'].map { |line| Line.create! name: line }
+              ['Maru', 'Guremike'].map { |region| Region.create! name: region }
             end
 
     # Create test users
@@ -71,9 +71,9 @@ fund2 = Fund.create! name: 'CatFund',
     Clinic.create! name: 'Sample Clinic 2 - VA', street_address: '1400 Defense',
                    city: 'Arlington', state: 'VA', zip: '20301'
     Clinic.create! name: 'Sample Clinic with NAF', street_address: '815 V Street NW',
-                   city: 'Washington', state: 'DC', zip: '20001', accepts_naf: true
+                   city: 'Washington', state: 'DC', zip: '20001'
     Clinic.create! name: 'Sample Clinic without NAF', street_address: '1811 14th Street NW',
-                   city: 'Washington', state: 'DC', zip: '20009', accepts_naf: false, accepts_medicaid: true
+                   city: 'Washington', state: 'DC', zip: '20009', accepts_medicaid: true
 
     # Create user-settable configuration
     Config.create config_key: :insurance,
@@ -97,7 +97,7 @@ fund2 = Fund.create! name: 'CatFund',
                                 primary_phone: "123-123-123#{i}",
                                 intake_date: 3.days.ago,
                                 shared_flag: i.even?,
-                                line: lines.first,
+                                region: regions.first
 
       # Create associated objects
       case i
@@ -120,14 +120,6 @@ fund2 = Fund.create! name: 'CatFund',
                         pronouns: 'she/they',
                         clinic: Clinic.first,
                         procedure_date: 2.days.from_now
-      when 3
-        # pledge submitted
-        patient.update! clinic: Clinic.first,
-                        procedure_date: 3.days.from_now,
-                        
-                        zipcode: "06222",
-                        pronouns: 'ze/zir',
-                        name: 'Pledge submitted - 3'
       when 4
         PaperTrail.request(whodunnit: user.id) do
           # With special circumstances
@@ -156,7 +148,8 @@ fund2 = Fund.create! name: 'CatFund',
       end
 
       if i % 3 == 0
-        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', support_date: 3.days.from_now, start_time: (Time.now + rand(3).days), end_time: (Time.now - rand(3).days + 4.hours)
+        patient.practical_supports.create! support_type: 'Car rides', source: 'Neighbor', 
+                                            start_time: 3.days.from_now, end_time: 4.days.from_now
       end
 
       if i % 5 == 0
@@ -177,7 +170,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{i}0-001#{rand(10)}",
         intake_date: 3.days.ago,
         shared_flag: i.even?,
-        line: i.even? ? lines.first : lines.second,
+        region: i.even? ? regions.first : regions.second,
         clinic: Clinic.all.sample,
         procedure_date: 10.days.from_now,
         
@@ -185,7 +178,8 @@ fund2 = Fund.create! name: 'CatFund',
 
       next unless i.even?
 
-      patient.fulfillment.update fulfilled: true
+      patient.fulfillment.update fulfilled: true,
+                                 procedure_date: 10.days.from_now
     end
 
     (1..5).each do |patient_number|
@@ -194,7 +188,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-002#{rand(10)}",
         intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         procedure_date: 10.days.from_now
       )
@@ -214,7 +208,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-003#{rand(10)}",
         intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         procedure_date: 10.days.from_now
       )
@@ -231,7 +225,7 @@ fund2 = Fund.create! name: 'CatFund',
         primary_phone: "321-0#{patient_number}0-004#{rand(10)}",
         intake_date: 3.days.ago,
         shared_flag: patient_number.even?,
-        line: lines[patient_number % 3] || lines.first,
+        region: regions[patient_number % 3] || regions.first,
         clinic: Clinic.all.sample,
         procedure_date: 10.days.from_now,
 
@@ -245,10 +239,9 @@ fund2 = Fund.create! name: 'CatFund',
         name: "Archive Dataful Patient #{patient_number}",
         primary_phone: "321-0#{patient_number}0-005#{rand(10)}",
         voicemail_preference: 'yes',
-        line: lines.first,
+        region: regions.first,
         language: 'Spanish',
         intake_date: 140.days.ago,
-
         created_at: 140.days.ago
       )
 
@@ -281,8 +274,8 @@ fund2 = Fund.create! name: 'CatFund',
 
         # abortion info - hand filled in
         clinic: Clinic.all.sample,
-
-
+        referred_to_clinic: patient_number.odd?,
+        
         updated_at: 138.days.ago # not sure if this even works?
       )
 
@@ -298,6 +291,23 @@ fund2 = Fund.create! name: 'CatFund',
         created_at: 137.days.ago
       )
 
+      # another call. get abortion information, create pledges, a note.
+      patient.calls.create! status: :reached_patient, created_at: 136.days.ago
+
+      # notes tab
+      PaperTrail.request(whodunnit: user2.id) do
+        patient.notes.create!(
+          full_text: 'Two note, maybe with iffy PII! From the second call.',
+          created_at: 133.days.ago
+        )
+      end
+
+      # fulfillment
+      patient.fulfillment.update!(
+        fulfilled: true,
+        procedure_date: 130.days.ago,
+        updated_at: 125.days.ago
+      )
     end
 
     (1..2).each do |patient_number|
@@ -306,10 +316,9 @@ fund2 = Fund.create! name: 'CatFund',
         name: "Archive Dropoff Patient #{patient_number}",
         primary_phone: "867-9#{patient_number}0-004#{rand(10)}",
         voicemail_preference: 'yes',
-        line: lines.first,
+        region: regions.first,
         language: 'Spanish',
         intake_date: 640.days.ago,
-
         created_at: 640.days.ago
       )
 
@@ -349,7 +358,7 @@ fund2 = Fund.create! name: 'CatFund',
 
         # abortion info - hand filled in
         clinic: Clinic.all.sample,
-
+        referred_to_clinic: patient_number.odd?
       )
 
       # toggle flag, maybe
@@ -367,25 +376,23 @@ fund2 = Fund.create! name: 'CatFund',
 
     # A few specific named cases that reflect common scenarios
     regina = Patient.create! name: 'Regina (SCENARIO)',
-                             line: lines.first,
+                             region: regions.first,
                              primary_phone: "000-000-0001",
-
                              intake_date: 30.days.ago
     regina.calls.create! created_at: 30.days.ago,
                          status: 'reached_patient'
     regina.update procedure_date: 18.days.ago,
-                  clinic: Clinic.first,
+                  clinic: Clinic.first
 
     regina.calls.create! created_at: 22.days.ago,
                          status: 'reached_patient'
     regina.fulfillment.update fulfilled: true,
-                              procedure_date: 18.days.ago,
-                              date_of_check: 1.day.ago,
-                              check_number: '500',
+                              procedure_date: 18.days.ago
+
     regina.notes.create! full_text: "SCENARIO: Regina calls us at 6 weeks LMP on 3-12. We call her back and reach the patient. We explain the fund's policies of only funding after 7 weeks LMP. Regina’s options are to either schedule her appointment a week from the day she calls or fund her procedure on her own. We offer her references to clinics who will be able to see her and the number to other funders who may be able to help her. We emphasize although we cannot fund her now financially, we can in the future and she should call us back if that is the case. She says she will make an appointment for two weeks out. Regina calls us back on 3-20. Her funding is completed. We send the pledge to the clinic on Regina's behalf. Regina goes to her appointment on 3-24 and has her abortion. The clinic mails us back the completed pledge form on 4-15. Fund checks the pledge against our system, completes an entry in our ledger, notes the completed pledge on Regina's file in DARIA (which then anon’s her data eventually), writes a check to the clinic and mails the check it to the clinic."
 
     janis = Patient.create! name: 'Janis (SCENARIO)',
-                            line: lines.first,
+                            region: regions.first,
                             primary_phone: "000-000-0002",
                             intake_date: 40.days.ago
     janis.calls.create! created_at: 40.days.ago,

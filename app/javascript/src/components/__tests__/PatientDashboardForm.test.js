@@ -42,7 +42,7 @@ describe("PatientDashboardForm", () => {
     expect(screen.queryByLabelText("First and last name")).toBeInTheDocument();
   });
 
-  it("renders a select for last_menstrual_period_weeks", () => {
+  it("renders an input for procedure_date", () => {
     const patient = {};
     const weeksOptions = [
       { label: 0, value: 0 },
@@ -60,51 +60,7 @@ describe("PatientDashboardForm", () => {
       />
     );
 
-    expect(
-      screen.queryByLabelText("Weeks along at intake")
-    ).toBeInTheDocument();
-  });
-
-  it("renders a select for last_menstrual_period_days", () => {
-    const patient = {};
-    const weeksOptions = [
-      { label: 0, value: 0 },
-      { label: 1, value: 1 },
-    ];
-    const daysOptions = [
-      { label: 0, value: 0 },
-      { label: 1, value: 1 },
-    ];
-    render(
-      <PatientDashboardForm
-        patient={patient}
-        weeksOptions={weeksOptions}
-        daysOptions={daysOptions}
-      />
-    );
-
-    expect(screen.queryByLabelText("Days along at intake")).toBeInTheDocument();
-  });
-
-  it("renders an input for appointment_date", () => {
-    const patient = {};
-    const weeksOptions = [
-      { label: 0, value: 0 },
-      { label: 1, value: 1 },
-    ];
-    const daysOptions = [
-      { label: 0, value: 0 },
-      { label: 1, value: 1 },
-    ];
-    render(
-      <PatientDashboardForm
-        patient={patient}
-        weeksOptions={weeksOptions}
-        daysOptions={daysOptions}
-      />
-    );
-
-    expect(screen.queryByLabelText("Appointment date")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Procedure date")).toBeInTheDocument();
   });
 
   it("renders an input for primary_phone", () => {
@@ -284,14 +240,7 @@ describe("PatientDashboardForm", () => {
       />
     );
 
-    const select = screen.queryByLabelText("Weeks along at intake");
-    await user.selectOptions(
-      select,
-      screen.getByRole("option", { name: "1 week" })
-    );
-
     expect(mockPut).toHaveBeenCalledWith(patientPath, {
-      last_menstrual_period_weeks: "1",
       authenticity_token: formAuthenticityToken,
     });
   });

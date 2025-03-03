@@ -3,7 +3,7 @@ require 'application_system_test_case'
 # Confirm user management functionality
 class UserManagementTest < ApplicationSystemTestCase
   before do
-    create :line
+    create :region
     @user = create :user,
                    name: 'john',
                    email: 'user@dcaf.com',
@@ -69,39 +69,39 @@ class UserManagementTest < ApplicationSystemTestCase
     end
 
     it 'should display all users' do
-      page.has_css?("#user-list tbody tr", :count => 3)
+      page.has_css?('#user-list tbody tr', count: 3)
     end
 
     it 'should search names' do
       fill_in 'search_field', with: 'john'
       find('#search_button').click
       wait_for_ajax
-      page.has_css?("#user-list tbody tr", :count => 1)
+      page.has_css?('#user-list tbody tr', count: 1)
     end
 
     it 'should search emails' do
       fill_in 'search_field', with: 'user@dcaf.com'
       find('#search_button').click
       wait_for_ajax
-      page.has_css?("#user-list tbody tr", :count => 1)
+      page.has_css?('#user-list tbody tr', count: 1)
     end
 
     it 'should return empty' do
       fill_in 'search_field', with: 'nonexistant'
       find('#search_button').click
       wait_for_ajax
-      page.has_css?("#user-list tbody tr", :count => 0)
+      page.has_css?('#user-list tbody tr', count: 0)
     end
 
     it 'should return full list after inputting blank search field' do
       fill_in 'search_field', with: 'user@dcaf.com'
       find('#search_button').click
       wait_for_ajax
-      page.has_css?("#user-list tbody tr", :count => 1)
+      page.has_css?('#user-list tbody tr', count: 1)
       fill_in 'search_field', with: ''
       find('#search_button').click
       wait_for_ajax
-      page.has_css?("#user-list tbody tr", :count => 3)
+      page.has_css?('#user-list tbody tr', count: 3)
     end
   end
 

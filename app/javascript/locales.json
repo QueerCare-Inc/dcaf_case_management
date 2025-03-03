@@ -5664,7 +5664,7 @@
         "clinic": "Clinic",
         "date_of_check": "Date of check",
         "fund_payout": "%{fund} payout",
-        "line": "Line"
+        "region": "Region"
       },
       "title": "Accountant dashboard"
     },
@@ -5707,6 +5707,7 @@
           "emergency_contact_phone": "Emergency contact phone",
           "emergency_contact_relationship": "Emergency contact relationship",
           "employment_status": "Employment status",
+          "end_time": "End time",
           "fulfilled": "Fulfilled",
           "fund_id": "Fund ID",
           "household_size_adults": "Adults in household",
@@ -5715,7 +5716,6 @@
           "insurance": "Insurance",
           "intake_date": "Intake Date",
           "language": "Language",
-          "line_id": "Line ID",
           "multiday_appointment": "Multi-day appointment",
           "name": "Name",
           "practical_support_waiver": "Practical support waiver",
@@ -5727,11 +5727,12 @@
           "race_ethnicity": "Race / Ethnicity",
           "referred_by": "Referred by",
           "referred_to_clinic": "Referred to clinic",
+          "region_id": "Region ID",
           "shared_flag": "Shared Flag",
           "source": "Source",
           "special_circumstances": "Special circumstances",
+          "start_time": "Start time",
           "state": "State",
-          "support_date": "Support date",
           "support_type": "Support type",
           "textable": "Textable",
           "voicemail_preference": "Voicemail preference",
@@ -5740,10 +5741,11 @@
         "practical_support": {
           "attachment_url": "Attachment URL",
           "confirmed": "Confirmed",
+          "end_time": "End time",
           "fulfilled": "Fulfilled",
           "purchase_date": "Purchase date",
           "source": "Source",
-          "support_date": "Support date",
+          "start_time": "Start time",
           "support_type": "Support type"
         },
         "user": {
@@ -5863,7 +5865,7 @@
     },
     "dashboard": {
       "activity_log": {
-        "label": "%{current_line} Line Activity Log"
+        "label": "%{current_region} Region Activity Log"
       },
       "budget_bar": {
         "pledged": "pledged",
@@ -6449,13 +6451,6 @@
         }
       }
     },
-    "lines": {
-      "new": {
-        "start": "Get started",
-        "welcome_to_daria": "Welcome to DARIA (%{fund} edition)!",
-        "what_line": "What line are you working on?"
-      }
-    },
     "multi_factor": {
       "authenticate": "Authenticate",
       "authentication_error": "Authentication error",
@@ -6507,8 +6502,8 @@
       "cm_resources": {
         "label": "CM Resources"
       },
-      "current_line": {
-        "helper": "Your current line"
+      "current_region": {
+        "helper": "Your current region"
       },
       "footer": {
         "national_abortion_federation": "National Abortion Federation",
@@ -6769,44 +6764,6 @@
         "submit": "Create Note",
         "title": "Notes"
       },
-      "pledge": {
-        "cancel": {
-          "confirm": "Are you sure you want to cancel this pledge?",
-          "title": "Cancel Pledge"
-        },
-        "errors": {
-          "blank_appt": "Appointment date cannot be blank",
-          "blank_clinic": "Clinic name cannot be blank",
-          "blank_fund": "%{fund} pledge field cannot be blank",
-          "blank_patient": "Patient name cannot be blank",
-          "data_required": "Data required:"
-        },
-        "step_one": {
-          "clinic_name": "Clinic name:",
-          "patient_id": "Patient ID:",
-          "patient_name": "Patient name:",
-          "pledge_amount": "Pledge amount:",
-          "title": "Confirm the following information is correct:"
-        },
-        "step_three": {
-          "clinic_fax": "Clinic fax",
-          "completed": "Once you've completed the pledging process, please use the check box below to indicate your pledge has been sent.",
-          "downloads": "Your pledge should appear in your computer's downloads.",
-          "fax_service": "Fax service",
-          "generated": "Awesome, you generated a %{fund} Pledge! Thanks!",
-          "sent_checkbox": "I sent the pledge",
-          "submit": "Submit the pledge for your client here:",
-          "title": "Submit and send your pledge:"
-        },
-        "step_two": {
-          "blank_name_error": "You need to enter your name in the box to sign and download the pledge",
-          "form_disabled": "Please generate your pledge form and click next.",
-          "generate_note": "Note that this does NOT send your pledge to the clinic! Please click to the next page after generating your form to record that you have sent the pledge to the clinic.",
-          "generate_pledge_button": "Generate your pledge",
-          "sign_pledge": "Enter your name in this box to sign your pledge:",
-          "title": "Generate your pledge form:"
-        }
-      },
       "practical_support": {
         "create": "Create new practical support entry",
         "delete": "Delete",
@@ -6859,6 +6816,13 @@
         }
       }
     },
+    "regions": {
+      "new": {
+        "start": "Get started",
+        "welcome_to_daria": "Welcome to DARIA (%{fund} edition)!",
+        "what_region": "What region are you working in?"
+      }
+    },
     "support": {
       "array": {
         "last_word_connector": ", and ",
@@ -6883,7 +6847,10 @@
       "practical_support_confirmed": "Check this box if this practical support is confirmed by the point of contact.",
       "practical_support_fulfilled": "Check this box if this practical support is completed or paid out, and requires no further attention.",
       "referred_to_clinic": "Check this box if you as a case manager referred the patient to a particular clinic.",
-      "shared_cases": "These are patients who require a little more attention. This list is shared across all case managers working on a single line. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
+      "resolved_without_fund": "This is used to indicate that a patient does not require or want our services any longer.",
+      "shared_cases": "These are patients who require a little more attention. This list is shared across all case managers working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
+      "solidarity": "Indicates a case to which this fund is providing support, but not handling.",
+      "solidarity_lead": "This is the fund serving as point-of-contact or coordinating funding for this patient.",
       "status_definition": "Status definition",
       "unconfirmed_support": "These are patients who have unconfirmed practical supports."
     },
@@ -9988,9 +9955,9 @@
         "clinic": "Clínica",
         "date_of_check": "Fecha del cheque",
         "fund_payout": "Pago de %{fund}",
-        "line": "Línea",
         "pledge_amount": "Cantidad de promesa",
         "pledge_sent": "Promesa enviada",
+        "region": "Región",
         "weeks_at_procedure": "Semanas en el procedimiento",
         "weeks_at_procedure_display": "%{gestation} semanas"
       },
@@ -10037,7 +10004,6 @@
           "check_number": "Cheque #",
           "city": "Ciudad",
           "clinic_id": "ID de la clínica",
-          "completed_ultrasound": "Ultrasonido completado",
           "confirmed": "Confirmada",
           "county": "Condado",
           "date_of_check": "Fecha del cheque",
@@ -10045,6 +10011,7 @@
           "emergency_contact_phone": "Otro teléfono",
           "emergency_contact_relationship": "Otra relacion de contacto",
           "employment_status": "Estatus de empleo",
+          "end_time": "Tiempo de finalización del supporte",
           "fulfilled": "Cumplida",
           "fund_id": "ID del fondo",
           "fund_payout": "Pago de fondos",
@@ -10057,9 +10024,6 @@
           "insurance": "Seguro médico",
           "intake_date": "Fecha de llamada inicial",
           "language": "Idioma",
-          "last_menstrual_period_days": "Últimos días del período menstrual",
-          "last_menstrual_period_weeks": "Últimas semanas del período menstrual",
-          "line_id": "ID de la línea",
           "multiday_appointment": "Cita de varios días",
           "naf_pledge": "Promesa de la NAF",
           "name": "Nombre",
@@ -10077,26 +10041,27 @@
           "race_ethnicity": "Raza / Etnicidad",
           "referred_by": "Referido por",
           "referred_to_clinic": "Referido a la clínica",
+          "region_id": "ID de la región",
           "resolved_without_fund": "Resuelto sin ayuda de fondo",
           "shared_flag": "Bandera compartida",
           "solidarity": "Promesa solidaria",
           "source": "Fuente",
           "special_circumstances": "Circunstancias Especiales",
+          "start_time": "Tiempo de inicio del supporte",
           "state": "Estado",
-          "support_date": "Fecha del soporte",
           "support_type": "Tipo de soporte",
           "textable": "Textable",
-          "ultrasound_cost": "Costo del ultrasonido",
           "voicemail_preference": "Preferencia de correo de voz",
           "zipcode": "Código postal"
         },
         "practical_support": {
           "attachment_url": "URL adjunta",
           "confirmed": "Confirmado",
+          "end_time": "Tiempo de finalización del apoyo",
           "fulfilled": "Cumplida",
           "purchase_date": "Día de compra",
           "source": "Fuente",
-          "support_date": "Día de el apoyo",
+          "start_time": "Tiempo de inicio del apoyo",
           "support_type": "Tipo de apoyo"
         },
         "user": {
@@ -10247,7 +10212,7 @@
     },
     "dashboard": {
       "activity_log": {
-        "label": "Actividad de línea de llamadas %{current_line}"
+        "label": "Actividad de región de llamadas %{current_region}"
       },
       "budget_bar": {
         "pledged": "prometido",
@@ -10750,13 +10715,6 @@
         }
       }
     },
-    "lines": {
-      "new": {
-        "start": "Empezar",
-        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{fund})!",
-        "what_line": "¿En cuál línea estás trabajando?"
-      }
-    },
     "multi_factor": {
       "authenticate": "Autenticar",
       "authentication_error": "Error de autenticación",
@@ -10808,8 +10766,8 @@
       "cm_resources": {
         "label": "Recursos del Administrador de Casos"
       },
-      "current_line": {
-        "helper": "Tu linea actual"
+      "current_region": {
+        "helper": "Tu región actual"
       },
       "footer": {
         "national_abortion_federation": "Federación Nacional de Abortos",
@@ -10896,34 +10854,6 @@
       }
     },
     "patient": {
-      "abortion_information": {
-        "clinic_section": {
-          "clinic": "Clínica",
-          "clinic_display": "%{clinic_name} (%{city}, %{state})",
-          "inactive_clinics": "Clinícas inactivas",
-          "medicaid_only_toggle": "Enseñar solo las clínicas de Medicaid",
-          "multi_day": "múltiples días",
-          "naf_only_toggle": "Enseñar solo clínicas de la NAF",
-          "not_currently_working_with_fund": "(Actualmente no trabaja con %{fund}) - %{clinic_name}",
-          "procedure_type": "Tipo de procedimiento",
-          "referred_to_clinic": "Referido a la clínica",
-          "resolved_without_fund": "Resuelto sin ayuda de %{fund}",
-          "solidarity": "Promesa solidaria",
-          "solidarity_lead": "Plomo de solidaridad",
-          "title": "Detalles de la clínica",
-          "ultrasound_completed": "¿Ultrasonido completado?"
-        },
-        "cost_section": {
-          "abortion_cost": "Costo del aborto",
-          "fund_pledge": "Promesa de %{fund}",
-          "naf_pledge": "Promesa de la Federación Nacional de Aborto",
-          "outstanding_balance": "Cantidad pendiente",
-          "patient_contribution": "Contribución del paciente",
-          "title": "Detalles del costo",
-          "ultrasound_cost": "Costo del ultrasonido"
-        },
-        "title": "Información de aborto"
-      },
       "call_log": {
         "delete_confirm": "¿Está seguro de que desea eliminar esta llamada del registro de llamadas?",
         "record_new_call": "Grabar nueva llamada",
@@ -11068,7 +10998,6 @@
         "voicemail_preference": "Preferencias de Mensaje de Voz"
       },
       "menu": {
-        "abortion_information": "Información de Aborto",
         "call_log": "Registro de Llamadas",
         "cancel_pledge": "Cancelar Promesa",
         "change_log": "Registro de Cambios",
@@ -11076,6 +11005,7 @@
         "patient_information": "Información del Paciente",
         "pledge_fulfillment": "Cumplimiento de la Promesa",
         "practical_support": "Apoyo Practico",
+        "procedure_information": "Información de Aborto",
         "submit_pledge": "Crear Promesa"
       },
       "new": {
@@ -11162,6 +11092,32 @@
         "practical_support_waiver": "Aa firmado una renuncia de soporte práctico",
         "title": "Apoyo practico"
       },
+      "procedure_information": {
+        "clinic_section": {
+          "clinic": "Clínica",
+          "clinic_display": "%{clinic_name} (%{city}, %{state})",
+          "inactive_clinics": "Clinícas inactivas",
+          "medicaid_only_toggle": "Enseñar solo las clínicas de Medicaid",
+          "multi_day": "múltiples días",
+          "naf_only_toggle": "Enseñar solo clínicas de la NAF",
+          "not_currently_working_with_fund": "(Actualmente no trabaja con %{fund}) - %{clinic_name}",
+          "procedure_type": "Tipo de procedimiento",
+          "referred_to_clinic": "Referido a la clínica",
+          "resolved_without_fund": "Resuelto sin ayuda de %{fund}",
+          "solidarity": "Promesa solidaria",
+          "solidarity_lead": "Plomo de solidaridad",
+          "title": "Detalles de la clínica"
+        },
+        "cost_section": {
+          "abortion_cost": "Costo del aborto",
+          "fund_pledge": "Promesa de %{fund}",
+          "naf_pledge": "Promesa de la Federación Nacional de Aborto",
+          "outstanding_balance": "Cantidad pendiente",
+          "patient_contribution": "Contribución del paciente",
+          "title": "Detalles del costo"
+        },
+        "title": "Información de aborto"
+      },
       "shared": {
         "appt_date": "Día de la cita",
         "name": "Nombre y apellido",
@@ -11192,6 +11148,13 @@
         }
       }
     },
+    "regions": {
+      "new": {
+        "start": "Empezar",
+        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{fund})!",
+        "what_region": "¿En cuál región estás trabajando?"
+      }
+    },
     "support": {
       "array": {
         "last_word_connector": " y ",
@@ -11212,7 +11175,6 @@
       "budget_bar": "La barra de presupuesto indica el dinero provisionalmente reservado para un paciente (cuando ingresa la cantidad de promesa %{fund}) y el dinero enviado a una clínica para un paciente (cuando marca la casilla de verificación \"envié la promesa\") durante un período determinado.",
       "call_list": "Esta lista organiza los pacientes para cuando quiera devolver llamadas durante su turno. Utiliza la búsqueda para rellenar la lista.",
       "completed_calls": "Esta es una lista de pacientes a los que ha llamado en las últimas 8 horas.",
-      "mandatory_ultrasound": "Si se encuentra en un estado que requiere ultrasonidos y el paciente ha completado uno, puede indicarlo aquí.",
       "patient_identifier": "Identificador interno semiúnico para este paciente, basado en su número de teléfono.",
       "practical_support_confirmed": "Marque esta casilla si este apoyo práctico es confirmado por el punto de contacto.",
       "practical_support_fulfilled": "Marque esta casilla si este soporte práctico está completo o pagado y no requiere mayor atención.",

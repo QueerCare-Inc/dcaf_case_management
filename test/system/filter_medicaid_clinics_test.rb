@@ -10,7 +10,7 @@ class FilterMedicaidClinicsTest < ApplicationSystemTestCase
     log_in_as @user
     visit edit_patient_path @patient
     has_text? 'First and last name' # wait until page loads
-    click_link 'Abortion Information'
+    click_link 'Procedure Information'
   end
 
   describe 'filtering to just Medicaid clinics' do
@@ -23,8 +23,12 @@ class FilterMedicaidClinicsTest < ApplicationSystemTestCase
       options_with_filter = find('#patient_clinic_id').all('option')
                                                       .map { |opt| { name: opt.text, disabled: opt['disabled'] } }
 
-      assert_equal 'true', options_with_filter.find { |x| x[:name] == "#{@non_medicaid_clinic.name} (#{@non_medicaid_clinic.city}, #{@non_medicaid_clinic.state})" }[:disabled]
-      assert_equal 'false', options_with_filter.find { |x| x[:name] == "#{@medicaid_clinic.name} (#{@medicaid_clinic.city}, #{@medicaid_clinic.state})" }[:disabled]
+      assert_equal 'true', options_with_filter.find { |x|
+        x[:name] == "#{@non_medicaid_clinic.name} (#{@non_medicaid_clinic.city}, #{@non_medicaid_clinic.state})"
+      }[:disabled]
+      assert_equal 'false', options_with_filter.find { |x|
+        x[:name] == "#{@medicaid_clinic.name} (#{@medicaid_clinic.city}, #{@medicaid_clinic.state})"
+      }[:disabled]
 
       # try to select and watch it not work
       select @non_medicaid_clinic.name, from: 'patient_clinic_id'

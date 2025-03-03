@@ -8,6 +8,6 @@ FactoryBot.define do
       "Support #{n}"
     end
     confirmed { false }
-    support_date { 2.days.from_now }
+    start_time { 2.days.from_now }
   end
 end

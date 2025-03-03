@@ -5,7 +5,6 @@ Rails.application.routes.draw do
   authenticate :user do
     root to: 'dashboards#index', as: :authenticated_root
     get 'dashboard', to: 'dashboards#index', as: 'dashboard'
-    get 'budget_bar', to: 'dashboards#budget_bar', defaults: { format: :js }, as: 'budget_bar'
     post 'search', to: 'dashboards#search', defaults: { format: :js }
 
     # For call list management
@@ -30,20 +29,13 @@ Rails.application.routes.draw do
     # /patients/:id/edit
     # /patients/:id/calls
     # /patients/:id/notes
-    # /patients/:id/external_pledges
     # /patients/:id/practical_supports
     resources :patients,
               only: [ :create, :edit, :update, :index, :destroy ] do
-      member do
-        get :download, as: 'generate_pledge'
-        post :fetch_pledge, as: 'fetch_pledge'
-      end
       resources :calls,
                 only: [ :create, :destroy, :new ]
       resources :notes,
                 only: [ :create, :update ]
-      resources :external_pledges,
-                only: [ :create, :update, :destroy ]
       resources :practical_supports,
                 only: [ :create, :edit, :update, :destroy ]      
     end
@@ -54,14 +46,12 @@ Rails.application.routes.draw do
                 only: [ :create, :update ]
     end
 
-    get 'patients/:patient_id/submit_pledge', to: 'patients#pledge', as: 'submit_pledge'
-
     get 'data_entry', to: 'patients#data_entry', as: 'data_entry' # temporary
     post 'data_entry', to: 'patients#data_entry_create', as: 'data_entry_create' # temporary
 
     resources :accountants, only: [:index, :edit]
 
-    resources :lines, only: [:new, :create]
+    resources :regions, only: [:new, :create]
     post 'clinicfinder', to: 'clinicfinders#search', defaults: { format: :js }, as: 'clinicfinder_search'
     resources :clinics, only: [:index, :create, :update, :new, :destroy, :edit]
     resources :configs, only: [:index, :create, :update]

@@ -14,14 +14,4 @@ class FulfillmentTest < ActiveSupport::TestCase
       assert @fulfillment.respond_to? :created_by_id
     end
   end
-
-  describe 'methods' do
-    it 'should cleanly display gestation at procedure date if present' do
-      @fulfillment.gestation_at_procedure = nil
-      refute @fulfillment.gestation_at_procedure_display
-
-      @fulfillment.gestation_at_procedure = '7'
-      assert_equal '7 weeks', @fulfillment.gestation_at_procedure_display
-    end
-  end
 end

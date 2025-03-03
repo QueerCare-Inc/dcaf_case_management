@@ -2,7 +2,7 @@ require 'application_system_test_case'
 
 class NavbarLinksTest < ApplicationSystemTestCase
   before do
-    create :line
+    create :region
     @user = create :user, role: :admin
     log_in_as @user
   end
@@ -49,21 +49,20 @@ class NavbarLinksTest < ApplicationSystemTestCase
       end
 
       it 'should not display the new user link' do
-        refute has_link? t('navigation.admin_tools.user_management')
+        assert_not has_link? t('navigation.admin_tools.user_management')
       end
 
       it 'should not display the Clinic Management link' do
-        refute has_link? t('navigation.admin_tools.clinic_management')
+        assert_not has_link? t('navigation.admin_tools.clinic_management')
       end
 
       it 'should not display the Config Management link' do
-        refute has_link? t('navigation.admin_tools.config_management')
+        assert_not has_link? t('navigation.admin_tools.config_management')
       end
 
       it 'should display the Accounting link' do
         assert has_link? t('navigation.admin_tools.accounting'), href: accountants_path
       end
-
 
       it 'should display the export link' do
         assert has_link? t('navigation.admin_tools.export'), href: patients_path(format: :csv)
@@ -79,7 +78,7 @@ class NavbarLinksTest < ApplicationSystemTestCase
       end
 
       it 'should not display an admin link' do
-        refute has_button? t('navigation.admin_tools.label')
+        assert_not has_button? t('navigation.admin_tools.label')
       end
     end
   end

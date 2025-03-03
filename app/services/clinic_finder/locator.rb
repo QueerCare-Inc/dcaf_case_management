@@ -1,5 +1,4 @@
 require 'ostruct'
-# require_relative './clinic_finder/gestation_helper'
 # require_relative 'clinic_finder/affordability_helper'
 
 # Use as follows:
@@ -14,9 +13,7 @@ module ClinicFinder
   class Locator
     include ClinicFinder::Modules::Geocoder
 
-    attr_accessor :clinic_structs
-    attr_accessor :patient_context # no reason to not assign this to an obj lvl
-    attr_accessor :geocoder
+    attr_accessor :clinic_structs, :patient_context, :geocoder # no reason to not assign this to an obj lvl
 
     def initialize(clinics)
       @clinic_structs = clinics.map { |clinic| OpenStruct.new clinic.attributes }
@@ -31,17 +28,6 @@ module ClinicFinder
       add_distances_to_clinic_openstructs
 
       @clinic_structs.sort_by(&:distance).take(limit)
-    end
-
-    # Return a set of the cheapest clinics and their attributes.
-    # TODO: Implement.
-    def locate_cheapest_clinic(gestational_age: 999, limit: 5)
-      puts 'NOT IMPLEMENTED YET'
-      # @helper = ::ClinicFinder::GestationHelper.new(gestational_age)
-      # filtered_clinics = filter_by_params gestational_age, naf_only, medicaid_only
-
-      # @gestational_tier = @helper.gestational_tier
-      # decorate_data(available_clinics)
     end
   end
 end

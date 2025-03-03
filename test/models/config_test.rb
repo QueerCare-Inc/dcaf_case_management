@@ -6,21 +6,21 @@ class ConfigTest < ActiveSupport::TestCase
   describe 'callbacks' do
     it 'should capitalize words before save' do
       c = Config.find_or_create_by(config_key: :start_of_week)
-      c.config_value= { options: ["wednesday"] }
+      c.config_value = { options: ['wednesday'] }
       assert c.valid?
-      assert_equal "Wednesday", c.options.last
+      assert_equal 'Wednesday', c.options.last
 
       c = Config.find_or_create_by(config_key: :hide_practical_support)
-      c.config_value = { options: ["no"] }
+      c.config_value = { options: ['no'] }
       assert c.valid?
-      assert_equal "No", c.options.last
+      assert_equal 'No', c.options.last
     end
 
     it 'should titleize words before save' do
       c = Config.find_or_create_by(config_key: :time_zone)
-      c.config_value= { options: ["puerto rico"] }
+      c.config_value = { options: ['puerto rico'] }
       assert c.valid?
-      assert_equal "Puerto Rico", c.options.last
+      assert_equal 'Puerto Rico', c.options.last
     end
   end
 
@@ -31,7 +31,7 @@ class ConfigTest < ActiveSupport::TestCase
 
     it 'should be unique on config_key' do
       @dupe_config = build :config
-      refute @dupe_config.valid?
+      assert_not @dupe_config.valid?
       assert @dupe_config.errors.messages[:config_key].include? 'has already been taken'
     end
 
@@ -44,94 +44,89 @@ class ConfigTest < ActiveSupport::TestCase
 
     it 'should require a config_key' do
       @bad_config = build :config, config_key: nil
-      refute @bad_config.valid?
+      assert_not @bad_config.valid?
       assert @bad_config.errors.messages[:config_key].include? "can't be blank"
     end
 
     it 'should reject lists for singleton values' do
       c = Config.find_or_create_by(config_key: :start_of_week)
 
-      c.config_value = { options: ["monday", "friday"] }
-      refute c.valid?
-
-      c = Config.find_or_create_by(config_key: :budget_bar_max)
-
-      c.config_value = { options: ["1000", "2000"] }
-      refute c.valid?
+      c.config_value = { options: %w[monday friday] }
+      assert_not c.valid?
 
       c = Config.find_or_create_by(config_key: :time_zone)
 
-      c.config_value = { options: ["Eastern", "Pacific"] }
-      refute c.valid?
+      c.config_value = { options: %w[Eastern Pacific] }
+      assert_not c.valid?
     end
 
     it 'should allow lists for non-singleton values' do
       c = Config.find_or_create_by(config_key: :practical_support)
 
-      c.config_value = { options: ["car", "train"] }
+      c.config_value = { options: %w[car train] }
       assert c.valid?
     end
 
     it 'should validate URLs' do
       Config::VALIDATIONS
-        .select{ |field, validator| validator == :validate_url }
+        .select { |field, validator| validator == :validate_url }
         .each do |url_field, _validator|
-          c = Config.find_or_create_by(config_key: url_field)
-          
-          # confirm cleaned URLs still valid
-          c.config_value = { options: ["www.efax.com/path"] }
-          assert c.valid?
-          # confirm https was added
-          assert_equal "https://www.efax.com/path", c.options.last.to_s
+        c = Config.find_or_create_by(config_key: url_field)
 
-          # bad
-          c.config_value = { options: ["bad url"] }
-          refute c.valid?
+        # confirm cleaned URLs still valid
+        c.config_value = { options: ['www.efax.com/path'] }
+        assert c.valid?
+        # confirm https was added
+        assert_equal 'https://www.efax.com/path', c.options.last.to_s
 
-          # allow no URL
-          c.config_value = { options: [] }
-          assert c.valid?
+        # bad
+        c.config_value = { options: ['bad url'] }
+        assert_not c.valid?
 
-          # make sure this is left alone
-          assert_nil c.options.last
+        # allow no URL
+        c.config_value = { options: [] }
+        assert c.valid?
+
+        # make sure this is left alone
+        assert_nil c.options.last
       end
     end
 
     it 'should validate start of week' do
       c = Config.find_or_create_by(config_key: :start_of_week)
 
-      c.config_value = { options: ["random value"] }
-      refute c.valid?
+      c.config_value = { options: ['random value'] }
+      assert_not c.valid?
 
-      c.config_value = { options: ["weekly"] }
-      refute c.valid?
+      c.config_value = { options: ['weekly'] }
+      assert_not c.valid?
 
-      c.config_value = { options: ["monday"] }
+      c.config_value = { options: ['monday'] }
       assert c.valid?
-      
-      c.config_value = { options: ["Wednesday"] }
+
+      c.config_value = { options: ['Wednesday'] }
       assert c.valid?
-      
-      c.config_value = { options: ["monthly"] }
+
+      c.config_value = { options: ['monthly'] }
       assert c.valid?
     end
 
     it 'should validate time zone' do
       c = Config.find_or_create_by(config_key: :time_zone)
 
-      c.config_value = { options: ["random value"] }
-      refute c.valid?
+      c.config_value = { options: ['random value'] }
+      assert_not c.valid?
 
-      c.config_value = { options: ["American Samoa"] }
-      refute c.valid?
+      c.config_value = { options: ['American Samoa'] }
+      assert_not c.valid?
 
-      c.config_value = { options: ["eastern"] }
+      c.config_value = { options: ['eastern'] }
       assert c.valid?
-      
-      c.config_value = { options: ["Pacific"] }
+
+      c.config_value = { options: ['Pacific'] }
       assert c.valid?
-      
-      c.config_value = { options: ["indiana (east)"] }
+
+      c.config_value = { options: ['indiana (east)'] }
       assert c.valid?
     end
   end
@@ -157,7 +152,7 @@ class ConfigTest < ActiveSupport::TestCase
       assert_includes @config.help_text,
                       'A link to a Google Drive'
     end
-    
+
     describe 'autosetup' do
       before { Config.destroy_all }
 
@@ -184,19 +179,6 @@ class ConfigTest < ActiveSupport::TestCase
       end
     end
 
-    describe '#budget_bar_max' do
-      it 'should return an integer of 1_000 if unconfigured' do
-        assert_equal 1_000, Config.budget_bar_max
-      end
-
-      it 'should return another amount if configured' do
-        c = Config.find_or_create_by(config_key: 'budget_bar_max')
-        c.config_value = { options: ["2000"] }
-        c.save!
-        assert_equal 2_000, Config.budget_bar_max
-      end
-    end
-
     describe 'archive_patients' do
       it 'should return proper defaults' do
         assert_equal 90, Config.archive_fulfilled_patients
@@ -205,84 +187,64 @@ class ConfigTest < ActiveSupport::TestCase
 
       it 'should validate bounds' do
         c = Config.find_or_create_by(config_key: 'days_to_keep_all_patients')
-        
+
         # low out of bounds
-        c.config_value = { options: ["59"] }
-        refute c.valid?
-        
+        c.config_value = { options: ['59'] }
+        assert_not c.valid?
+
         # low edge
-        c.config_value = { options: ["60"] }
+        c.config_value = { options: ['60'] }
         assert c.valid?
-        
+
         # in bounds
-        c.config_value = { options: ["120"] }
+        c.config_value = { options: ['120'] }
         assert c.valid?
-        
+
         # high edge
-        c.config_value = { options: ["550"] }
+        c.config_value = { options: ['550'] }
         assert c.valid?
-        
-        c.config_value = { options: ["551"] }
-        refute c.valid?
+
+        c.config_value = { options: ['551'] }
+        assert_not c.valid?
       end
     end
 
     describe '#hide_practical_support?' do
       it 'can return true' do
         c = Config.find_or_create_by(config_key: 'hide_practical_support')
-        c.config_value = { options: ["Yes"] }
+        c.config_value = { options: ['Yes'] }
         c.save!
         assert(Config.hide_practical_support? == true)
       end
 
       it 'can return false' do
         c = Config.find_or_create_by(config_key: 'hide_practical_support')
-        c.config_value = { options: ["No"] }
+        c.config_value = { options: ['No'] }
         c.save!
         assert(Config.hide_practical_support? == false)
       end
 
-      it "returns false by default" do
+      it 'returns false by default' do
         assert(Config.hide_practical_support? == false)
-      end
-    end
-
-    describe '#hide_budget_bar?' do
-      it 'can return true' do
-        c = Config.find_or_create_by(config_key: 'hide_budget_bar')
-        c.config_value = { options: ["Yes"] }
-        c.save!
-        assert(Config.hide_budget_bar? == true)
-      end
-
-      it 'can return false' do
-        c = Config.find_or_create_by(config_key: 'hide_budget_bar')
-        c.config_value = { options: ["No"] }
-        c.save!
-        assert(Config.hide_budget_bar? == false)
-      end
-
-      it "returns false by default" do
-        assert(Config.hide_budget_bar? == false)
       end
     end
 
     describe '#display_practical_support_attachment_url?' do
       it 'can return true' do
         c = Config.find_or_create_by(config_key: 'display_practical_support_attachment_url')
-        c.config_value = { options: ["Yes"] }
+        c.config_value = { options: ['Yes'] }
         c.save!
         assert(Config.display_practical_support_attachment_url? == true)
       end
 
       it 'can return false' do
         c = Config.find_or_create_by(config_key: 'display_practical_support_attachment_url')
-        c.config_value = { options: ["No"] }
+        c.config_value = { options: ['No'] }
         c.save!
         assert(Config.display_practical_support_attachment_url? == false)
       end
 
-      it "returns false by default" do
+      it 'returns false by default' do
         assert(Config.display_practical_support_attachment_url? == false)
       end
     end
@@ -290,19 +252,19 @@ class ConfigTest < ActiveSupport::TestCase
     describe '#display_practical_support_waiver?' do
       it 'can return true' do
         c = Config.find_or_create_by(config_key: 'display_practical_support_waiver')
-        c.config_value = { options: ["Yes"] }
+        c.config_value = { options: ['Yes'] }
         c.save!
         assert(Config.display_practical_support_waiver? == true)
       end
 
       it 'can return false' do
         c = Config.find_or_create_by(config_key: 'display_practical_support_waiver')
-        c.config_value = { options: ["No"] }
+        c.config_value = { options: ['No'] }
         c.save!
         assert(Config.display_practical_support_waiver? == false)
       end
 
-      it "returns false by default" do
+      it 'returns false by default' do
         assert(Config.display_practical_support_waiver? == false)
       end
     end
@@ -314,7 +276,7 @@ class ConfigTest < ActiveSupport::TestCase
 
       it 'should return another day of the week if configured' do
         c = Config.find_or_create_by(config_key: 'start_of_week')
-        c.config_value = { options: ["Tuesday"] }
+        c.config_value = { options: ['Tuesday'] }
         c.save!
         assert_equal :tuesday, Config.start_day
       end
@@ -322,14 +284,14 @@ class ConfigTest < ActiveSupport::TestCase
 
     describe '#time_zone' do
       it 'should return the time zone as an ActiveSupport::TimeZone' do
-        assert_equal ActiveSupport::TimeZone.new("Eastern Time (US & Canada)"), Config.time_zone
+        assert_equal ActiveSupport::TimeZone.new('Eastern Time (US & Canada)'), Config.time_zone
       end
 
       it 'should return another time zone if configured' do
         c = Config.find_or_create_by(config_key: 'time_zone')
-        c.config_value = { options: ["Mountain"] }
+        c.config_value = { options: ['Mountain'] }
         c.save!
-        assert_equal ActiveSupport::TimeZone.new("Mountain Time (US & Canada)"), Config.time_zone
+        assert_equal ActiveSupport::TimeZone.new('Mountain Time (US & Canada)'), Config.time_zone
       end
     end
 
@@ -342,25 +304,24 @@ class ConfigTest < ActiveSupport::TestCase
         c = Config.find_or_create_by(config_key: 'shared_reset')
 
         # low out of bounds
-        c.config_value = { options: ["1"] }
-        refute c.valid?
+        c.config_value = { options: ['1'] }
+        assert_not c.valid?
 
         # low edge
-        c.config_value = { options: ["2"] }
+        c.config_value = { options: ['2'] }
         assert c.valid?
 
         # in bounds
-        c.config_value = { options: ["14"] }
+        c.config_value = { options: ['14'] }
         assert c.valid?
 
         # high edge
-        c.config_value = { options: ["42"] }
+        c.config_value = { options: ['42'] }
         assert c.valid?
 
-        c.config_value = { options: ["43"] }
-        refute c.valid?
+        c.config_value = { options: ['43'] }
+        assert_not c.valid?
       end
     end
-
   end
 end

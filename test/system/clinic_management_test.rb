@@ -3,9 +3,8 @@ require 'application_system_test_case'
 # Test workflows around administering lists of clinics a fund works with
 class ClinicManagementTest < ApplicationSystemTestCase
   before do
-    create :line
-    @clinic = create :clinic, accepts_naf: true,
-                              accepts_medicaid: true
+    create :region
+    @clinic = create :clinic, accepts_medicaid: true
 
     @user = create :user, role: 'admin'
     @nonadmin = create :user, role: 'cm'
@@ -44,7 +43,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
       fill_in 'Name', with: invalid_clinic_name
       click_button 'Add clinic'
 
-      refute has_link? 'Add a new clinic'
+      assert_not has_link? 'Add a new clinic'
       assert has_text? 'Errors prevented this clinic from being saved'
     end
   end
@@ -82,7 +81,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
       click_button 'Save changes'
 
       visit edit_patient_path @patient
-      click_link 'Abortion Information'
+      click_link 'Procedure Information'
       select "(Not currently working with CATF) - #{@clinic.name}", from: 'patient_clinic_id'
       assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
     end
@@ -101,11 +100,6 @@ class ClinicManagementTest < ApplicationSystemTestCase
     fill_in 'Fax', with: '222-333-4444'
     check 'Accepts NAF'
     check 'Accepts Medicaid'
-    fill_in 'Gestational limit (in days)', with: '30'
-    (5..30).each do |i|
-      fill_in "Costs at #{i} weeks", with: i
-    end
-    fill_in 'Email for Pledges', with: 'pledges@gdqtabaf.net'
     new_clinic_name
   end
 
@@ -119,10 +113,5 @@ class ClinicManagementTest < ApplicationSystemTestCase
     assert has_field? 'Fax', with: '222-333-4444'
     assert has_checked_field? 'Accepts NAF'
     assert has_checked_field? 'Accepts Medicaid'
-    assert has_field? 'Gestational limit (in days)', with: '30'
-    (5..30).each do |i|
-      assert has_field? "Costs at #{i} weeks", with: i
-    end
-    assert has_field? 'Email for Pledges', with: 'pledges@gdqtabaf.net'
   end
 end

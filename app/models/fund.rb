@@ -1,9 +1,8 @@
 class Fund < ApplicationRecord
-  # TODO make papertrailable
+  # TODO: make papertrailable
 
   # Relations
-  has_many :lines
-  has_one :pledge_config
+  has_many :regions
 
   # Validations
   validates :name,
@@ -16,19 +15,18 @@ class Fund < ApplicationRecord
   validates :name, :subdomain, uniqueness: true
 
   def delete_patient_related_data
-    [ Patient,
-      ArchivedPatient,
-      Note,
-      Fulfillment,
-      ExternalPledge,
-      PracticalSupport,
-      Call ].each do |model|
-        model.destroy_all
-      end
+    [Patient,
+     ArchivedPatient,
+     Note,
+     Fulfillment,
+     PracticalSupport,
+     Call].each do |model|
+      model.destroy_all
+    end
   end
 
   def delete_administrative_data
-    [ Clinic, Config, Line, User ].each do |model|
+    [Clinic, Config, Region, User].each do |model|
       model.destroy_all
     end
   end

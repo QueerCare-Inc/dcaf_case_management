@@ -4,7 +4,7 @@ $('#clinic-finder-results').empty().hide();
   $("#clinic-finder-results").append(
     "<%= escape_javascript(render partial: 'clinicfinders/result_table',
                            locals: { title: t('clinic_locator.result.nearest_title'),
-                                     clinic_fields: [:name, :location, :accepts_naf, :distance, :gestational_limit],
+                                     clinic_fields: [:name, :location, :distance],
                                      clinics: @nearest }) %>"
   );
 <% end %>

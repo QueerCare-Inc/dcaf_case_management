@@ -8,9 +8,4 @@ class Fulfillment < ApplicationRecord
 
   # Relationships
   belongs_to :can_fulfill, polymorphic: true
-
-  # Validations
-  validates :check_number, length: { maximum: 150 }
-
-
 end

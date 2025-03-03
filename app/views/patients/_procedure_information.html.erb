@@ -22,7 +22,6 @@
         <%= f.time_field :appointment_time, include_seconds: false %>
 
         <%= f.form_group :clinic_filters do %>
-          <%= f.check_box :naf_filter, label: t('patient.procedure_information.clinic_section.naf_only_toggle') %>
           <%= f.check_box :medicaid_filter, label: t('patient.procedure_information.clinic_section.medicaid_only_toggle') %>
         <% end %>
       </div>
@@ -33,19 +32,8 @@
                           label: t('patient.procedure_information.clinic_section.referred_to_clinic'),
                           label_class: 'tooltip-header-checkbox',
                           data: { 'tooltip-text': referred_to_clinic_help_text } %>
-          <%= f.check_box :solidarity,
-                          label: t('patient.procedure_information.clinic_section.solidarity'),
-                          label_class: 'tooltip-header-checkbox',
-                          data: { 'tooltip-text': solidarity_help_text } %>            
           <%= f.check_box :multiday_appointment %>
         <% end %>
-        <%= f.select :solidarity_lead,
-            solidarity_leads,
-            {
-              label: t('patient.procedure_information.clinic_section.solidarity_lead'),
-              label_class: 'tooltip-header-input',
-            },
-            data: {'tooltip-text': solidarity_lead_help_text } %>
         <% if procedure_type_options.present? %>
           <%= f.select :procedure_type,
             options_for_select(procedure_type_options(patient.procedure_type),
@@ -55,7 +43,4 @@
       </div>
     </div>
   <% end %>
-
-  <%= render partial: 'clinicfinders/search_form',
-             locals: { patient: patient } %>
 </div>

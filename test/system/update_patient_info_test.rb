@@ -4,16 +4,12 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   extend Minitest::OptionalRetry
 
   before do
-    @line = create :line
-    @line2 = create :line
+    @region = create :region
+    @region2 = create :region
     @user = create :user
     @admin = create :user, role: :admin
     @clinic = create :clinic
-    @patient = create :patient, line: @line
-    @patient.external_pledges.create source: 'Metallica Abortion Fund',
-                                     amount: 100
-    @ext_pledge = @patient.external_pledges.first
-    create_external_pledge_source_config
+    @patient = create :patient, region: @region
     create_insurance_config
     create_practical_support_config
     create_language_config
@@ -40,68 +36,31 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       end
     end
 
-    describe 'updating LMP weeks' do
+    describe 'updating procedure date' do
       before do
-        select '5 weeks', from: 'patient_last_menstrual_period_weeks'
+        fill_in 'Procedure date', with: 5.days.from_now.strftime('%m/%d/%Y')
         click_away_from_field
         wait_for_ajax
         reload_page_and_click_link 'Patient Information'
       end
 
-      it 'should update LMP weeks' do
+      it 'should update procedure date' do
         within :css, '#patient_dashboard' do
-          lmp_weeks = find('#patient_last_menstrual_period_weeks')
-          assert_equal '5', lmp_weeks.value
+          assert has_field? 'Procedure date', with: 5.days.from_now.strftime('%Y-%m-%d')
         end
       end
     end
 
-    describe 'updating LMP days' do
+    describe 'updating procedure date counter' do
       before do
-        select '2 days', from: 'patient_last_menstrual_period_days'
-        click_away_from_field
-        wait_for_ajax
-        reload_page_and_click_link 'Patient Information'
-      end
-
-      it 'should update LMP days' do
-        within :css, '#patient_dashboard' do
-          lmp_days = find('#patient_last_menstrual_period_days')
-          assert_equal '2', lmp_days.value
-        end
-      end
-    end
-
-    describe 'updating appointment date' do
-      before do
-        fill_in 'Appointment date', with: 5.days.from_now.strftime('%m/%d/%Y')
-        click_away_from_field
-        wait_for_ajax
-        reload_page_and_click_link 'Patient Information'
-      end
-
-      it 'should update appointment date' do
-        within :css, '#patient_dashboard' do
-          assert has_field? 'Appointment date', with: 5.days.from_now.strftime('%Y-%m-%d')
-        end
-      end
-    end
-
-    describe 'updating appointment date counter' do
-      before do
-        @patient.update last_menstrual_period_weeks: 5,
-                        last_menstrual_period_days: 2,
-                        procedure_date: 5.days.from_now.strftime('%Y-%m-%d')
+        @patient.update procedure_date: 5.days.from_now.strftime('%Y-%m-%d')
         visit edit_patient_path @patient
       end
 
-      it 'should update the appointment date counter' do
+      it 'should update the procedure date counter' do
         assert has_content? 'Currently: 5w 4d'
-        assert has_content? 'Approx gestation at appt: 6 weeks 2 days'
 
-        select '1 day', from: 'patient_last_menstrual_period_days'
         assert has_content? 'Currently: 5w 3d'
-        assert has_content? 'Approx gestation at appt: 6 weeks 1 day'
       end
     end
 
@@ -136,63 +95,24 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
     end
   end
 
-  describe 'changing abortion information' do
+  describe 'changing procedure information' do
     before do
-      click_link 'Abortion Information'
+      click_link 'Procedure Information'
       select @clinic.name, from: 'patient_clinic_id'
       fill_in 'Appointment time', with: '4:30PM'
-      check 'Resolved without assistance from CATF'
       check 'Referred to clinic'
-      check 'Ultrasound completed?'
-      check 'Solidarity Pledge'
       check 'Multi-day appointment'
-      select 'Metallica Abortion Fund', from: 'patient_solidarity_lead'
 
-      fill_in 'Abortion cost', with: '300'
-      fill_in 'Ultrasound cost', with: '20'
-      fill_in 'Patient contribution', with: '200'
-      fill_in 'National Abortion Federation pledge', with: '50'
-      fill_in 'CATF pledge', with: '25'
-      fill_in 'Metallica Abortion Fund pledge', with: '25', match: :prefer_exact
       click_away_from_field
-      reload_page_and_click_link 'Abortion Information'
+      reload_page_and_click_link 'Procedure Information'
     end
 
-    it 'should update balance on field change' do
-      # updateBalance()
-      find('#outstanding-balance').has_text?('$0')
-
-      fill_in 'Abortion cost', :with => '20000'
-      find('#outstanding-balance').has_text?('$19720')
-      fill_in 'Ultrasound cost', :with => '0'
-      find('#outstanding-balance').has_text?('$19700')
-      fill_in 'Patient contribution', with: '0'
-      find('#outstanding-balance').has_text?('$19900')
-      fill_in 'National Abortion Federation pledge', with: '0'
-      find('#outstanding-balance').has_text?('$19950')
-      fill_in 'Metallica Abortion Fund pledge', with: '0', match: :prefer_exact
-      find('#outstanding-balance').has_text?('$19975')
-      fill_in 'CATF pledge', with: '0'
-      find('#outstanding-balance').has_text?('$20000')
-    end
-
-    it 'should alter the abortion information' do
-      within :css, '#abortion_information' do
+    it 'should alter the procedure information' do
+      within :css, '#procedure_information' do
         assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
         assert has_field? 'Appointment time', with: '16:30'
-        assert has_checked_field?('Resolved without assistance from CATF')
         assert has_checked_field?('Referred to clinic')
-        assert has_checked_field?('Ultrasound completed?')
-        assert has_checked_field?('Solidarity Pledge')
         assert has_checked_field?('Multi-day appointment')
-        assert has_field? 'Solidarity Lead', with: 'Metallica Abortion Fund'
-
-        assert has_field? 'Abortion cost', with: '300'
-        assert has_field? 'Ultrasound cost', with: '20'
-        assert has_field? 'Patient contribution', with: '200'
-        assert has_field? 'National Abortion Federation pledge', with: '50'
-        assert has_field? 'CATF pledge', with: '25'
-        assert has_field? 'Metallica Abortion Fund pledge', with: '25'
       end
     end
   end
@@ -263,7 +183,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         assert_equal 'Spanish', find('#patient_language').value
         assert has_checked_field? 'Homelessness'
         assert has_checked_field? 'Prison'
-        assert has_no_css? '#patient_line'
+        assert has_no_css? '#patient_region'
       end
     end
 
@@ -275,14 +195,14 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         visit edit_patient_path @patient
         wait_for_element 'Patient Information'
 
-        select @line2.name, from: 'patient_line_id'
+        select @region2.name, from: 'patient_region_id'
         click_away_from_field
         reload_page_and_click_link 'Patient Information'
       end
 
       it 'should alter the information' do
         within :css, '#patient_information' do
-          assert_equal @line2.id.to_s, find('#patient_line_id').value
+          assert_equal @region2.id.to_s, find('#patient_region_id').value
         end
       end
     end
@@ -306,9 +226,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   describe 'changing fulfillment information' do
     before do
       @patient = create :patient, procedure_date: 2.days.from_now,
-                                  clinic: @clinic,
-                                  fund_pledge: 100,
-                                  pledge_sent: true
+                                  clinic: @clinic
 
       log_out
       log_in_as @admin
@@ -318,8 +236,6 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       fill_in 'Procedure date', with: 2.days.from_now.strftime('%m/%d/%Y')
       wait_for_ajax
 
-      select '12 weeks', from: 'Weeks along at procedure'
-      fill_in 'CATF payout', with: '100'
       wait_for_ajax
 
       fill_in 'Check #', with: '444-22'
@@ -340,9 +256,6 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         assert has_checked_field? 'Pledge fulfilled'
         assert has_field? 'Procedure date',
                           with: 2.days.from_now.strftime('%Y-%m-%d')
-        assert_equal '12',
-                     find('#patient_fulfillment_attributes_gestation_at_procedure').value
-        assert has_field? 'CATF payout', with: 100
         assert has_field? 'Check #', with: '444-22'
         assert has_checked_field? 'Fulfillment audited?'
 
@@ -354,11 +267,11 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   end
 
   describe 'clicking around' do
-    it 'should let you click back to abortion information' do
+    it 'should let you click back to procedure information' do
       click_link 'Notes'
-      within(:css, '#sections') { refute has_text? 'Abortion information' }
-      click_link 'Abortion Information'
-      within(:css, '#sections') { assert has_text? 'Abortion information' }
+      within(:css, '#sections') { assert_not has_text? 'Procedure information' }
+      click_link 'Procedure Information'
+      within(:css, '#sections') { assert has_text? 'Procedure information' }
     end
   end
 

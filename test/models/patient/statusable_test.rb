@@ -37,17 +37,6 @@ class PatientTest::Statusable < PatientTest
         assert_equal Patient::STATUSES[:fundraising][:key], @patient.status
       end
 
-      it 'should update to "Sent Pledge" after a pledge has been sent' do
-        @patient.pledge_sent = true
-        assert_equal Patient::STATUSES[:pledge_sent][:key], @patient.status
-      end
-
-      it 'should update to "Pledge Not Fulfilled" if a pledge has not been fulfilled for 150 days' do
-        @patient.pledge_sent = true
-        @patient.pledge_sent_at = (Time.zone.now - 151.days)
-        assert_equal Patient::STATUSES[:pledge_unfulfilled][:key], @patient.status
-      end
-
       it 'should update to "Pledge Fulfilled" if a pledge has been fulfilled' do
         @patient.fulfillment.fulfilled = true
         assert_equal Patient::STATUSES[:fulfilled][:key], @patient.status
@@ -62,21 +51,16 @@ class PatientTest::Statusable < PatientTest
         @patient.calls.create attributes_for(:call, status: :reached_patient, created_at: 120.days.ago)
         assert_equal Patient::STATUSES[:needs_appt][:key], @patient.status
       end
-
-      it 'should update to "Resolved Without CATF" if patient is resolved' do
-        @patient.resolved_without_fund = true
-        assert_equal Patient::STATUSES[:resolved][:key], @patient.status
-      end
     end
 
     describe 'contact_made? method' do
       it 'should return false if no calls have been made' do
-        refute @patient.send :contact_made?
+        assert_not @patient.send :contact_made?
       end
 
       it 'should return false if an unsuccessful call has been made' do
         @patient.calls.create attributes_for(:call, status: :left_voicemail)
-        refute @patient.send :contact_made?
+        assert_not @patient.send :contact_made?
       end
 
       it 'should return true if a successful call has been made' do

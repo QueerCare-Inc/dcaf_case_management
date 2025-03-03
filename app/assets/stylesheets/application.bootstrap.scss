@@ -1,6 +1,6 @@
 // Major library config
-@import './styles/bootstrap';
-@import './styles/vendor/jquery-ui';
+@use './styles/bootstrap';
+@use './styles/vendor/jquery-ui';
 
 // Custom styling
 @import './styles/globals';

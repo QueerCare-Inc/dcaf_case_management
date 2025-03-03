@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class FundTest < ActiveSupport::TestCase
   before do
@@ -13,7 +13,7 @@ class FundTest < ActiveSupport::TestCase
     [:name, :subdomain, :domain, :full_name].each do |attrib|
       it "should require #{attrib}" do
         @fund[attrib] = nil
-        refute @fund.valid?
+        assert_not @fund.valid?
       end
     end
 
@@ -21,7 +21,7 @@ class FundTest < ActiveSupport::TestCase
       it "should be unique on #{attrib}" do
         nonunique_fund = create :fund
         nonunique_fund[attrib] = @fund[attrib]
-        refute nonunique_fund.valid?
+        assert_not nonunique_fund.valid?
       end
     end
   end
@@ -45,13 +45,13 @@ class FundTest < ActiveSupport::TestCase
         assert_equal 1, Patient.count
         @pt2 = Patient.first
       end
-      refute_equal @pt1.id, @pt2.id
-      refute_equal @pt1.fund_id, @pt2.fund_id
+      assert_not_equal @pt1.id, @pt2.id
+      assert_not_equal @pt1.fund_id, @pt2.fund_id
 
       # But there should be two patients in db
       ActsAsTenant.current_tenant = nil
       ActsAsTenant.test_tenant = nil
-      assert_equal 2, Patient.count 
+      assert_equal 2, Patient.count
     end
 
     it 'should be able to delete its patient-related data without affecting other funds' do
@@ -60,11 +60,9 @@ class FundTest < ActiveSupport::TestCase
           @patient = create :patient
           @patient.notes.create attributes_for(:note)
           @patient.calls.create attributes_for(:call)
-          @patient.external_pledges.create attributes_for(:external_pledge)
           @patient.practical_supports.create attributes_for(:practical_support)
           @archived_patient = create :archived_patient
           @archived_patient.calls.create attributes_for(:call)
-          @archived_patient.external_pledges.create attributes_for(:external_pledge)
           @archived_patient.practical_supports.create attributes_for(:practical_support)
         end
       end
@@ -72,29 +70,29 @@ class FundTest < ActiveSupport::TestCase
       @fund.delete_patient_related_data
 
       ActsAsTenant.with_tenant(@fund) do
-        [ Patient,
-          ArchivedPatient,
-          Note,
-          Fulfillment,
-          ExternalPledge,
-          PracticalSupport,
-          Call ].each do |model|
-            assert_equal 0, model.count
-          end
+        [Patient,
+         ArchivedPatient,
+         Note,
+         Fulfillment,
+         PracticalSupport,
+         Call].each do |model|
+          assert_equal 0, model.count
+        end
       end
 
       ActsAsTenant.with_tenant(@fund2) do
-        [ Patient,
-          ArchivedPatient,
-          Note,
-          Fulfillment ].each do |model|
-            assert_equal 1, model.count
-          end
-        [ ExternalPledge,
+        [Patient,
+         ArchivedPatient,
+         Note,
+         Fulfillment].each do |model|
+          assert_equal 1, model.count
+        end
+        [
           PracticalSupport,
-          Call ].each do |model|
-            assert_equal 2, model.count
-          end
+          Call
+        ].each do |model|
+          assert_equal 2, model.count
+        end
       end
     end
 
@@ -103,7 +101,7 @@ class FundTest < ActiveSupport::TestCase
         ActsAsTenant.with_tenant(fund) do
           create :user
           create :config
-          create :line
+          create :region
           create :clinic
         end
       end
@@ -111,17 +109,16 @@ class FundTest < ActiveSupport::TestCase
       @fund.delete_administrative_data
 
       ActsAsTenant.with_tenant(@fund) do
-        [ Clinic, Config, Line, User ].each do |model|
+        [Clinic, Config, Region, User].each do |model|
           assert_equal 0, model.count
         end
       end
 
       ActsAsTenant.with_tenant(@fund2) do
-        [ Clinic, Config, Line, User ].each do |model|
+        [Clinic, Config, Region, User].each do |model|
           assert_equal 1, model.count
         end
       end
-
     end
   end
 end

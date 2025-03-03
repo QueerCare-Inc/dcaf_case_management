@@ -37,7 +37,7 @@ class PracticalSupportsController < ApplicationController
   end
 
   def destroy
-    flash.now[:alert] = "Removed practical support"
+    flash.now[:alert] = 'Removed practical support'
     @support.destroy
     respond_to { |format| format.js }
   end
@@ -47,9 +47,9 @@ class PracticalSupportsController < ApplicationController
   def practical_support_params
     params.require(:practical_support)
           .permit(:name, :start_time, :end_time,
-            :confirmed, :source, :support_type, 
-            :amount, :support_date, :purchase_date, 
-            :fulfilled, :attachment_url)
+                  :confirmed, :source, :support_type,
+                  :amount, :purchase_date,
+                  :fulfilled, :attachment_url)
   end
 
   def find_patient

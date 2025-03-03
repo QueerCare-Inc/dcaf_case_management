@@ -16,13 +16,6 @@ $('#change_log').html(
 // Rerack shared flag status
 $('#patient_shared_flag').prop('checked', <%= @patient.shared_flag? %>);
 
-// If updating the accountants view, refresh the row
-if($('#row-<%= @patient.id %>')) {
-  $('#row-<%= @patient.id %>').html(
-    '<%= escape_javascript(render "accountants/table_content_row", patient: @patient) %>'
-  );
-}
-
 // Update the archive date on audit
 $('#patient_fulfillment_attributes_audited')
   .parent()

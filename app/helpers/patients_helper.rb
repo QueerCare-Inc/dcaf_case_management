@@ -161,7 +161,7 @@ module PatientsHelper
         t('patient.procedure_information.clinic_section.clinic_display', clinic_name: clinic.name,
                                                                          city: clinic.city, state: clinic.state),
         clinic.id,
-        { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
+        { data: { medicaid: !!clinic.accepts_medicaid } }
       ]
     end
                             .unshift nil
@@ -241,8 +241,8 @@ module PatientsHelper
     options.uniq
   end
 
-  def line_options
-    Line.all.sort_by(&:name).map { |x| [x.name, x.id] }
+  def region_options
+    Region.all.sort_by(&:name).map { |x| [x.name, x.id] }
   end
 
   def procedure_date_display(patient)

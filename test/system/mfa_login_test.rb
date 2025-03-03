@@ -8,7 +8,7 @@ class MfaLoginTest < ApplicationSystemTestCase
   before do
     @twilio_verify_mock = Minitest::Mock.new
 
-    create :line
+    create :region
     @user = create :user
   end
 

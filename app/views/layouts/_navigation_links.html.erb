@@ -1,6 +1,6 @@
 <ul class="navbar-nav mr-auto">
   <% if current_user %>
-    <%= current_line_display %>
+    <%= current_region_display %>
     <%= cm_resources_link %>
     <%= spanish_or_english_link %>
   <% end %>
@@ -19,8 +19,6 @@
         <%= link_to t('navigation.admin_tools.clinic_management'), clinics_path, class: 'dropdown-item' %>
         <%= link_to t('navigation.admin_tools.config_management'), configs_path, class: 'dropdown-item' %>
       <% end %>
-      <%= link_to t('navigation.admin_tools.accounting'), accountants_path, class: 'dropdown-item' %>
-      <%= link_to t('navigation.admin_tools.export'), patients_path(format: :csv), class: 'dropdown-item' %>
     </div>
   </div>
 <% end %>

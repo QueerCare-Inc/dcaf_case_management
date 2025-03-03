@@ -6,8 +6,10 @@
                         url: data_entry_create_path,
                         html: { class: 'mass_entry_form' },
                         local: true do |f| %>
-  <%= f.select :line_id, options_for_select(line_options, current_line.id) %>
+  <%= f.select :region_id, options_for_select(region_options, current_region.id) %>
 
+  <%= f.date_field :intake_date,
+                   label: t('patient.new.intake_date') %>
   <%= f.date_field :intake_date,
                    label: t('patient.new.intake_date') %>
 
@@ -31,19 +33,14 @@
                    label: t('patient.information.emergency_contact.relationship'),
                    autocomplete: 'off'%>
 
+
   <%= f.text_field :city, autocomplete: 'off' %>
   <%= f.select :state, options_for_select(state_options(nil)), autocomplete: 'off' %>
-  <%= f.text_field :county, autocomplete: 'off' %>
   <%= f.number_field :zipcode, autocomplete: 'off' %>
   
 
    <%= f.select :language, options_for_select(language_options), autocomplete: 'off' %>
    <%= f.select :voicemail_preference, options_for_select(voicemail_options), autocomplete: 'off' %>
-
-  <!-- Notes doesn't work because strong params :( -->
-  <%#= f.fields_for @patient.notes.new do |notes| %>
-    <%#= notes.text_area :full_text, size: '20x5', placeholder: 'Enter notes here' %>
-  <%# end %>
 
   <%= f.number_field :age, autocomplete: 'off' %>
   <%= f.select :race_ethnicity,
@@ -88,10 +85,10 @@
   <% if procedure_type_options.present? %>
     <%= f.select :procedure_type,
       options_for_select(procedure_type_options),
-      label: t('patient.abortion_information.clinic_section.procedure_type') %>
+      label: t('patient.procedure_information.clinic_section.procedure_type') %>
   <% end %>
 
-  <%= f.check_box :referred_to_clinic, label: t('patient.abortion_information.clinic_section.referred_to_clinic') %>
+  <%= f.check_box :referred_to_clinic, label: t('patient.procedure_information.clinic_section.referred_to_clinic') %>
 
   <fieldset class="mt-5">
     <legend class="font-weight-bold" id="special_circumstances_label">

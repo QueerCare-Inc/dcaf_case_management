@@ -4,20 +4,20 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
   before do
     @user = create :user
     @admin = create :user, role: :admin
-    @line = create :line
+    @region = create :region
     @data_volunteer = create :user, role: :data_volunteer
 
     sign_in @user
-    choose_line @line
+    choose_region @region
     @clinic = create :clinic
     @patient = create :patient,
                       name: 'Susie Everyteen',
                       primary_phone: '123-456-7890',
                       emergency_contact_phone: '333-444-5555',
-                      line: @line,
+                      region: @region,
                       city: '=injected_formula'
     @archived_patient = create :archived_patient,
-                               line: @line,
+                               region: @region,
                                intake_date: 400.days.ago
   end
 
@@ -40,9 +40,8 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
     it 'should not serve html' do
       sign_in @data_volunteer
-      assert_raise ActionController::UnknownFormat do
-        get patients_path
-      end
+      get patients_path
+      assert_equal response.status, 406
     end
 
     it 'should get csv when user is admin' do
@@ -63,35 +62,35 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       assert_equal 'text/csv', response.content_type.split(';').first
     end
 
-    it 'should consist of a header line, the patient record, and the archived patient record' do
+    it 'should consist of a header region, the patient record, and the archived patient record' do
       sign_in @data_volunteer
       get patients_path(format: :csv)
-      lines = response.body.split("\n").reject(&:blank?)
-      assert_equal 3, lines.count
-      assert_match @patient.id.to_s, lines[1]
-      assert_match @archived_patient.id.to_s, lines[2]
+      regions = response.body.split("\n").reject(&:blank?)
+      assert_equal 3, regions.count
+      assert_match @patient.id.to_s, regions[1]
+      assert_match @archived_patient.id.to_s, regions[2]
     end
 
     it 'should not contain personally-identifying information' do
       sign_in @data_volunteer
       get patients_path(format: :csv)
-      refute_match @patient.name.to_s, response.body
-      refute_match @patient.primary_phone.to_s, response.body
-      refute_match @patient.emergency_contact_phone.to_s, response.body
+      assert_no_match @patient.name.to_s, response.body
+      assert_no_match @patient.primary_phone.to_s, response.body
+      assert_no_match @patient.emergency_contact_phone.to_s, response.body
     end
 
     it 'should escape fields with attempted formula injection' do
       sign_in @data_volunteer
       get patients_path(format: :csv)
-      lines = response.body.split("\n").reject(&:blank?)
+      regions = response.body.split("\n").reject(&:blank?)
       # A single quote at the beginning indicates it's escaped.
-      assert_match "'=injected_formula", lines[1]
+      assert_match "'=injected_formula", regions[1]
     end
   end
 
   describe 'create method' do
     before do
-      @new_patient = attributes_for :patient, name: 'Test Patient', line_id: @line.id
+      @new_patient = attributes_for :patient, name: 'Test Patient', region_id: @region.id
     end
 
     it 'should create and save a new patient' do
@@ -123,12 +122,6 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       post patients_path, params: { patient: @new_patient }
       assert_not_nil Patient.find_by(name: 'Test Patient').fulfillment
     end
-
-    it 'should ignore pledge fulfillment attributes' do
-      @new_patient[:fulfillment_attributes] = attributes_for :fulfillment, fulfilled: true, fund_payout: 1_000
-      post patients_path, params: { patient: @new_patient }
-      assert_nil Patient.find_by(name: 'Test Patient').fulfillment.fund_payout
-    end
   end
 
   describe 'edit method' do
@@ -159,21 +152,11 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
         @payload = {
           procedure_date: @date.strftime('%Y-%m-%d'),
           name: 'Susie Everyteen 2',
-          resolved_without_fund: true,
-          fund_pledge: 100,
           clinic_id: @clinic.id
         }
 
         patch patient_path(@patient), params: { patient: @payload }, xhr: true
         @patient.reload
-      end
-
-      it 'should update pledge fields' do
-        @payload[:pledge_sent] = true
-        patch patient_path(@patient), params: { patient: @payload }, xhr: true
-        @patient.reload
-        assert_kind_of Time, @patient.pledge_sent_at
-        assert_kind_of Object, @patient.pledge_sent_by
       end
 
       it 'should update last edited by' do
@@ -199,16 +182,6 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
         patch patient_path('notanactualid'), params: { patient: @payload }
         assert_redirected_to root_path
       end
-
-      it 'should ignore pledge fulfillment attributes' do
-        assert_nil @patient.fulfillment.fund_payout
-        @payload[:fulfillment_attributes] = @patient.fulfillment.attributes
-        @payload[:fulfillment_attributes][:fund_payout] = 1_000
-        patch patient_path(@patient), params: { patient: @payload }, xhr: true
-        assert response.body.include? 'saved'
-        @patient.fulfillment.reload
-        assert_nil @patient.fulfillment.fund_payout
-      end
     end
 
     describe 'as JSON' do
@@ -217,21 +190,11 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
         @payload = {
           procedure_date: @date.strftime('%Y-%m-%d'),
           name: 'Susie Everyteen 2',
-          resolved_without_fund: true,
-          fund_pledge: 100,
           clinic_id: @clinic.id
         }
 
         patch patient_path(@patient), params: { patient: @payload }, as: :json
         @patient.reload
-      end
-
-      it 'should update pledge fields' do
-        @payload[:pledge_sent] = true
-        patch patient_path(@patient), params: { patient: @payload }, as: :json
-        @patient.reload
-        assert_kind_of Time, @patient.pledge_sent_at
-        assert_kind_of Object, @patient.pledge_sent_by
       end
 
       it 'should update last edited by' do
@@ -257,51 +220,6 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
         patch patient_path('notanactualid'), params: { patient: @payload }
         assert_redirected_to root_path
       end
-
-      it 'should ignore pledge fulfillment attributes' do
-        assert_nil @patient.fulfillment.fund_payout
-        @payload[:fulfillment_attributes] = @patient.fulfillment.attributes
-        @payload[:fulfillment_attributes][:fund_payout] = 1_000
-        patch patient_path(@patient), params: { patient: @payload }, as: :json
-        assert response.body.include? 'saved'
-        @patient.fulfillment.reload
-        assert_nil @patient.fulfillment.fund_payout
-      end
-    end
-
-    it 'should allow admins to change pledge fulfillment attributes' do
-      @date = 5.days.from_now.to_date
-      @payload = {
-        procedure_date: @date.strftime('%Y-%m-%d'),
-        name: 'Susie Everyteen 2',
-        resolved_without_fund: true,
-        fund_pledge: 100,
-        clinic_id: @clinic.id
-      }
-
-      patch patient_path(@patient), params: { patient: @payload }, xhr: true
-      @patient.reload
-
-      delete destroy_user_session_path
-      sign_in @admin
-
-      assert_nil @patient.fulfillment.fund_payout
-      bullet_enabled = Bullet.enable?
-      Bullet.enable = false
-      @payload[:fulfillment_attributes] = @patient.fulfillment.attributes
-      @payload[:fulfillment_attributes][:fund_payout] = 1_000
-      patch patient_path(@patient), params: { patient: @payload }, xhr: true
-      assert response.body.include? 'saved'
-      @patient.fulfillment.reload
-      assert_equal 1_000, @patient.fulfillment.fund_payout
-      Bullet.enable = bullet_enabled
-    end
-  end
-
-  describe 'pledge method' do
-    it 'should respond success on completion' do
-      get submit_pledge_path(@patient), xhr: true
-      assert_response :success
     end
   end
 
@@ -312,62 +230,10 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  describe 'download' do
-    it 'should not download a pdf with no case manager name' do
-      get generate_pledge_patient_path(@patient), params: { case_manager_name: '' }
-      assert_redirected_to edit_patient_path(@patient)
-    end
-
-    it 'should download a pdf' do
-      pledge_generator_mock = Minitest::Mock.new
-      pdf_mock_result = Minitest::Mock.new
-      pledge_generator_mock.expect(:generate_pledge_pdf, pdf_mock_result)
-      pdf_mock_result.expect :render, "mow"
-      assert_nil @patient.pledge_generated_at
-      PledgeFormGenerator.stub(:new, pledge_generator_mock) do
-        get generate_pledge_patient_path(@patient), params: { case_manager_name: 'somebody' }
-      end
-
-      refute_nil @patient.reload.pledge_generated_at
-      refute_nil @patient.reload.pledge_generated_by
-      assert_response :success
-    end
-  end
-
-  describe 'fetch_pledge' do
-    before do
-      ActsAsTenant.current_tenant.build_pledge_config(remote_pledge_extras: {}).save
-      @patient.update clinic: @clinic, procedure_date: Time.zone.now.strftime('%Y-%m-%d')
-    end
-
-    it 'should request a pdf from a service' do
-      fake_result = Minitest::Mock.new
-      fake_result.expect :ok?, true
-      fake_result.expect :body, ''
-      HTTParty.stub(:post, fake_result) do
-        post fetch_pledge_patient_path(@patient), params: {}
-      end
-      refute_nil @patient.reload.pledge_generated_at
-      refute_nil @patient.reload.pledge_generated_by
-      assert_response :success
-    end
-
-    it 'should error cleanly' do
-      fake_result = Minitest::Mock.new
-      fake_result.expect :ok?, false
-      HTTParty.stub(:post, fake_result) do
-        post fetch_pledge_patient_path(@patient), params: {}
-      end
-      assert_nil @patient.reload.pledge_generated_at
-      assert_nil @patient.reload.pledge_generated_by
-      assert_response :redirect
-    end
-  end
-
   # confirm sending a 'post' with a payload results in a new patient
   describe 'data_entry_create method' do
     before do
-      @test_patient = attributes_for :patient, name: 'Test Patient', line_id: create(:line).id
+      @test_patient = attributes_for :patient, name: 'Test Patient', region_id: create(:region).id
     end
 
     it 'should create and save a new patient' do
@@ -437,19 +303,17 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
         assert_difference 'Patient.count', -1 do
           delete patient_path(@patient)
         end
-        refute_nil flash[:notice]
+        assert_not_nil flash[:notice]
       end
 
       it 'should prevent a patient from being destroyed under some circumstances' do
         @patient.update procedure_date: 2.days.from_now,
-                        clinic: (create :clinic),
-                        fund_pledge: 100,
-                        pledge_sent: true
+                        clinic: (create :clinic)
 
         assert_no_difference 'Patient.count' do
           delete patient_path(@patient)
         end
-        refute_nil flash[:alert]
+        assert_not_nil flash[:alert]
       end
     end
   end

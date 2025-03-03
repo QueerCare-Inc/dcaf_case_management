@@ -9,7 +9,7 @@ en:
       clinic: Clinic
       date_of_check: Date of check
       fund_payout: "%{fund} payout"
-      line: Line
+      region: Region
     title: Accountant dashboard
   activerecord:
     attributes:
@@ -51,10 +51,11 @@ en:
         household_size_adults: Adults in household
         household_size_children: Minors in household
         income: Income
+        intake_date: Intake date
         insurance: Insurance
         intake_date: Intake Date
         language: Language
-        line_id: Line ID
+        region_id: Region ID
         multiday_appointment: Multi-day appointment
         name: Name
         emergency_contact: Emergency contact
@@ -72,7 +73,8 @@ en:
         source: Source
         special_circumstances: Special circumstances
         state: State
-        support_date: Support date
+        start_time: Start time
+        end_time: End time
         support_type: Support type
         textable: Textable
         voicemail_preference: Voicemail preference
@@ -83,7 +85,8 @@ en:
         fulfilled: Fulfilled
         purchase_date: Purchase date
         source: Source
-        support_date: Support date
+        start_time: Start time
+        end_time: End time
         support_type: Support type
       user:
         current_password: Current password
@@ -173,7 +176,7 @@ en:
       title: Configs
   dashboard:
     activity_log:
-      label: "%{current_line} Line Activity Log"
+      label: "%{current_region} Region Activity Log"
     budget_bar:
       pledged: pledged
       pledged_item: "%{amount} pledged"
@@ -265,11 +268,11 @@ en:
     user_created: User created!
     user_update_error: Error saving user details - %{error}
     user_update_success: Successfully updated user details
-  lines:
+  regions:
     new:
       start: Get started
       welcome_to_daria: Welcome to DARIA (%{fund} edition)!
-      what_line: What line are you working on?
+      what_region: What region are you working in?
   multi_factor:
     authenticate: Authenticate
     authentication_error: Authentication error
@@ -313,8 +316,8 @@ en:
       user_management: User Management
     cm_resources:
       label: CM Resources
-    current_line:
-      helper: Your current line
+    current_region:
+      helper: Your current region
     footer:
       national_abortion_federation: National Abortion Federation
       please_send_feedback: Please send feedback or ideas to the programming team at
@@ -487,38 +490,6 @@ en:
       shared_flag: Share this patient for other case managers
       submit: Create Note
       title: Notes
-    pledge:
-      cancel:
-        confirm: Are you sure you want to cancel this pledge?
-        title: Cancel Pledge
-      errors:
-        blank_appt: Appointment date cannot be blank
-        blank_clinic: Clinic name cannot be blank
-        blank_fund: "%{fund} pledge field cannot be blank"
-        blank_patient: Patient name cannot be blank
-        data_required: 'Data required:'
-      step_one:
-        clinic_name: 'Clinic name:'
-        patient_id: 'Patient ID:'
-        patient_name: 'Patient name:'
-        pledge_amount: 'Pledge amount:'
-        title: 'Confirm the following information is correct:'
-      step_three:
-        clinic_fax: Clinic fax
-        completed: Once you've completed the pledging process, please use the check box below to indicate your pledge has been sent.
-        downloads: Your pledge should appear in your computer's downloads.
-        fax_service: Fax service
-        generated: Awesome, you generated a %{fund} Pledge! Thanks!
-        sent_checkbox: I sent the pledge
-        submit: 'Submit the pledge for your client here:'
-        title: 'Submit and send your pledge:'
-      step_two:
-        blank_name_error: You need to enter your name in the box to sign and download the pledge
-        form_disabled: Please generate your pledge form and click next.
-        generate_note: Note that this does NOT send your pledge to the clinic! Please click to the next page after generating your form to record that you have sent the pledge to the clinic.
-        generate_pledge_button: Generate your pledge
-        sign_pledge: 'Enter your name in this box to sign your pledge:'
-        title: 'Generate your pledge form:'
     practical_support:
       create: Create new practical support entry
       delete: Delete
@@ -560,7 +531,10 @@ en:
     practical_support_confirmed: Check this box if this practical support is confirmed by the point of contact.
     practical_support_fulfilled: Check this box if this practical support is completed or paid out, and requires no further attention.
     referred_to_clinic: Check this box if you as a case manager referred the patient to a particular clinic.
-    shared_cases: These are patients who require a little more attention. This list is shared across all case managers working on a single line. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.
+    resolved_without_fund: This is used to indicate that a patient does not require or want our services any longer.
+    shared_cases: These are patients who require a little more attention. This list is shared across all case managers working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.
+    solidarity: Indicates a case to which this fund is providing support, but not handling.
+    solidarity_lead: This is the fund serving as point-of-contact or coordinating funding for this patient.
     status_definition: Status definition
     unconfirmed_support: These are patients who have unconfirmed practical supports.
   user:

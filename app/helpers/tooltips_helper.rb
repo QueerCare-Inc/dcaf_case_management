@@ -22,10 +22,6 @@ module TooltipsHelper
     t('tooltips.call_list').strip
   end
 
-  def budget_bar_help_text
-    t('tooltips.budget_bar', fund: ActsAsTenant.current_tenant.name).strip
-  end
-
   def completed_calls_help_text
     t('tooltips.completed_calls').strip
   end
@@ -44,31 +40,11 @@ module TooltipsHelper
 
     status_def = "#{status[:key]}: #{status[:help_text]}"
 
-    safe_join(["#{t('tooltips.status_definition')}:"].concat([status_def]), tag('br'))
-  end
-
-  def record_new_external_pledge_help_text
-    t('tooltips.record_new_external_pledge').strip
-  end
-
-  def resolved_without_fund_help_text
-    t('tooltips.resolved_without_fund').strip
+    safe_join(["#{t('tooltips.status_definition')}:"].concat([status_def]), tag.br)
   end
 
   def referred_to_clinic_help_text
     t('tooltips.referred_to_clinic').strip
-  end
-
-  def mandatory_ultrasound_help_text
-    t('tooltips.mandatory_ultrasound').strip
-  end
-
-  def solidarity_help_text
-    t('tooltips.solidarity').strip
-  end
-
-  def solidarity_lead_help_text
-    t('tooltips.solidarity_lead').strip
   end
 
   def patient_identifier_help_text

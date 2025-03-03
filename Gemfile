@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 ruby '3.2.4'
 
 # Standard rails
-gem 'rails', '~> 7.1.5.1'
-gem 'puma', '~> 6.5' # roar
+gem 'rails', '~> 7.2.2.1'
+gem 'puma', '~> 6.6' # roar
 gem 'sdoc', '~> 2.6.0', group: :doc
 gem 'nokogiri', '>= 1.13.4'
 gem 'tzinfo-data', require: false
@@ -30,7 +30,7 @@ gem 'activerecord-session_store'
 # Our authentication library is devise, with oauth2 for google signin
 gem 'devise', '~> 4.9'
 gem 'devise-security'
-gem 'omniauth-google-oauth2', '~> 1.2.0'
+gem 'omniauth-google-oauth2', '~> 1.2.1'
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 
 # Run multiple funds on one server

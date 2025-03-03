@@ -9,13 +9,10 @@ class PaperTrailVersion < PaperTrail::Version
     id
     user_ids
     updated_by_id
-    pledge_sent_by_id
     last_edited_by_id
     identifier
     updated_at
     created_at
-    can_pledge_type
-    can_pledge_id
     fund_id
     can_fulfill_type
     can_fulfill_id
@@ -26,11 +23,6 @@ class PaperTrailVersion < PaperTrail::Version
     procedure_date
     intake_date
   ].freeze
-  TIME_FIELDS = %w[
-    pledge_generated_at
-    pledge_sent_at
-    fund_pledged_at
-  ]
 
   # convenience methods for clean view display
   def date_of_change
@@ -51,7 +43,7 @@ class PaperTrailVersion < PaperTrail::Version
              .reduce({}) do |acc, x|
                key = x[0]
                acc.merge({ key => { original: format_fieldchange(key, x[1][0]),
-                                    modified: format_fieldchange(key, x[1][1]) }})
+                                    modified: format_fieldchange(key, x[1][1]) } })
              end
   end
 
@@ -60,29 +52,26 @@ class PaperTrailVersion < PaperTrail::Version
   end
 
   def self.destroy_old
-    PaperTrailVersion.where("created_at < ?", 1.year.ago).destroy_all
+    PaperTrailVersion.where('created_at < ?', 1.year.ago).destroy_all
   end
 
   private
 
   def format_fieldchange(key, value)
-    shaped_value = if value.blank?
-                     '(empty)'
-                   elsif DATE_FIELDS.include? key
-                     year, month, day = value.split('-')
-                     "#{month.rjust(2, '0')}/#{day.rjust(2, '0')}/#{year}"
-                   elsif TIME_FIELDS.include? key
-                     year, month, day = value.gsub(/T.*/, '').split('-')
-                     "#{month.rjust(2, '0')}/#{day.rjust(2, '0')}/#{year}"
-                   elsif value.is_a? Array # special circumstances, for example
-                     value.reject(&:blank?).join(', ')
-                   elsif key == 'clinic_id'
-                     Clinic.find(value).name
-                   elsif key == 'pledge_generated_by_id'
-                     ::User.find(value).name # Use the User model instead of the Userstamp namespace
-                   else
-                     value
-                   end
-    shaped_value
+    if value.blank?
+      '(empty)'
+    elsif DATE_FIELDS.include? key
+      year, month, day = value.split('-')
+      "#{month.rjust(2, '0')}/#{day.rjust(2, '0')}/#{year}"
+    #  elsif TIME_FIELDS.include? key
+    #    year, month, day = value.gsub(/T.*/, '').split('-')
+    #    "#{month.rjust(2, '0')}/#{day.rjust(2, '0')}/#{year}"
+    elsif value.is_a? Array # special circumstances, for example
+      value.reject(&:blank?).join(', ')
+    elsif key == 'clinic_id'
+      Clinic.find(value).name
+    else
+      value
+    end
   end
 end

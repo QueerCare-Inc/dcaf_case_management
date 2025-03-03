@@ -7,11 +7,12 @@ class ArchivedPatient < ApplicationRecord
   include Exportable
 
   # Relationships
-  belongs_to :line
   belongs_to :clinic, optional: true
+  belongs_to :region
   has_one :fulfillment, as: :can_fulfill
   has_many :calls, as: :can_call
-  
+  has_many :practical_supports, as: :can_support
+
   # Enums
   enum :age_range, {
     not_specified: :not_specified,
@@ -26,11 +27,11 @@ class ArchivedPatient < ApplicationRecord
 
   # Validations
   validates :intake_date,
-            :line,
+            :region,
             presence: true
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
-                               allow_blank: true
-  # validates_associated :fulfillment
+                             allow_blank: true
+  validates_associated :fulfillment
 
   # Archive & delete audited patients who called a several months ago, or any
   # from a year plus ago
@@ -45,10 +46,9 @@ class ArchivedPatient < ApplicationRecord
     end
   end
 
-
   def self.convert_patient(patient)
     archived_patient = new(
-      line: patient.line,
+      region: patient.region,
       city: patient.city,
       state: patient.state,
       county: patient.county,
@@ -74,12 +74,12 @@ class ArchivedPatient < ApplicationRecord
       age_range: patient.age_range,
       has_alt_contact: patient.has_alt_contact,
       notes_count: patient.notes_count,
-      has_special_circumstances: patient.has_special_circumstances
+      has_special_circumstances: patient.has_special_circumstances,
       has_in_case_of_emergency: patient.has_in_case_of_emergency
     )
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id
-    archived_patient.line_id = patient.line_id
+    archived_patient.region_id = patient.region_id
 
     PaperTrail.request(whodunnit: patient.created_by_id) do
       archived_patient.save!
@@ -87,7 +87,7 @@ class ArchivedPatient < ApplicationRecord
 
     patient.versions.destroy_all
 
-    # patient.fulfillment.update! can_fulfill: archived_patient
+    patient.fulfillment.update! can_fulfill: archived_patient
 
     patient.calls.each do |call|
       call.update! can_call: archived_patient

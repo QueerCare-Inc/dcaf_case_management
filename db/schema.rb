@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "voicemail_preference", default: "not_specified"
     t.string "line_legacy"
     t.string "language"
-    t.date "initial_call_date"
+    t.date "intake_date"
     t.boolean "shared_flag"
     t.string "city"
     t.string "state"
@@ -35,22 +35,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.boolean "has_special_circumstances"
     t.string "referred_by"
     t.boolean "referred_to_clinic"
-    t.date "appointment_date"
+    t.date "procedure_date"
     t.boolean "textable"
     t.bigint "clinic_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.bigint "line_id", null: false
-    t.boolean "solidarity"
-    t.string "solidarity_lead"
     t.string "procedure_type"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
+    t.bigint "region_id", null: false
     t.index ["clinic_id"], name: "index_archived_patients_on_clinic_id"
     t.index ["fund_id"], name: "index_archived_patients_on_fund_id"
-    t.index ["line_id"], name: "index_archived_patients_on_line_id"
     t.index ["line_legacy"], name: "index_archived_patients_on_line_legacy"
+    t.index ["region_id"], name: "index_archived_patients_on_region_id"
   end
 
   create_table "auth_factors", force: :cascade do |t|
@@ -76,12 +74,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.bigint "line_id", null: false
+    t.bigint "region_id", null: false
     t.index ["fund_id"], name: "index_call_list_entries_on_fund_id"
-    t.index ["line_id"], name: "index_call_list_entries_on_line_id"
     t.index ["line_legacy"], name: "index_call_list_entries_on_line_legacy"
     t.index ["patient_id", "user_id", "fund_id"], name: "index_call_list_entries_on_patient_id_and_user_id_and_fund_id", unique: true
     t.index ["patient_id"], name: "index_call_list_entries_on_patient_id"
+    t.index ["region_id"], name: "index_call_list_entries_on_region_id"
     t.index ["user_id"], name: "index_call_list_entries_on_user_id"
   end
 
@@ -105,40 +103,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "phone"
     t.string "fax"
     t.boolean "active", default: true, null: false
-    t.boolean "accepts_naf"
     t.boolean "accepts_medicaid"
-    t.integer "gestational_limit"
     t.decimal "coordinates", array: true
-    t.integer "costs_5wks"
-    t.integer "costs_6wks"
-    t.integer "costs_7wks"
-    t.integer "costs_8wks"
-    t.integer "costs_9wks"
-    t.integer "costs_10wks"
-    t.integer "costs_11wks"
-    t.integer "costs_12wks"
-    t.integer "costs_13wks"
-    t.integer "costs_14wks"
-    t.integer "costs_15wks"
-    t.integer "costs_16wks"
-    t.integer "costs_17wks"
-    t.integer "costs_18wks"
-    t.integer "costs_19wks"
-    t.integer "costs_20wks"
-    t.integer "costs_21wks"
-    t.integer "costs_22wks"
-    t.integer "costs_23wks"
-    t.integer "costs_24wks"
-    t.integer "costs_25wks"
-    t.integer "costs_26wks"
-    t.integer "costs_27wks"
-    t.integer "costs_28wks"
-    t.integer "costs_29wks"
-    t.integer "costs_30wks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.string "email_for_pledges"
     t.index ["fund_id"], name: "index_clinics_on_fund_id"
     t.index ["name", "fund_id"], name: "index_clinics_on_name_and_fund_id", unique: true
   end
@@ -159,35 +128,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "line_legacy"
     t.string "patient_name"
     t.string "patient_id"
-    t.integer "pledge_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.bigint "line_id", null: false
+    t.bigint "region_id", null: false
     t.index ["created_at"], name: "index_events_on_created_at"
     t.index ["fund_id"], name: "index_events_on_fund_id"
-    t.index ["line_id"], name: "index_events_on_line_id"
     t.index ["line_legacy"], name: "index_events_on_line_legacy"
-  end
-
-  create_table "external_pledges", force: :cascade do |t|
-    t.string "source", null: false
-    t.integer "amount"
-    t.boolean "active"
-    t.string "can_pledge_type", null: false
-    t.bigint "can_pledge_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "fund_id"
-    t.index ["can_pledge_type", "can_pledge_id"], name: "index_external_pledges_on_can_pledge_type_and_can_pledge_id"
-    t.index ["fund_id"], name: "index_external_pledges_on_fund_id"
+    t.index ["region_id"], name: "index_events_on_region_id"
   end
 
   create_table "fulfillments", force: :cascade do |t|
     t.boolean "fulfilled", default: false, null: false
     t.date "procedure_date"
-    t.string "check_number"
-    t.date "date_of_check"
     t.boolean "audited"
     t.string "can_fulfill_type", null: false
     t.bigint "can_fulfill_id", null: false
@@ -209,15 +162,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "full_name", comment: "Full name of the fund. e.g. DC Abortion Fund"
     t.string "site_domain", comment: "URL of the fund's public-facing website. e.g. www.dcabortionfund.org"
     t.string "phone", comment: "Contact number for the abortion fund, usually the hotline"
-  end
-
-  create_table "lines", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "fund_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["fund_id"], name: "index_lines_on_fund_id"
-    t.index ["name", "fund_id"], name: "index_lines_on_name_and_fund_id", unique: true
   end
 
   create_table "notes", force: :cascade do |t|
@@ -245,7 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
   create_table "patients", force: :cascade do |t|
     t.string "name", null: false
     t.string "primary_phone", null: false
-    t.string "emergency_conctact"
+    t.string "emergency_contact"
     t.string "emergency_contact_phone"
     t.string "emergency_contact_relationship"
     t.string "identifier"
@@ -255,8 +199,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "pronouns"
     t.date "intake_date", null: false
     t.boolean "shared_flag"
-    t.integer "last_menstrual_period_weeks"
-    t.integer "last_menstrual_period_days"
     t.integer "age"
     t.string "city"
     t.string "state"
@@ -271,7 +213,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "special_circumstances", default: [], array: true
     t.string "referred_by"
     t.boolean "referred_to_clinic"
-    t.boolean "completed_ultrasound"
     t.date "procedure_date"
     t.boolean "textable"
     t.bigint "clinic_id"
@@ -279,9 +220,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
-    t.bigint "line_id", null: false
-    t.boolean "solidarity"
-    t.string "solidarity_lead"
     t.string "procedure_type"
     t.time "appointment_time", comment: "A patient's appointment time"
     t.boolean "multiday_appointment"
@@ -290,16 +228,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.string "email"
     t.string "emergency_reference_wording"
     t.string "in_case_of_emergency", default: [], array: true
+    t.bigint "region_id", null: false
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
-    t.index ["emergency_conctact"], name: "index_patients_on_emergency_conctact"
+    t.index ["emergency_contact"], name: "index_patients_on_emergency_contact"
     t.index ["emergency_contact_phone"], name: "index_patients_on_emergency_contact_phone"
     t.index ["fund_id"], name: "index_patients_on_fund_id"
     t.index ["identifier"], name: "index_patients_on_identifier"
     t.index ["last_edited_by_id"], name: "index_patients_on_last_edited_by_id"
-    t.index ["line_id"], name: "index_patients_on_line_id"
     t.index ["line_legacy"], name: "index_patients_on_line_legacy"
     t.index ["name"], name: "index_patients_on_name"
     t.index ["primary_phone", "fund_id"], name: "index_patients_on_primary_phone_and_fund_id", unique: true
+    t.index ["region_id"], name: "index_patients_on_region_id"
     t.index ["shared_flag"], name: "index_patients_on_shared_flag"
   end
 
@@ -330,7 +269,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.datetime "updated_at", null: false
     t.bigint "fund_id"
     t.decimal "amount", precision: 8, scale: 2
-    t.date "support_date"
     t.string "attachment_url", comment: "A link to a fund's stored receipt for this particular entry"
     t.boolean "fulfilled", comment: "An indicator that a particular practical support is fulfilled, completed, or paid out."
     t.date "purchase_date", comment: "Date of purchase, if applicable"
@@ -338,6 +276,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
     t.datetime "end_time"
     t.index ["can_support_type", "can_support_id"], name: "index_practical_supports_on_can_support_type_and_can_support_id"
     t.index ["fund_id"], name: "index_practical_supports_on_fund_id"
+  end
+
+  create_table "regions", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "fund_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "state"
+    t.index ["fund_id"], name: "index_regions_on_fund_id"
+    t.index ["name", "fund_id"], name: "index_regions_on_name_and_fund_id", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -351,7 +299,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
 
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
-    t.string "line"
+    t.string "region"
     t.integer "role", default: 0, null: false
     t.boolean "disabled_by_fund", default: false
     t.datetime "created_at", null: false
@@ -392,26 +340,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_223439) do
 
   add_foreign_key "archived_patients", "clinics"
   add_foreign_key "archived_patients", "funds"
-  add_foreign_key "archived_patients", "lines"
+  add_foreign_key "archived_patients", "regions"
   add_foreign_key "auth_factors", "users"
   add_foreign_key "call_list_entries", "funds"
-  add_foreign_key "call_list_entries", "lines"
   add_foreign_key "call_list_entries", "patients"
+  add_foreign_key "call_list_entries", "regions"
   add_foreign_key "call_list_entries", "users"
   add_foreign_key "calls", "funds"
   add_foreign_key "clinics", "funds"
   add_foreign_key "configs", "funds"
   add_foreign_key "events", "funds"
-  add_foreign_key "events", "lines"
-  add_foreign_key "external_pledges", "funds"
+  add_foreign_key "events", "regions"
   add_foreign_key "fulfillments", "funds"
-  add_foreign_key "lines", "funds"
   add_foreign_key "notes", "funds"
   add_foreign_key "patients", "clinics"
   add_foreign_key "patients", "funds"
-  add_foreign_key "patients", "lines"
+  add_foreign_key "patients", "regions"
   add_foreign_key "patients", "users", column: "last_edited_by_id"
   add_foreign_key "practical_supports", "funds"
+  add_foreign_key "regions", "funds"
   add_foreign_key "users", "funds"
   add_foreign_key "versions", "funds"
 end

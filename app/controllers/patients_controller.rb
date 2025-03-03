@@ -32,18 +32,12 @@ class PatientsController < ApplicationController
   def edit
     # i18n-tasks-use t('activerecord.attributes.practical_support.confirmed')
     # i18n-tasks-use t('activerecord.attributes.practical_support.source')
-    # i18n-tasks-use t('activerecord.attributes.practical_support.support_date')
+    # i18n-tasks-use t('activerecord.attributes.practical_support.start_time')
+    # i18n-tasks-use t('activerecord.attributes.practical_support.end_time')
     # i18n-tasks-use t('activerecord.attributes.practical_support.purchase_date')
     # i18n-tasks-use t('activerecord.attributes.practical_support.support_type')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.active')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.amount')
-    # i18n-tasks-use t('activerecord.attributes.external_pledge.source')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.audited')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.check_number')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.date_of_check')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.fulfilled')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.fund_payout')
-    # i18n-tasks-use t('activerecord.attributes.fulfillment.gestation_at_procedure')
     # i18n-tasks-use t('activerecord.attributes.fulfillment.procedure_date')
     # i18n-tasks-use t('activerecord.attributes.practical_support.fulfilled')
     @note = @patient.notes.new
@@ -97,7 +91,6 @@ class PatientsController < ApplicationController
     action_name.to_sym == :edit || (action_name.to_sym == :update && !request.format.json?)
   end
 
-
   def find_patient
     @patient = Patient.includes(versions: [:item, :user])
                       .find params[:id]
@@ -134,17 +127,16 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :name, :care_coordinator, 
+    :name, :care_coordinator,
     :procedure_date, :primary_phone, :pronouns, :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
-    :line_id,
+    :region_id,
     :legal_name, :email,
     :age, :race_ethnicity, :language, :voicemail_preference, :textable,
-    :city, :state, :county, :zipcode, :emergency_contact, :other_phone,
-    :emergency_contact_relationship,
-    :other_contact_referencing,
+    :city, :state, :county, :zipcode, :emergency_contact, :emergency_contact_phone,
+    :emergency_contact_relationship, :other_contact_referencing,
     :employment_status, :income,
     :household_size_adults, :household_size_children, :insurance, :referred_by,
     :procedure_type,
@@ -153,13 +145,8 @@ class PatientsController < ApplicationController
     { in_case_of_emergency: [] }
   ].freeze
 
-  # Does this make sense for a one to many relationship?
   PROCEDURE_INFORMATION_PARAMS = [
-    :clinic_id,
-    :surgeon_id, :procedure_type,
-    :referred_to_clinic, 
-    :solidarity, :solidarity_lead, :appointment_time,
-    :multiday_appointment
+    :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
   ].freeze
 
   # Does this make sense for a one to many relationship?
@@ -168,24 +155,18 @@ class PatientsController < ApplicationController
   ]
 
   FULFILLMENT_PARAMS = [
-    fulfillment_attributes: [:id, :fulfilled, :procedure_date, 
-                             :check_number, :date_of_check, :audited]
+    fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
   ].freeze
 
-  OTHER_PARAMS = [:shared_flag, :initial_call_date, :practical_support_waiver].freeze
+  OTHER_PARAMS = [:shared_flag, :intake_date, :practical_support_waiver].freeze
 
   def patient_params
     permitted_params = [].concat(
       PATIENT_DASHBOARD_PARAMS, PATIENT_INFORMATION_PARAMS,
-      PROCEDURE_INFORMATION_PARAMS, SHIFT_INFORMATION_PARAMS, OTHER_PARAMS
+      PROCEDURE_INFORMATION_PARAMS, OTHER_PARAMS
     )
     permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:patient).permit(permitted_params)
-  end
-
-  def encrypt_payload(payload)
-    encryptor = ActiveSupport::MessageEncryptor.new(ENV.fetch('PLEDGE_GENERATOR_ENCRYPTOR', '0' * 32))
-    encryptor.encrypt_and_sign(payload)
   end
 
   def render_csv
