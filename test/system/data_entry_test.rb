@@ -86,8 +86,8 @@ class DataEntryTest < ApplicationSystemTestCase
     end
 
     it 'should log a new patient ready for further editing: abortion' do
-      click_link 'Abortion Information'
-      within :css, '#abortion_information' do
+      click_link 'Procedure Information'
+      within :css, '#procedure_information' do
         assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
         assert has_checked_field? 'Referred to clinic'
       end

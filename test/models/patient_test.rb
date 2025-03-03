@@ -6,12 +6,12 @@ class PatientTest < ActiveSupport::TestCase
   before do
     @user = create :user
     @region = create :region
-    @patient = create :patient, other_phone: '111-222-3333',
-                                other_contact: 'Yolo',
+    @patient = create :patient, emergency_contact_phone: '111-222-3333',
+                                emergency_contact: 'Yolo',
                                 region: @region
 
-    @patient2 = create :patient, other_phone: '333-222-3333',
-                                 other_contact: 'Foobar',
+    @patient2 = create :patient, emergency_contact_phone: '333-222-3333',
+                                 emergency_contact: 'Foobar',
                                  region: @region
     @patient.calls.create attributes_for(:call, status: :reached_patient)
     @call = @patient.calls.first
@@ -21,19 +21,19 @@ class PatientTest < ActiveSupport::TestCase
   describe 'callbacks' do
     before do
       @new_patient = build :patient, name: '  Name With Whitespace  ',
-                                     other_contact: ' also name with whitespace ',
-                                     other_contact_relationship: '  something ',
+                                     emergency_contact: ' also name with whitespace ',
+                                     emergency_contact_relationship: '  something ',
                                      primary_phone: '111-222-3333',
-                                     other_phone: '999-888-7777'
+                                     emergency_contact_phone: '999-888-7777'
     end
 
     it 'should clean fields before save' do
       @new_patient.save
       assert_equal 'Name With Whitespace', @new_patient.name
-      assert_equal 'also name with whitespace', @new_patient.other_contact
-      assert_equal 'something', @new_patient.other_contact_relationship
+      assert_equal 'also name with whitespace', @new_patient.emergency_contact
+      assert_equal 'something', @new_patient.emergency_contact_relationship
       assert_equal '1112223333', @new_patient.primary_phone
-      assert_equal '9998887777', @new_patient.other_phone
+      assert_equal '9998887777', @new_patient.emergency_contact_phone
     end
 
     it 'should init a fulfillment after creation' do
@@ -59,7 +59,7 @@ class PatientTest < ActiveSupport::TestCase
       assert_not @patient.valid?
     end
 
-    %w[primary_phone other_phone].each do |phone|
+    %w[primary_phone emergency_contact_phone].each do |phone|
       it "should enforce a max length of 10 for #{phone}" do
         @patient[phone] = '123-456-789022'
         assert_not @patient.valid?
@@ -79,19 +79,19 @@ class PatientTest < ActiveSupport::TestCase
       end
     end
 
-    it 'should require appointment_date to be reasonably after intake_date' do
+    it 'should require procedure_date to be after intake_date' do
       # when initial call date is nil
-      @patient.appointment_date = '2016-05-01'
+      @patient.procedure_date = '2016-05-01'
       @patient.intake_date = nil
       assert_not @patient.valid?
       # when initial call date is after appointment date
       @patient.intake_date = '2016-09-01'
       assert_not @patient.valid?
       # when appointment date is nil
-      @patient.appointment_date = nil
+      @patient.procedure_date = nil
       assert @patient.valid?
       # when appointment date is after initial call date
-      @patient.appointment_date = '2016-08-01'
+      @patient.procedure_date = '2016-08-01'
       assert @patient.valid?
     end
 
@@ -166,7 +166,7 @@ class PatientTest < ActiveSupport::TestCase
 
   describe 'callbacks' do
     describe 'clean_fields' do
-      %w[name other_contact].each do |field|
+      %w[name emergency_contact].each do |field|
         it "should strip whitespace from before and after #{field}" do
           @patient[field] = '   Yolo Goat   '
           @patient.save
@@ -174,7 +174,7 @@ class PatientTest < ActiveSupport::TestCase
         end
       end
 
-      %w[primary_phone other_phone].each do |field|
+      %w[primary_phone emergency_contact_phone].each do |field|
         it "should remove nondigits on save from #{field}" do
           @patient[field] = '111-222-3333'
           @patient.save
@@ -188,7 +188,7 @@ class PatientTest < ActiveSupport::TestCase
         create :clinic
         @patient = create :patient, shared_flag: true,
                                     clinic: Clinic.first,
-                                    appointment_date: 2.days.from_now
+                                    procedure_date: 2.days.from_now
       end
     end
 
@@ -228,7 +228,7 @@ class PatientTest < ActiveSupport::TestCase
   describe 'other methods' do
     before do
       @patient = create :patient, primary_phone: '111-222-3333',
-                                  other_phone: '111-222-4444',
+                                  emergency_contact_phone: '111-222-4444',
                                   name: 'Yolo Goat Bart Simpson'
     end
 
@@ -238,8 +238,8 @@ class PatientTest < ActiveSupport::TestCase
     end
 
     it 'secondary_phone_display - should be hyphenated other phone' do
-      assert_not_equal @patient.other_phone, @patient.other_phone_display
-      assert_equal '111-222-4444', @patient.other_phone_display
+      assert_not_equal @patient.emergency_contact_phone, @patient.emergency_contact_phone_display
+      assert_equal '111-222-4444', @patient.emergency_contact_phone_display
     end
 
     it 'initials - creates proper initials' do
@@ -430,8 +430,8 @@ class PatientTest < ActiveSupport::TestCase
                                             confirmed: true
 
         # no practical support, also should not show up
-        @patient3 = create :patient, other_phone: '333-222-1111',
-                                     other_contact: 'Cats',
+        @patient3 = create :patient, emergency_contact_phone: '333-222-1111',
+                                     emergency_contact: 'Cats',
                                      region: @region
       end
 
@@ -519,7 +519,7 @@ class PatientTest < ActiveSupport::TestCase
     {
       id: patient.id,
       name: patient.name,
-      appointment_date: patient.appointment_date
+      procedure_date: patient.procedure_date
     }
   end
 end

@@ -127,22 +127,32 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :name, :appointment_date, :primary_phone, :pronouns
+    :name, :care_coordinator,
+    :procedure_date, :primary_phone, :pronouns, :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
-    :region_id, :age, :race_ethnicity, :language, :voicemail_preference, :textable,
-    :city, :state, :county, :zipcode, :other_contact, :other_phone,
-    :other_contact_relationship, :employment_status, :income,
+    :region_id,
+    :legal_name, :email,
+    :age, :race_ethnicity, :language, :voicemail_preference, :textable,
+    :city, :state, :county, :zipcode, :emergency_contact, :emergency_contact_phone,
+    :emergency_contact_relationship, :other_contact_referencing,
+    :employment_status, :income,
     :household_size_adults, :household_size_children, :insurance, :referred_by,
-    :procedure_type, { special_circumstances: [] }
+    :procedure_type,
+    :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
+    { special_circumstances: [] },
+    { in_case_of_emergency: [] }
   ].freeze
 
-  ABORTION_INFORMATION_PARAMS = [
-    :clinic_id, :referred_to_clinic,
-    :appointment_time,
-    :multiday_appointment
+  PROCEDURE_INFORMATION_PARAMS = [
+    :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
   ].freeze
+
+  # Does this make sense for a one to many relationship?
+  PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
+    :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
+  ]
 
   FULFILLMENT_PARAMS = [
     fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
@@ -153,7 +163,7 @@ class PatientsController < ApplicationController
   def patient_params
     permitted_params = [].concat(
       PATIENT_DASHBOARD_PARAMS, PATIENT_INFORMATION_PARAMS,
-      ABORTION_INFORMATION_PARAMS, OTHER_PARAMS
+      PROCEDURE_INFORMATION_PARAMS, OTHER_PARAMS
     )
     permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:patient).permit(permitted_params)

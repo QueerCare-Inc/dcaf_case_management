@@ -48,7 +48,7 @@ es:
         active: Activa
         age: Edad
         amount: Monto
-        appointment_date: Día de la cita
+        procedure_date: Día de la cita
         appointment_time: Hora de la cita
         audited: Auditada
         check_number: 'Cheque #'
@@ -74,9 +74,9 @@ es:
         multiday_appointment: Cita de varios días
         naf_pledge: Promesa de la NAF
         name: Nombre
-        other_contact: Otro contacto
-        other_contact_relationship: Otra relacion de contacto
-        other_phone: Otro teléfono
+        emergency_contact: Otro contacto
+        emergency_contact_relationship: Otra relacion de contacto
+        emergency_contact_phone: Otro teléfono
         patient_contribution: Contribución del paciente
         pledge_generated_at: Promesa generada en
         pledge_generated_by_id: Promesa generada por
@@ -130,9 +130,9 @@ es:
         no_voicemail: No deje un mensaje de voz a este paciente
         voicemail_identify: Si se puede dejar mensaje de voz; Y tambien, identificarse como %{fund}
         voicemail_no_identify: Si se puede dejar mensaje de voz; Pero no identificarse como %{fund}
-    other_contact:
+    emergency_contact:
       number: "%{name}'s numero:"
-      other_contact: "%{name} %{rel} es el contacto principal para este paciente%{punc}"
+      emergency_contact: "%{name} %{rel} es el contacto principal para este paciente%{punc}"
       primary: 'Contacto primario:'
     status:
       couldnt_reach_patient: No hablé con el paciente
@@ -170,7 +170,7 @@ es:
       title: Añadir una nueva clínica
   common:
     add: Añadir
-    appointment_date_short: Día de la cita
+    procedure_date_short: Día de la cita
     back: Atrás
     clinic: Clínica
     close: Cierre
@@ -368,7 +368,7 @@ es:
   note:
     most_recent: 'La nota más reciente de %{by} en %{at}:'
   patient:
-    abortion_information:
+    procedure_information:
       clinic_section:
         clinic: Clínica
         clinic_display: "%{clinic_name} (%{city}, %{state})"
@@ -496,7 +496,7 @@ es:
       income_help: Empleo, Cupones de Alimentos, SS, TANF, etc.
       insurance: Seguro médico del patiente
       language: Idioma preferido
-      other_contact:
+      emergency_contact:
         name: Nombre de Otro Contacto
         phone: Otro teléfono
         relationship: Relación con Otro Contacto
@@ -515,7 +515,7 @@ es:
       title: Información del Paciente
       voicemail_preference: Preferencias de Mensaje de Voz
     menu:
-      abortion_information: Información de Aborto
+      procedure_information: Información de Aborto
       call_log: Registro de Llamadas
       cancel_pledge: Cancelar Promesa
       change_log: Registro de Cambios

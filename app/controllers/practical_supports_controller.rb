@@ -46,7 +46,10 @@ class PracticalSupportsController < ApplicationController
 
   def practical_support_params
     params.require(:practical_support)
-          .permit(:confirmed, :source, :support_type, :amount, :purchase_date, :fulfilled, :attachment_url, :start_time, :end_time)
+          .permit(:name, :start_time, :end_time,
+                  :confirmed, :source, :support_type,
+                  :amount, :purchase_date,
+                  :fulfilled, :attachment_url)
   end
 
   def find_patient

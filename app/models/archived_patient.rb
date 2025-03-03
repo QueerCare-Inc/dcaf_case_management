@@ -29,8 +29,8 @@ class ArchivedPatient < ApplicationRecord
   validates :intake_date,
             :region,
             presence: true
-  validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
-                               allow_blank: true
+  validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
+                             allow_blank: true
   validates_associated :fulfillment
 
   # Archive & delete audited patients who called a several months ago, or any
@@ -53,7 +53,7 @@ class ArchivedPatient < ApplicationRecord
       state: patient.state,
       county: patient.county,
       intake_date: patient.intake_date,
-      appointment_date: patient.appointment_date,
+      procedure_date: patient.procedure_date,
       multiday_appointment: patient.multiday_appointment,
       practical_support_waiver: patient.practical_support_waiver,
 
@@ -74,7 +74,8 @@ class ArchivedPatient < ApplicationRecord
       age_range: patient.age_range,
       has_alt_contact: patient.has_alt_contact,
       notes_count: patient.notes_count,
-      has_special_circumstances: patient.has_special_circumstances
+      has_special_circumstances: patient.has_special_circumstances,
+      has_in_case_of_emergency: patient.has_in_case_of_emergency
     )
 
     archived_patient.clinic_id = patient.clinic_id if patient.clinic_id

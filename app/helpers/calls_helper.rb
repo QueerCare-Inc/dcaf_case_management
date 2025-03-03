@@ -13,11 +13,11 @@ module CallsHelper
     end
   end
 
-  def display_other_contact_and_phone_if_exists(patient)
+  def display_emergency_contact_and_phone_if_exists(patient)
     section = []
-    if patient.other_contact? || patient.other_phone?
+    if patient.emergency_contact? || patient.emergency_contact_phone?
       section.push name_display_h4(patient)
-      section.push other_phone_h4(patient) if patient.other_phone?
+      section.push emergency_contact_phone_h4(patient) if patient.emergency_contact_phone?
       section.push patient_name_h4(patient)
     end
     safe_join section, ''
@@ -48,7 +48,7 @@ module CallsHelper
 
   def name_display_h4(patient)
     content_tag :h4,
-                other_contact_name_display(patient),
+                emergency_contact_name_display(patient),
                 class: 'modal-title calls-request calls-other-contact'
   end
 
@@ -85,29 +85,29 @@ module CallsHelper
       end
   end
 
-  def other_contact_name_display(patient)
-    if patient.other_contact?
-      t('call.other_contact.other_contact', name: "#{patient.other_contact}",
-                                            rel: "#{other_contact_relationship_display(patient)}",
-                                            punc: "#{patient.other_phone? ? ':' : '.'}")
+  def emergency_contact_name_display(patient)
+    if patient.emergency_contact?
+      t('call.emergency_contact.emergency_contact', name: "#{patient.emergency_contact}",
+                                            rel: "#{emergency_contact_relationship_display(patient)}",
+                                            punc: "#{patient.emergency_contact_phone? ? ':' : '.'}")
     else
-      t('call.other_contact.primary')
+      t('call.emergency_contact.primary')
     end
   end
 
-  def other_phone_h4(patient)
-    content_tag :h4, patient.other_phone_display, class: 'calls-phone'
+  def emergency_contact_phone_h4(patient)
+    content_tag :h4, patient.emergency_contact_phone_display, class: 'calls-phone'
   end
 
   def patient_name_h4(patient)
     content_tag :h4,
-                t('call.other_contact.number', name: "#{patient.name}"),
+                t('call.emergency_contact.number', name: "#{patient.name}"),
                 class: 'modal-title calls-request'
   end
 
-  def other_contact_relationship_display(patient)
-    if patient.other_contact_relationship?
-      " (#{patient.other_contact_relationship})"
+  def emergency_contact_relationship_display(patient)
+    if patient.emergency_contact_relationship?
+      " (#{patient.emergency_contact_relationship})"
     else
       ''
     end

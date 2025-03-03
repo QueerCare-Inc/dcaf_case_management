@@ -4,18 +4,25 @@
                locals: {title: t('dashboard.partial_titles.coordinator_cr'),
                         calendar_type: 'coordinator_cr'
                } %>
+    <%= render partial: 'dashboards/shift_calendar',
+               locals: {title: t('dashboard.partial_titles.coordinator_cr'),
+                        calendar_type: 'coordinator_cr'
+               }%>
     <%= render partial: 'dashboards/search_form' %>
+    <p>Replace with add CR Button</p>
     <%= render partial: 'dashboards/table_content',
                locals: { title: t('dashboard.partial_titles.call_list'),
                          table_type: 'call_list',
                          patients: current_user.call_list_patients(current_region),
                          sortable: true,
                          autosortable: true } %>
+    <p>Replace with New CR Requests</p>
     <%= render partial: 'dashboards/table_content',
                locals: { title: t('dashboard.partial_titles.completed_calls'),
                          table_type: 'completed_calls',
                          patients: current_user.recently_called_patients(current_region),
                          autosortable: true } %>
+    <p>Replace with Your Active CRs</p>
     <%= render partial: 'dashboards/table_content',
                locals: { title: t('dashboard.partial_titles.shared_cases'),
                          table_type: 'shared_cases',
@@ -26,6 +33,8 @@
                          table_type: 'unconfirmed_support',
                          patients: @unconfirmed_support_patients,
                          autosortable: true } %>
+    <p>Replace with Unfulfilled Volunteer Shifts</p>
+    <p>Insert Unfulfilled Reimbursements</p>
     <%= render partial: 'dashboards/modal' %>
     <%= render partial: 'dashboards/activity_log' %>
   </div>

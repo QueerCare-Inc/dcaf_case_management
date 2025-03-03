@@ -14,12 +14,12 @@ module PatientSearchable
       base = Patient
       base = base.where(region: regions) if regions
       matches = base.where('name ilike ?', wildcard_name)
-                    .or(base.where('other_contact ilike ?', wildcard_name))
+                    .or(base.where('emergency_contact ilike ?', wildcard_name))
                     .or(base.where('identifier ilike ?', wildcard_name))
       if clean_phone.present?
         clean_phone = "%#{clean_phone}%"
         matches = matches.or(base.where('primary_phone like ?', clean_phone))
-                         .or(base.where('other_phone like ?', clean_phone))
+                         .or(base.where('emergency_contact_phone like ?', clean_phone))
       end
       matches = matches.order(updated_at: :desc)
       matches = matches.limit(search_limit) if search_limit.present?

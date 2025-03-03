@@ -13,7 +13,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     @patient = create :patient,
                       name: 'Susie Everyteen',
                       primary_phone: '123-456-7890',
-                      other_phone: '333-444-5555',
+                      emergency_contact_phone: '333-444-5555',
                       region: @region,
                       city: '=injected_formula'
     @archived_patient = create :archived_patient,
@@ -76,7 +76,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       get patients_path(format: :csv)
       assert_no_match @patient.name.to_s, response.body
       assert_no_match @patient.primary_phone.to_s, response.body
-      assert_no_match @patient.other_phone.to_s, response.body
+      assert_no_match @patient.emergency_contact_phone.to_s, response.body
     end
 
     it 'should escape fields with attempted formula injection' do
@@ -150,7 +150,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       before do
         @date = 5.days.from_now.to_date
         @payload = {
-          appointment_date: @date.strftime('%Y-%m-%d'),
+          procedure_date: @date.strftime('%Y-%m-%d'),
           name: 'Susie Everyteen 2',
           clinic_id: @clinic.id
         }
@@ -188,7 +188,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       before do
         @date = 5.days.from_now.to_date
         @payload = {
-          appointment_date: @date.strftime('%Y-%m-%d'),
+          procedure_date: @date.strftime('%Y-%m-%d'),
           name: 'Susie Everyteen 2',
           clinic_id: @clinic.id
         }
@@ -270,7 +270,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
     it 'should fail to save if initial call date is nil' do
       @test_patient[:intake_date] = nil
-      @test_patient[:appointment_date] = Date.tomorrow
+      @test_patient[:procedure_date] = Date.tomorrow
       assert_no_difference 'Patient.count' do
         post data_entry_create_path, params: { patient: @test_patient }
         assert_response :success
@@ -307,7 +307,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       end
 
       it 'should prevent a patient from being destroyed under some circumstances' do
-        @patient.update appointment_date: 2.days.from_now,
+        @patient.update procedure_date: 2.days.from_now,
                         clinic: (create :clinic)
 
         assert_no_difference 'Patient.count' do

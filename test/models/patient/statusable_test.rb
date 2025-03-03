@@ -5,8 +5,8 @@ class PatientTest::Statusable < PatientTest
   describe 'status concern methods' do
     before do
       @user = create :user
-      @patient = create :patient, other_phone: '111-222-3333',
-                                  other_contact: 'Yolo'
+      @patient = create :patient, emergency_contact_phone: '111-222-3333',
+                                  emergency_contact: 'Yolo'
     end
 
     describe 'status method branch 1' do
@@ -20,7 +20,7 @@ class PatientTest::Statusable < PatientTest
       end
 
       it 'should still say "No Contact Made" if patient leaves voicemail with appointment' do
-        @patient.appointment_date = '01/01/2017'
+        @patient.procedure_date = '01/01/2017'
         assert_equal Patient::STATUSES[:no_contact][:key], @patient.status
       end
     end
@@ -33,7 +33,7 @@ class PatientTest::Statusable < PatientTest
 
       it 'should update to "Fundraising" once appointment made and patient reached' do
         @patient.calls.create attributes_for(:call, status: :reached_patient)
-        @patient.appointment_date = '01/01/2017'
+        @patient.procedure_date = '01/01/2017'
         assert_equal Patient::STATUSES[:fundraising][:key], @patient.status
       end
 

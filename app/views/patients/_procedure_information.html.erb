@@ -1,5 +1,5 @@
-<div id="abortion_information_content">
-  <h2><%= t('patient.abortion_information.title') %></h2>
+<div id="procedure_information_content">
+  <h2 class="mt-5"><%= t('patient.procedure_information.title') %></h2>
 
   <div class="practical-support-flag">
     <% if patient.practical_supports.any? %>
@@ -7,10 +7,10 @@
     <% end %>
   </div>
 
-  <h3><%= t('patient.abortion_information.clinic_section.title') %></h3>
+  <h3><%= t('patient.procedure_information.clinic_section.title') %></h3>
 
   <%= bootstrap_form_with model: patient,
-                          html: { id: 'abortion-information-form-1' },
+                          html: { id: 'procedure-information-form-1' },
                           local: false,
                           method: 'patch',
                           class: 'edit_patient' do |f| %>
@@ -18,18 +18,18 @@
       <div class="col info-form-left">
         <%= f.select :clinic_id,
                      options_for_select(clinic_options, patient.clinic.try(:id)),
-                     label: t('patient.abortion_information.clinic_section.clinic') %>
+                     label: t('patient.procedure_information.clinic_section.clinic') %>
         <%= f.time_field :appointment_time, include_seconds: false %>
 
         <%= f.form_group :clinic_filters do %>
-          <%= f.check_box :medicaid_filter, label: t('patient.abortion_information.clinic_section.medicaid_only_toggle') %>
+          <%= f.check_box :medicaid_filter, label: t('patient.procedure_information.clinic_section.medicaid_only_toggle') %>
         <% end %>
       </div>
 
       <div class="col info-form-right">
-        <%= f.form_group :abortion_info_checkboxes do %>
+        <%= f.form_group :procedure_info_checkboxes do %>
           <%= f.check_box :referred_to_clinic,
-                          label: t('patient.abortion_information.clinic_section.referred_to_clinic'),
+                          label: t('patient.procedure_information.clinic_section.referred_to_clinic'),
                           label_class: 'tooltip-header-checkbox',
                           data: { 'tooltip-text': referred_to_clinic_help_text } %>
           <%= f.check_box :multiday_appointment %>
@@ -38,7 +38,7 @@
           <%= f.select :procedure_type,
             options_for_select(procedure_type_options(patient.procedure_type),
                                patient.procedure_type),
-            label: t('patient.abortion_information.clinic_section.procedure_type') %>
+            label: t('patient.procedure_information.clinic_section.procedure_type') %>
         <% end %>
       </div>
     </div>

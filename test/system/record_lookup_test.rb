@@ -13,14 +13,14 @@ class RecordLookupTest < ApplicationSystemTestCase
     before do
       @patient = create :patient, name: 'Susan Everyteen DC',
                                   primary_phone: '111-222-3333',
-                                  other_contact: 'Yolo Goat',
-                                  other_phone: '222-333-4455',
+                                  emergency_contact: 'Yolo Goat',
+                                  emergency_contact_phone: '222-333-4455',
                                   region: @region
 
       @patient_2 = create :patient, name: 'Susan Everyteen MD',
                                     primary_phone: '111-222-4444',
-                                    other_contact: 'Yolo Goat',
-                                    other_phone: '222-333-4455',
+                                    emergency_contact: 'Yolo Goat',
+                                    emergency_contact_phone: '222-333-4455',
                                     region: @region2
     end
 

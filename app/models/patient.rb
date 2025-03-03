@@ -46,17 +46,17 @@ class Patient < ApplicationRecord
   validates :primary_phone, format: /\A\d{10}\z/,
                             length: { is: 10 }
   validate :confirm_unique_phone_number
-  validates :other_phone, format: /\A\d{10}\z/,
-                          length: { is: 10 },
-                          allow_blank: true
-  validates :appointment_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
-                               allow_blank: true
+  validates :emergency_contact_phone, format: /\A\d{10}\z/,
+                                      length: { is: 10 },
+                                      allow_blank: true
+  validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
+                             allow_blank: true
   validate :confirm_appointment_after_initial_call
   validates :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: -1 }
-  validates :name, :primary_phone, :other_contact, :other_phone, :other_contact_relationship,
+  validates :name, :primary_phone, :emergency_contact, :emergency_contact_phone, :emergency_contact_relationship,
             :voicemail_preference, :language, :pronouns, :city, :state, :county, :zipcode,
             :race_ethnicity, :employment_status, :insurance, :income, :referred_by, :procedure_type,
             length: { maximum: 150 }
@@ -69,6 +69,7 @@ class Patient < ApplicationRecord
                       allow_blank: true
 
   validate :special_circumstances_length
+  validate :in_case_of_emergency_length
 
   # Methods
   def save_identifier
@@ -128,7 +129,7 @@ class Patient < ApplicationRecord
   end
 
   def has_alt_contact
-    other_contact.present? || other_phone.present? || other_contact_relationship.present?
+    emergency_contact.present? || emergency_contact_phone.present? || emergency_contact_relationship.present?
   end
 
   def age_range
@@ -158,6 +159,10 @@ class Patient < ApplicationRecord
 
   def has_special_circumstances
     special_circumstances.map { |circumstance| circumstance.present? }.any?
+  end
+
+  def has_in_case_of_emergency
+    in_case_of_emergency.map { |emergency| emergency.present? }.any?
   end
 
   def archive_date
@@ -193,24 +198,25 @@ class Patient < ApplicationRecord
   def as_json
     super.merge(
       status: status,
-      primary_phone_display: primary_phone_display
+      primary_phone_display: primary_phone_display,
+      email_display: email_display
     )
   end
 
   private
 
   def confirm_appointment_after_initial_call
-    if appointment_date.present? && intake_date.present? && (intake_date - 60.days)&.send(:>, appointment_date)
-      errors.add(:appointment_date, 'must be closer to the date of initial call')
-    end
+    return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
+
+    errors.add(:procedure_date, 'must be after date of initial call')
   end
 
   def clean_fields
     primary_phone.gsub!(/\D/, '') if primary_phone
-    other_phone.gsub!(/\D/, '') if other_phone
+    emergency_contact_phone.gsub!(/\D/, '') if emergency_contact_phone
     name.strip! if name
-    other_contact.strip! if other_contact
-    other_contact_relationship.strip! if other_contact_relationship
+    emergency_contact.strip! if emergency_contact
+    emergency_contact_relationship.strip! if emergency_contact_relationship
 
     # add dash if needed
     zipcode.gsub!(/(\d{5})(\d{4})/, '\1-\2') if zipcode
@@ -242,6 +248,14 @@ class Patient < ApplicationRecord
 
     special_circumstances.each do |value|
       errors.add(:special_circumstances, 'is invalid') if value && value.length > 50
+    end
+  end
+
+  def in_case_of_emergency_length
+    errors.add(:in_case_of_emergency, 'is invalid') unless in_case_of_emergency.length <= 7
+
+    in_case_of_emergency.each do |value|
+      errors.add(:in_case_of_emergency, 'is invalid') if value && value.length > 120
     end
   end
 end

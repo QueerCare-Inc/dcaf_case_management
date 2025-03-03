@@ -21,7 +21,7 @@ module Statusable
     return STATUSES[:fulfilled][:key] if fulfillment.fulfilled?
     return STATUSES[:dropoff][:key] if days_since_last_call > 120
     return STATUSES[:no_contact][:key] unless contact_made?
-    return STATUSES[:fundraising][:key] if appointment_date
+    return STATUSES[:fundraising][:key] if procedure_date
 
     STATUSES[:needs_appt][:key]
   end

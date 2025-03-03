@@ -35,7 +35,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
     t.boolean "has_special_circumstances"
     t.string "referred_by"
     t.boolean "referred_to_clinic"
-    t.date "appointment_date"
+    t.date "procedure_date"
     t.boolean "textable"
     t.bigint "clinic_id"
     t.datetime "created_at", null: false
@@ -103,7 +103,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
     t.string "phone"
     t.string "fax"
     t.boolean "active", default: true, null: false
-    t.boolean "accepts_naf"
     t.boolean "accepts_medicaid"
     t.decimal "coordinates", array: true
     t.datetime "created_at", null: false
@@ -190,9 +189,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
   create_table "patients", force: :cascade do |t|
     t.string "name", null: false
     t.string "primary_phone", null: false
-    t.string "other_contact"
-    t.string "other_phone"
-    t.string "other_contact_relationship"
+    t.string "emergency_contact"
+    t.string "emergency_contact_phone"
+    t.string "emergency_contact_relationship"
     t.string "identifier"
     t.string "voicemail_preference", default: "not_specified"
     t.string "line_legacy"
@@ -214,7 +213,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
     t.string "special_circumstances", default: [], array: true
     t.string "referred_by"
     t.boolean "referred_to_clinic"
-    t.date "appointment_date"
+    t.date "procedure_date"
     t.boolean "textable"
     t.bigint "clinic_id"
     t.bigint "last_edited_by_id"
@@ -225,15 +224,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_03_024816) do
     t.time "appointment_time", comment: "A patient's appointment time"
     t.boolean "multiday_appointment"
     t.boolean "practical_support_waiver", comment: "Optional practical support services waiver, for funds that use them"
+    t.string "legal_name"
+    t.string "email"
+    t.string "emergency_reference_wording"
+    t.string "in_case_of_emergency", default: [], array: true
     t.bigint "region_id", null: false
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
+    t.index ["emergency_contact"], name: "index_patients_on_emergency_contact"
+    t.index ["emergency_contact_phone"], name: "index_patients_on_emergency_contact_phone"
     t.index ["fund_id"], name: "index_patients_on_fund_id"
     t.index ["identifier"], name: "index_patients_on_identifier"
     t.index ["last_edited_by_id"], name: "index_patients_on_last_edited_by_id"
     t.index ["line_legacy"], name: "index_patients_on_line_legacy"
     t.index ["name"], name: "index_patients_on_name"
-    t.index ["other_contact"], name: "index_patients_on_other_contact"
-    t.index ["other_phone"], name: "index_patients_on_other_phone"
     t.index ["primary_phone", "fund_id"], name: "index_patients_on_primary_phone_and_fund_id", unique: true
     t.index ["region_id"], name: "index_patients_on_region_id"
     t.index ["shared_flag"], name: "index_patients_on_shared_flag"

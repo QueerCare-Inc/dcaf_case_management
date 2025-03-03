@@ -8,7 +8,7 @@ class ActivityLogTest < ApplicationSystemTestCase
     @region = create :region
     @patient = create :patient,
                       clinic: @clinic,
-                      appointment_date: 3.days.from_now,
+                      procedure_date: 3.days.from_now,
                       region: @region
 
     log_in_as @user, @region

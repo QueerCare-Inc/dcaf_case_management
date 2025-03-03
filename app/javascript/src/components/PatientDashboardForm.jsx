@@ -9,7 +9,7 @@ export default PatientDashboardForm = ({
   patient,
   weeksOptions,
   daysOptions,
-  initialCallDate,
+  // initialCallDate,
   statusHelpText,
   isAdmin,
   patientPath,
@@ -30,7 +30,7 @@ export default PatientDashboardForm = ({
 
     const putData = {
       name: updatedPatientData.name,
-      appointment_date: updatedPatientData.appointment_date,
+      procedure_date: updatedPatientData.procedure_date,
       primary_phone: updatedPatientData.primary_phone,
       pronouns: updatedPatientData.pronouns,
     }
@@ -70,12 +70,12 @@ export default PatientDashboardForm = ({
       />
 
       <Input
-        id="patient_appointment_date"
-        name="patient[appointment_date]"
+        id="patient_procedure_date"
+        name="patient[procedure_date]"
         label={i18n.t('patient.shared.appt_date')}
         type="date"
-        value={patientData.appointment_date}
-        onChange={e => debouncedAutosave({ appointment_date: e.target.value })}
+        value={patientData.procedure_date}
+        onChange={e => debouncedAutosave({ procedure_date: e.target.value })}
       />
 
       <Input

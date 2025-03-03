@@ -53,7 +53,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
 
     describe 'updating appointment date counter' do
       before do
-        @patient.update appointment_date: 5.days.from_now.strftime('%Y-%m-%d')
+        @patient.update procedure_date: 5.days.from_now.strftime('%Y-%m-%d')
         visit edit_patient_path @patient
       end
 
@@ -95,20 +95,20 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
     end
   end
 
-  describe 'changing abortion information' do
+  describe 'changing procedure information' do
     before do
-      click_link 'Abortion Information'
+      click_link 'Procedure Information'
       select @clinic.name, from: 'patient_clinic_id'
       fill_in 'Appointment time', with: '4:30PM'
       check 'Referred to clinic'
       check 'Multi-day appointment'
 
       click_away_from_field
-      reload_page_and_click_link 'Abortion Information'
+      reload_page_and_click_link 'Procedure Information'
     end
 
-    it 'should alter the abortion information' do
-      within :css, '#abortion_information' do
+    it 'should alter the procedure information' do
+      within :css, '#procedure_information' do
         assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
         assert has_field? 'Appointment time', with: '16:30'
         assert has_checked_field?('Referred to clinic')
@@ -225,7 +225,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
 
   describe 'changing fulfillment information' do
     before do
-      @patient = create :patient, appointment_date: 2.days.from_now,
+      @patient = create :patient, procedure_date: 2.days.from_now,
                                   clinic: @clinic
 
       log_out
@@ -267,11 +267,11 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
   end
 
   describe 'clicking around' do
-    it 'should let you click back to abortion information' do
+    it 'should let you click back to procedure information' do
       click_link 'Notes'
-      within(:css, '#sections') { assert_not has_text? 'Abortion information' }
-      click_link 'Abortion Information'
-      within(:css, '#sections') { assert has_text? 'Abortion information' }
+      within(:css, '#sections') { assert_not has_text? 'Procedure information' }
+      click_link 'Procedure Information'
+      within(:css, '#sections') { assert has_text? 'Procedure information' }
     end
   end
 

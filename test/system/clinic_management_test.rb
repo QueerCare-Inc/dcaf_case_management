@@ -81,7 +81,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
       click_button 'Save changes'
 
       visit edit_patient_path @patient
-      click_link 'Abortion Information'
+      click_link 'Procedure Information'
       select "(Not currently working with CATF) - #{@clinic.name}", from: 'patient_clinic_id'
       assert_equal @clinic.id.to_s, find('#patient_clinic_id').value
     end

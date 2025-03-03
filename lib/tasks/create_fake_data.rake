@@ -27,7 +27,7 @@ namespace :db do
             shared_flag: flag,
             region: regions[gen.rand(3)], # thank you seeds.rb! 
             clinic: has_appt ? clinics.sample : nil,
-            appointment_date: has_appt ? initial_call + gen.rand(15) : nil
+            procedure_date: has_appt ? initial_call + gen.rand(15) : nil
           )
 
           # create calls, where every patient will have at least one call made

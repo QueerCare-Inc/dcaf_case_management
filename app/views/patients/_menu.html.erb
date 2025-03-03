@@ -1,7 +1,7 @@
 <div id='menu-content' class="row">
-  <div class="nav nav-pills flex-column abortion-left-menu" id='menu-list' role='tablist' aria-orientation="vertical">
+  <div class="nav nav-pills flex-column procedure-left-menu" id='menu-list' role='tablist' aria-orientation="vertical">
     <%= render 'menu_item', link_for: 'patient_information', active: true %>
-    <%= render 'menu_item', link_for: 'abortion_information', active: false %>
+    <%= render 'menu_item', link_for: 'procedure_information', active: false %>
     <%= render 'menu_item', link_for: 'practical_support', active: false unless Config.hide_practical_support? %>
     <%= render 'menu_item', link_for: 'notes', active: false %>
     <%= render 'menu_item', link_for: 'change_log', active: false %>

@@ -14,8 +14,8 @@
       <%= render 'patients/patient_information', patient: @patient %>
     </div>
 
-    <div id="abortion_information" class="abortion-info tab-pane">
-      <%= render 'patients/abortion_information', patient: @patient %>
+    <div id="procedure_information" class="procedure-info tab-pane">
+      <%= render 'patients/procedure_information', patient: @patient %>
     </div>
 
     <div id="change_log" class="change-log tab-pane">
@@ -29,7 +29,6 @@
     <div id="notes" class="notes tab-pane">
       <%= render 'patients/notes', patient: @patient, note: @note %>
     </div>
-
 
     <% unless Config.hide_practical_support? %>
     <div id="practical_support" class="practical_support tab-pane">

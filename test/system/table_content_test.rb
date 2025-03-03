@@ -6,7 +6,7 @@ class TableContentTest < ApplicationSystemTestCase
   before do
     @user = create :user
     @patient = create :patient, intake_date: 3.days.ago,
-                                appointment_date: 3.days.from_now.utc,
+                                procedure_date: 3.days.from_now.utc,
                                 shared_flag: true
 
     @patient.calls.create status: :left_voicemail,

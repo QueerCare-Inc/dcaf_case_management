@@ -42,7 +42,7 @@ describe("PatientDashboardForm", () => {
     expect(screen.queryByLabelText("First and last name")).toBeInTheDocument();
   });
 
-  it("renders an input for appointment_date", () => {
+  it("renders an input for procedure_date", () => {
     const patient = {};
     const weeksOptions = [
       { label: 0, value: 0 },

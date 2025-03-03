@@ -26,7 +26,7 @@ module Exportable
     'Income' => :income,
     'Referred By' => :referred_by,
     'Referred to clinic by fund' => :referred_to_clinic,
-    'Appointment Date' => :appointment_date,
+    'Procedure Date' => :procedure_date,
     'Intake Date' => :intake_date,
     'Shared?' => :shared_flag,
     'Has Special Circumstances' => :has_special_circumstances,

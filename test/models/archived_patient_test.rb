@@ -6,8 +6,8 @@ class ArchivedPatientTest < ActiveSupport::TestCase
     @user2 = create :user
     @region = create :region
     with_versioning(@user) do
-      @patient = create :patient, other_phone: '111-222-3333',
-                                  other_contact: 'Yolo',
+      @patient = create :patient, emergency_contact_phone: '111-222-3333',
+                                  emergency_contact: 'Yolo',
                                   region: @region
 
       @patient.calls.create attributes_for(:call, status: :reached_patient)
@@ -39,13 +39,13 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       with_versioning(@user) do
         @clinic = create :clinic
         @patient = create :patient, primary_phone: '222-222-3336',
-                                    other_phone: '222-222-4441',
+                                    emergency_contact_phone: '222-222-4441',
                                     region: @region,
                                     clinic: @clinic,
                                     city: 'Washington',
                                     race_ethnicity: 'Asian',
                                     intake_date: 16.days.ago,
-                                    appointment_date: 6.days.ago,
+                                    procedure_date: 6.days.ago,
                                     multiday_appointment: true,
                                     practical_support_waiver: true
         @patient.calls.create status: :couldnt_reach_patient
@@ -69,8 +69,8 @@ class ArchivedPatientTest < ActiveSupport::TestCase
       assert_equal @archived_patient.region, @patient.region
       assert_equal @archived_patient.city, @patient.city
       assert_equal @archived_patient.race_ethnicity, @patient.race_ethnicity
-      assert_equal @archived_patient.appointment_date,
-                   @patient.appointment_date
+      assert_equal @archived_patient.procedure_date,
+                   @patient.procedure_date
       assert_equal @archived_patient.multiday_appointment,
                    @patient.multiday_appointment
       assert_equal @archived_patient.practical_support_waiver,
@@ -113,13 +113,13 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   describe 'archive_audited_patients' do
     before do
       @patient_audited = create :patient, primary_phone: '222-222-3333',
-                                          other_phone: '222-222-4444',
+                                          emergency_contact_phone: '222-222-4444',
                                           intake_date: 30.days.ago,
                                           region: @region
       @patient_audited.fulfillment.update audited: true
 
       @patient_unaudited = create :patient, primary_phone: '564-222-3333',
-                                            other_phone: '222-222-9074',
+                                            emergency_contact_phone: '222-222-9074',
                                             intake_date: 120.days.ago,
                                             region: @region
     end
@@ -145,7 +145,7 @@ class ArchivedPatientTest < ActiveSupport::TestCase
   describe 'archive_unaudited_year_ago_patients' do
     before do
       @patient_old_unaudited = create :patient, primary_phone: '564-222-3333',
-                                                other_phone: '222-222-9074',
+                                                emergency_contact_phone: '222-222-9074',
                                                 intake_date: 370.days.ago,
                                                 region: @region
       @patient_old_unaudited.fulfillment.update audited: false

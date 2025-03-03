@@ -13,9 +13,8 @@
         <th scope="col"><%= t 'common.phone' %></th>
         <th scope="col"><%= t 'common.name' %></th>
         <%= th_autosortable t('activerecord.attributes.patient.intake_date'), 'string', local_assigns %>
-        <th scope="col"><%= t 'common.weeks_along_short' %></th>
         <%= th_autosortable t('common.status'), 'string', local_assigns %>
-        <%= th_autosortable t('common.appointment_date_short'), 'string', local_assigns %>
+        <%= th_autosortable t('common.procedure_date_short'), 'string', local_assigns %>
         <th scope="col"><%= t 'common.notes' %></th>
         <th scope="col"><!-- add/delete from call list --></th>
         <th scope="col"><!-- call --></th>
@@ -38,8 +37,9 @@
 
           <td><%= patient.intake_date.display_date %></td>
 
+
           <td><%= patient.status %></td>
-          <td><%= appointment_date_display patient %></td>
+          <td><%= procedure_date_display patient %></td>
           <td><%= patient.most_recent_note_display_text %> </td>
 
           <% if table_type == 'completed_calls' || table_type == 'shared_cases' %>

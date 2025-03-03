@@ -30,7 +30,9 @@ class User < ApplicationRecord
   enum :role, {
     cm: 0,
     data_volunteer: 1,
-    admin: 2
+    admin: 2,
+    cr: 3, #care recipient
+    volunteer: 4, #in person volunteer
   }
 
   # Callbacks

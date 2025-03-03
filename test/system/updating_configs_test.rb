@@ -213,9 +213,9 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         @patient.save!
 
         visit edit_patient_path @patient
-        click_link 'Abortion Information'
+        click_link 'Procedure Information'
 
-        within :css, '#abortion-information-form-1' do
+        within :css, '#procedure-information-form-1' do
           assert has_select? with_options: %w[Dog Cat Turtle],
                              selected: 'Dog'
         end
@@ -227,9 +227,9 @@ class UpdatingConfigsTest < ApplicationSystemTestCase
         click_button 'Update options for Procedure type'
 
         visit edit_patient_path @patient
-        click_link 'Abortion Information'
+        click_link 'Procedure Information'
 
-        within :css, '#abortion-information-form-1' do
+        within :css, '#procedure-information-form-1' do
           assert_not has_content? 'Procedure type'
         end
       end

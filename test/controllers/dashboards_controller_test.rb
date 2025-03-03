@@ -7,7 +7,7 @@ class DashboardsControllerTest < ActionDispatch::IntegrationTest
     @patient = create :patient,
                       name: 'Susie Everyteen',
                       primary_phone: '123-456-7890',
-                      other_phone: '333-444-5555',
+                      emergency_contact_phone: '333-444-5555',
                       region: @region
     sign_in @user
     choose_region @region

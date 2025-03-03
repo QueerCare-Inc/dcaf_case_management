@@ -105,6 +105,21 @@ module PatientsHelper
     return [] if procedure_type_options.blank?
 
     options_plus_current([nil] + procedure_type_options, current_value)
+
+    # THIS SECTION CURRENTLY BREAKS THE PATIENT VIEW AND CONFIG MANAGEMENT
+    # standard_options = [
+    #   [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
+    #   [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
+    #   [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
+    #   [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
+    #   [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
+    #   [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
+    #   [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
+    # ]
+    # full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
+    # full_set.push(*standard_options) unless Config.hide_standard_dropdown
+
+    # options_plus_current(full_set, current_value)
   end
 
   def income_options
@@ -143,8 +158,8 @@ module PatientsHelper
     active_clinics = clinics.select(&:active)
                             .map do |clinic|
       [
-        t('patient.abortion_information.clinic_section.clinic_display', clinic_name: clinic.name,
-                                                                        city: clinic.city, state: clinic.state),
+        t('patient.procedure_information.clinic_section.clinic_display', clinic_name: clinic.name,
+                                                                         city: clinic.city, state: clinic.state),
         clinic.id,
         { data: { medicaid: !!clinic.accepts_medicaid } }
       ]
@@ -155,18 +170,54 @@ module PatientsHelper
     inactive_clinics = clinics.reject(&:active)
                               .map do |clinic|
       [
-        t('patient.abortion_information.clinic_section.not_currently_working_with_fund',
+        t('patient.procedure_information.clinic_section.not_currently_working_with_fund',
           fund: ActsAsTenant.current_tenant.name, clinic_name: clinic.name),
         clinic.id,
-        { data: { medicaid: !!clinic.accepts_medicaid } }
+        { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
       ]
     end
     if inactive_clinics.count > 0
-      inactive_clinics.unshift ["--- #{t('patient.abortion_information.clinic_section.inactive_clinics').upcase} ---",
+      inactive_clinics.unshift ["--- #{t('patient.procedure_information.clinic_section.inactive_clinics').upcase} ---",
                                 nil, { disabled: true }]
     end
 
     active_clinics | inactive_clinics
+  end
+
+  def surgeon_options
+    surgeons = Surgeon.all.sort_by(&:name)
+    active_surgeons = surgeons.select(&:active)
+                              .map do |surgeon|
+      [
+        t('patient.procedure_information.surgeon_section.surgeon_display', surgeon_name: surgeon.name),
+        surgeon.id
+      ]
+    end
+                            .unshift nil
+
+    # Map inactives; if there are any, put in a breaker
+    inactive_surgeons = surgeons.reject(&:active)
+                                .map do |surgeon|
+      [
+        t('patient.procedure_information.surgeon_section.not_currently_working_with_fund',
+          fund: ActsAsTenant.current_tenant.name, surgeon_name: surgeon.name),
+        surgeon.id
+      ]
+    end
+    if inactive_surgeons.count > 0
+      inactive_surgeons.unshift ["--- #{t('patient.procedure_information.surgeon_section.inactive_surgeons').upcase} ---",
+                                 nil, { disabled: true }]
+    end
+
+    active_surgeons | inactive_surgeons
+  end
+
+  def disable_continue?(patient)
+    patient.pledge_info_present? ? 'disabled="disabled"' : ''
+  end
+
+  def pledge_limit_help_text_options
+    Config.find_or_create_by(config_key: 'pledge_limit_help_text').options
   end
 
   def state_options(current_state)
@@ -194,15 +245,15 @@ module PatientsHelper
     Region.all.sort_by(&:name).map { |x| [x.name, x.id] }
   end
 
-  def appointment_date_display(patient)
-    return nil unless patient.appointment_date.present?
+  def procedure_date_display(patient)
+    return nil unless patient.procedure_date.present?
 
-    day = patient.appointment_date.strftime('%m/%d/%Y')
+    day = patient.procedure_date.strftime('%m/%d/%Y')
     if patient.appointment_time
       time = patient.appointment_time.strftime('%l:%M %p').strip
       day = "#{day} @ #{time}"
     end
-    day = "#{day} (#{t('patient.abortion_information.clinic_section.multi_day')})" if patient.multiday_appointment?
+    day = "#{day} (#{t('patient.procedure_information.clinic_section.multi_day')})" if patient.multiday_appointment?
     day
   end
 end

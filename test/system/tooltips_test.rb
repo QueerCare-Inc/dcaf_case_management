@@ -24,7 +24,7 @@ class TooltipsTest < ApplicationSystemTestCase
     # Using resolved without assistance as an example of this
     it 'should pop up with content' do
       visit edit_patient_path(@patient)
-      click_link 'Abortion Information'
+      click_link 'Procedure Information'
 
       assert has_content? 'This is used to indicate that'
     end

@@ -10,6 +10,8 @@
 
   <%= f.date_field :intake_date,
                    label: t('patient.new.intake_date') %>
+  <%= f.date_field :intake_date,
+                   label: t('patient.new.intake_date') %>
 
   <%= f.text_field :name,
                    label: t('common.name'), autocomplete: 'off' %>
@@ -21,14 +23,14 @@
   <%= f.text_field :pronouns,
                    autocomplete: 'off' %>
 
-  <%= f.text_field :other_contact,
-                   label: t('patient.information.other_contact.name'),
+  <%= f.text_field :emergency_contact,
+                   label: t('patient.information.emergency_contact.name'),
                    autocomplete: 'off' %>
-  <%= f.text_field :other_phone,
-                   label: t('patient.information.other_contact.phone'),
+  <%= f.text_field :emergency_contact_phone,
+                   label: t('patient.information.emergency_contact.phone'),
                    autocomplete: 'off' %>
-  <%= f.text_field :other_contact_relationship,
-                   label: t('patient.information.other_contact.relationship'),
+  <%= f.text_field :emergency_contact_relationship,
+                   label: t('patient.information.emergency_contact.relationship'),
                    autocomplete: 'off'%>
 
 
@@ -48,7 +50,7 @@
                options_for_select(clinic_options),
                label: t('patient.pledge_fulfillment.confirmation.clinic') %>
 
-  <%= f.date_field :appointment_date,
+  <%= f.date_field :procedure_date,
                    label: t('patient.shared.appt_date'),
                    autocomplete: 'off' %>
 
@@ -83,10 +85,10 @@
   <% if procedure_type_options.present? %>
     <%= f.select :procedure_type,
       options_for_select(procedure_type_options),
-      label: t('patient.abortion_information.clinic_section.procedure_type') %>
+      label: t('patient.procedure_information.clinic_section.procedure_type') %>
   <% end %>
 
-  <%= f.check_box :referred_to_clinic, label: t('patient.abortion_information.clinic_section.referred_to_clinic') %>
+  <%= f.check_box :referred_to_clinic, label: t('patient.procedure_information.clinic_section.referred_to_clinic') %>
 
   <fieldset class="mt-5">
     <legend class="font-weight-bold" id="special_circumstances_label">

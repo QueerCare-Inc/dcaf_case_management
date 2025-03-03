@@ -20,7 +20,7 @@ class PaperTrailVersion < PaperTrail::Version
     can_support_id
   ].freeze
   DATE_FIELDS = %w[
-    appointment_date
+    procedure_date
     intake_date
   ].freeze
 
