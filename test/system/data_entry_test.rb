@@ -31,7 +31,7 @@ class DataEntryTest < ApplicationSystemTestCase
       fill_in 'Age', with: '30'
       select 'Other', from: 'patient_race_ethnicity'
       select @clinic.name, from: 'patient_clinic_id'
-      fill_in 'Appointment date', with: 1.day.ago.strftime('%m/%d/%Y')
+      fill_in 'Procedure date', with: 1.day.ago.strftime('%m/%d/%Y')
       select 'DC Medicaid', from: 'patient_insurance'
       select '1', from: 'patient_household_size_adults'
       select '2', from: 'patient_household_size_children'
@@ -54,7 +54,7 @@ class DataEntryTest < ApplicationSystemTestCase
         assert has_field? 'First and last name', with: 'Susie Everyteen'
         assert has_field? 'Pronouns', with: 'she/they'
         assert has_text? "Called on: #{2.days.ago.strftime('%m/%d/%Y')}"
-        assert has_field?('Appointment date',
+        assert has_field?('Procedure date',
                           with: 1.day.ago.strftime('%Y-%m-%d'))
         assert has_field? 'Phone number', with: '111-222-3344'
       end
@@ -110,7 +110,7 @@ class DataEntryTest < ApplicationSystemTestCase
       fill_in 'Age', with: '30'
       select 'Other', from: 'patient_race_ethnicity'
       select @clinic.name, from: 'patient_clinic_id'
-      fill_in 'Appointment date', with: 70.days.ago.strftime('%m/%d/%Y')
+      fill_in 'Procedure date', with: 70.days.ago.strftime('%m/%d/%Y')
       select 'DC Medicaid', from: 'patient_insurance'
       select '1', from: 'patient_household_size_adults'
       select '2', from: 'patient_household_size_children'

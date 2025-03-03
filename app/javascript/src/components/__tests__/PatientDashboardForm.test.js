@@ -60,7 +60,7 @@ describe("PatientDashboardForm", () => {
       />
     );
 
-    expect(screen.queryByLabelText("Appointment date")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Procedure date")).toBeInTheDocument();
   });
 
   it("renders an input for primary_phone", () => {

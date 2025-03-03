@@ -36,28 +36,28 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       end
     end
 
-    describe 'updating appointment date' do
+    describe 'updating procedure date' do
       before do
-        fill_in 'Appointment date', with: 5.days.from_now.strftime('%m/%d/%Y')
+        fill_in 'Procedure date', with: 5.days.from_now.strftime('%m/%d/%Y')
         click_away_from_field
         wait_for_ajax
         reload_page_and_click_link 'Patient Information'
       end
 
-      it 'should update appointment date' do
+      it 'should update procedure date' do
         within :css, '#patient_dashboard' do
-          assert has_field? 'Appointment date', with: 5.days.from_now.strftime('%Y-%m-%d')
+          assert has_field? 'Procedure date', with: 5.days.from_now.strftime('%Y-%m-%d')
         end
       end
     end
 
-    describe 'updating appointment date counter' do
+    describe 'updating procedure date counter' do
       before do
         @patient.update procedure_date: 5.days.from_now.strftime('%Y-%m-%d')
         visit edit_patient_path @patient
       end
 
-      it 'should update the appointment date counter' do
+      it 'should update the procedure date counter' do
         assert has_content? 'Currently: 5w 4d'
 
         assert has_content? 'Currently: 5w 3d'
