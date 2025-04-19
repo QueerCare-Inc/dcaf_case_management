@@ -8,7 +8,7 @@ module CallsHelper
     elsif patient.voicemail_preference == 'not_specified'
       voicemail_not_specified_notifier + leave_a_voicemail_link(patient)
     else
-      # custom value for voicemail 
+      # custom value for voicemail
       voicemail_custom_notifier(patient) + leave_a_voicemail_link(patient)
     end
   end
@@ -69,27 +69,29 @@ module CallsHelper
 
   def voicemail_ok_notifier
     content_tag :p, class: 'text-success' do
-      content_tag :strong, t('call.new.voicemail_instructions.voicemail_identify', fund: ActsAsTenant.current_tenant.name)
+      content_tag :strong,
+                  t('call.new.voicemail_instructions.voicemail_identify', org: ActsAsTenant.current_tenant.name)
     end
   end
 
   def voicemail_not_specified_notifier
     content_tag :p, class: 'text-warning' do
-      content_tag :strong, t('call.new.voicemail_instructions.voicemail_no_identify', fund: ActsAsTenant.current_tenant.name)
+      content_tag :strong,
+                  t('call.new.voicemail_instructions.voicemail_no_identify', org: ActsAsTenant.current_tenant.name)
     end
   end
 
   def voicemail_custom_notifier(patient)
-      content_tag :p, class: 'text-warning' do
-        content_tag :strong, patient.voicemail_preference
-      end
+    content_tag :p, class: 'text-warning' do
+      content_tag :strong, patient.voicemail_preference
+    end
   end
 
   def emergency_contact_name_display(patient)
     if patient.emergency_contact?
       t('call.emergency_contact.emergency_contact', name: "#{patient.emergency_contact}",
-                                            rel: "#{emergency_contact_relationship_display(patient)}",
-                                            punc: "#{patient.emergency_contact_phone? ? ':' : '.'}")
+                                                    rel: "#{emergency_contact_relationship_display(patient)}",
+                                                    punc: "#{patient.emergency_contact_phone? ? ':' : '.'}")
     else
       t('call.emergency_contact.primary')
     end

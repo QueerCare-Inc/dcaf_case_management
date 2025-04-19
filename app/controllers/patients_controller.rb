@@ -66,7 +66,7 @@ class PatientsController < ApplicationController
     if @patient.save
       flash[:notice] = t('flash.patient_save_success',
                          patient: @patient.name,
-                         fund: current_tenant.name)
+                         org: current_tenant.name)
       redirect_to edit_patient_path @patient
     else
       flash[:alert] = t('flash.patient_save_error', error: @patient.errors.full_messages.to_sentence)
@@ -136,13 +136,14 @@ class PatientsController < ApplicationController
     :legal_name, :email,
     :age, :race_ethnicity, :language, :voicemail_preference, :textable,
     :city, :state, :county, :zipcode, :emergency_contact, :emergency_contact_phone,
-    :emergency_contact_relationship, :other_contact_referencing,
+    :emergency_contact_relationship,
     :employment_status, :income,
     :household_size_adults, :household_size_children, :insurance, :referred_by,
     :procedure_type,
     :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
     { special_circumstances: [] },
-    { in_case_of_emergency: [] }
+    { in_case_of_emergency: [] },
+    { emergency_contact_options: [] }
   ].freeze
 
   PROCEDURE_INFORMATION_PARAMS = [

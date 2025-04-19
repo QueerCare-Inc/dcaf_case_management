@@ -1,12 +1,12 @@
 # Object representing a clinic that a patient is going to.
 class Clinic < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Concerns
   include PaperTrailable
 
   # Clinics intentionally excluded from ClinicFinder are assigned the zip 99999.
-  # e.g. so a fund can have an 'OTHER CLINIC' catchall.
+  # e.g. so a org can have an 'OTHER CLINIC' catchall.
   EXCLUDED_ZIP = '99999'
 
   encrypts :name, deterministic: true
@@ -19,6 +19,9 @@ class Clinic < ApplicationRecord
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
+  belongs_to :region
+  # has_many :surgeons_clinics
+  has_many :surgeons, through: :surgeons_clinics
 
   # Validations
   validates :name, :street_address, :city, :state, :zip, presence: true

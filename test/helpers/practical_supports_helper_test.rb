@@ -88,7 +88,7 @@ class PracticalSupportsHelperTest < ActionView::TestCase
     before do
       @patient = create :patient
       @patient.practical_supports.create support_type: 'Concert Tickets',
-                                         source: 'Metallica Abortion Fund'
+                                         source: 'Metallica Abortion Org'
       @patient.practical_supports.create support_type: 'Swag',
                                          source: 'YOLO AF',
                                          confirmed: true,
@@ -105,7 +105,7 @@ class PracticalSupportsHelperTest < ActionView::TestCase
     end
 
     it 'should display' do
-      assert_equal 'Concert Tickets from Metallica Abortion Fund', practical_support_display_text(@psupport1)
+      assert_equal 'Concert Tickets from Metallica Abortion Org', practical_support_display_text(@psupport1)
       assert_equal "(Confirmed) Swag from YOLO AF on #{2.days.from_now.display_date} (Purchased on #{1.day.ago.display_date})",
                    practical_support_display_text(@psupport2)
       assert_equal '(Fulfilled) Companion from Cat for $32.00', practical_support_display_text(@psupport3)

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col regions-form">
-    <h1 class="border-bottom title"><%= t 'regions.new.welcome_to_daria', fund: current_tenant.name %></h1>
+    <h1 class="border-bottom title"><%= t 'regions.new.welcome_to_daria', org: current_tenant.name %></h1>
 
     <%= bootstrap_form_with url: regions_path, local: true, class: 'region-select-form' do |f| %>
       <%= f.form_group :region_id, label: { text: t('regions.new.what_region') } do %>

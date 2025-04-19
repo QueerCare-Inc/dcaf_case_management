@@ -32,7 +32,7 @@ class ActiveSupport::TestCase
   parallelize(workers: :number_of_processors) unless ENV['DOCKER']
 
   def setup_tenant
-    tenant = create :fund, name: 'CATF', full_name: 'Cat Fund'
+    tenant = create :org, name: 'CATF', full_name: 'Cat Fund'
     ActsAsTenant.current_tenant = tenant
     ActsAsTenant.test_tenant = tenant
   end

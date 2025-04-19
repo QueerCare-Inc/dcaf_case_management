@@ -7,7 +7,7 @@ class UserManagementTest < ApplicationSystemTestCase
     @user = create :user,
                    name: 'john',
                    email: 'user@dcaf.com',
-                   role: :cm
+                   role: :care_coordinator
 
     @admin = create :user,
                     name: 'admin',

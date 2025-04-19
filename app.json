@@ -1,6 +1,6 @@
 {
   "name": "DARIA Case Manager",
-  "description": "A Rails-based case management system for abortion funds",
+  "description": "A Rails-based case management system for abortion orgs",
   "repository": "https://github.com/DARIAEngineering/dcaf_case_management",
   "scripts": {
     "postdeploy": "bundle exec rails db:migrate"
@@ -25,7 +25,7 @@
       "value": "",
       "required": false
     },
-    "FUND_MAILER_DOMAIN": {
+    "ORG_MAILER_DOMAIN": {
       "description": "domain you want emails to come from. Should be the domain configured with sendgrid. Usually dariaservices.com.",
       "value": "dariaservices.com"
     },

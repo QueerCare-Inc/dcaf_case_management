@@ -6,7 +6,7 @@ class DashboardsController < ApplicationController
 
   def index
     @shared_patients = eager_loaded_patients.shared_patients(current_region)
-    @unconfirmed_support_patients = eager_loaded_patients.unconfirmed_practical_support(current_region)
+    # @unconfirmed_support_patients = eager_loaded_patients.unconfirmed_practical_support(current_region)
   end
 
   def search

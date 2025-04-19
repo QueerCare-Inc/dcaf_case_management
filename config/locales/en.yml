@@ -8,7 +8,7 @@ en:
       check_number: 'Check #'
       clinic: Clinic
       date_of_check: Date of check
-      fund_payout: "%{fund} payout"
+      org_payout: "%{org} payout"
       region: Region
     title: Accountant dashboard
   activerecord:
@@ -47,7 +47,7 @@ en:
         date_of_check: Date of check
         employment_status: Employment status
         fulfilled: Fulfilled
-        fund_id: Fund ID
+        org_id: Org ID
         household_size_adults: Adults in household
         household_size_children: Minors in household
         income: Income
@@ -104,8 +104,8 @@ en:
         reached_patient: I reached the patient
       voicemail_instructions:
         no_voicemail: Do not leave this patient a voicemail
-        voicemail_identify: Voicemail OK; Okay to identify as %{fund}
-        voicemail_no_identify: Voicemail OK; Do not identify as %{fund}
+        voicemail_identify: Voicemail OK; Okay to identify as %{org}
+        voicemail_no_identify: Voicemail OK; Do not identify as %{org}
     emergency_contact:
       number: "%{name}'s number:"
       emergency_contact: "%{name} %{rel} is the primary contact for this patient%{punc}"
@@ -144,6 +144,7 @@ en:
     add: Add
     procedure_date_short: Proc date
     back: Back
+    care_coordinator: Coordinator
     clinic: Clinic
     close: Close
     detail: Detail
@@ -159,10 +160,13 @@ en:
     patient: Patient
     phone: Phone
     prefer_not_to_answer: Prefer not to answer
+    procedure_type: Procedure
     purchased_on: Purchased on
     save: Save
     search: Search
+    services: Services
     status: Status
+    support_dates: Support dates
     update: Update
     weeks_days: "%{weeks} weeks, %{days} days"
     weeks_days_short: "%{weeks}w %{days}d"
@@ -244,7 +248,7 @@ en:
     reached_patient: reached
     unknown_action: interacted with
   flash:
-    account_locked: Account currently locked, check with your fund.
+    account_locked: Account currently locked, check with your org.
     action_on_account: "%{verb} %{name}'s account."
     cant_lock_own_account: You can't lock your own account. Ask another admin.
     clinic_created: "%{clinic} created!"
@@ -262,7 +266,7 @@ en:
     patient_removed_database: Patient successfully removed from database.
     patient_removed_database_error: Can't delete patients with pledges; please correct the patient record and try again.
     patient_save_error: Errors prevented this patient from being saved - %{error}
-    patient_save_success: "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{fund} pledge amounts are the same, and you're set."
+    patient_save_success: "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set."
     pledge_download_alert: You need to enter your name in the box to sign and download the pledge
     unlocked: Unlocked
     user_created: User created!
@@ -271,7 +275,7 @@ en:
   regions:
     new:
       start: Get started
-      welcome_to_daria: Welcome to DARIA (%{fund} edition)!
+      welcome_to_daria: Welcome to DARIA (%{org} edition)!
       what_region: What region are you working in?
   multi_factor:
     authenticate: Authenticate
@@ -314,8 +318,8 @@ en:
       export: Export anonymized CSV
       label: Admin
       user_management: User Management
-    cm_resources:
-      label: CM Resources
+    care_coordinator_resources:
+      label: Care Coordinator Resources
     current_region:
       helper: Your current region
     footer:
@@ -343,7 +347,7 @@ en:
       record_new_call: Record new call
       table:
         actions: ACTIONS
-        case_manager: CM
+        care_coordinator: Care Coordinator
         date: DATE
         remove_button: Remove
         result: RESULT
@@ -355,7 +359,7 @@ en:
         patient: Patient
         practical_support: Practical support
       table:
-        case_manager: CM
+        care_coordinator: Care Coordinator
         change: Change (from -> to)
         modified_date: Modified Date
       title: Patient history
@@ -422,12 +426,12 @@ en:
         domestic_violence_org: Domestic violence crisis/intervention org
         family: Family member
         friend: Friend
-        fund: "%{fund} website or social media"
+        org: "%{org} website or social media"
         homeless: Homeless shelter
         legal_clinic: Legal clinic
         naf: NAF
         nnaf: NNAF
-        other_fund: Other abortion fund
+        other_org: Other abortion org
         prev_patient: Previous patient
         school: School
         sexual_assault_crisis_org: Sexual assault crisis org
@@ -448,21 +452,29 @@ en:
         name: Emergency contact name
         phone: Emergency contact phone
         relationship: Relationship to emergency contact
-        emergency_reference_wording: How do you want %{fund} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?
+        emergency_contact_options: How do you want %{org} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?
         title: Emergency Contact
-      referred_by: How patient heard about %{fund}
+      emergency_contact_options:
+        use_pronouns: Use pronouns
+        use_name: Use name
+        use_legal_name: Use legal name
+        other: Other
+        title: Emergency Contact Communication Options
+      referred_by: How patient heard about %{org}
       special_circumstances:
         domestic_violence: Domestic violence
         fetal_diagnosis: Fetal diagnosis
         homelessness: Homelessness
+        housing_insecure: Housing insecure
         incest: Incest
+        medicaid_eligible: Medicaid eligible
         other_medical_issue: Other medical issue
         prison: Prison
         rape: Rape
         title: Special Circumstances
       in_case_of_emergency:
         advanced_care_directive: Do you have an advanced care directive?
-        ident_disclosure_permission: Does %{fund} have permission to disclose your name, gender, sex, and medical history to emergency response teams?
+        ident_disclosure_permission: Does %{org} have permission to disclose your name, gender, sex, and medical history to emergency response teams?
         title: In Case of Emergency
         emergency_call:
           criminal_activity: Criminal activity or danger to life
@@ -470,7 +482,7 @@ en:
           medical_emergency: Medical emergency
           mental_health_emergency: Mental health emergency
           missing_person: Missing or lost persons
-          title: Under what circumstances, if any, would you want a %{fund} volunteer to call 911?
+          title: Under what circumstances, if any, would you want a %{org} volunteer to call 911?
       textable: Textable?
       title: Patient information
       voicemail_preference: Voicemail preference
@@ -487,14 +499,14 @@ en:
       title: 'Add a new patient:'
     notes:
       placeholder: Enter notes here
-      shared_flag: Share this patient for other case managers
+      shared_flag: Share this patient for other care coordinators
       submit: Create Note
       title: Notes
     practical_support:
       create: Create new practical support entry
       delete: Delete
       delete_confirm: Are you sure you want to delete this practical support entry?
-      guidance_link: "%{fund} practical support guidance"
+      guidance_link: "%{org} practical support guidance"
       new: 'Record new practical support info:'
       practical_support_waiver: Has signed a practical support waiver
       title: Practical support
@@ -506,13 +518,13 @@ en:
       help:
         dropoff: Patient has not been heard from in 120+ days.
         fulfilled: Patient has been marked fulfilled.
-        fundraising: The patient has an appointment date, and is working on raising funds.
-        needs_appt: The patient has spoken to the fund, but has not yet set an appointment date with a clinic.
-        no_contact: A patient has initiated contact, but nobody from the fund has spoken to them yet.
+        fundraising: The patient has an appointment date, and is working on raising orgs.
+        needs_appt: The patient has spoken to the org, but has not yet set an appointment date with a clinic.
+        no_contact: A patient has initiated contact, but nobody from the org has spoken to them yet.
         pledge_paid: Accountant has paid back the clinic for the pledge.
-        pledge_sent: A case manager has sent a pledge to the clinic on behalf of the patient.
+        pledge_sent: A care coordinator has sent a pledge to the clinic on behalf of the patient.
         pledge_unfulfilled: Patient had a pledge sent 150+ days ago but has not cashed it.
-        resolved: Patient has decided to not involve the fund in their plans.
+        resolved: Patient has decided to not involve the org in their plans.
       key:
         dropoff: Probable Dropoff
         fulfilled: Pledge Fulfilled
@@ -522,19 +534,19 @@ en:
         pledge_paid: Pledge Paid
         pledge_sent: Pledge Sent
         pledge_unfulfilled: Pledge Not Fulfilled
-        resolved: Resolved Without %{fund}
+        resolved: Resolved Without %{org}
   tooltips:
-    budget_bar: The budget bar lists money tentatively set aside for a patient (by entering a value in the %{fund} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.
+    budget_bar: The budget bar lists money tentatively set aside for a patient (by entering a value in the %{org} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.
     call_list: This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.
     completed_calls: This is a list of patients you have called within the last 8 hours.
     patient_identifier: Semi-unique internal identifier for this patient, based on their phone number.
     practical_support_confirmed: Check this box if this practical support is confirmed by the point of contact.
     practical_support_fulfilled: Check this box if this practical support is completed or paid out, and requires no further attention.
-    referred_to_clinic: Check this box if you as a case manager referred the patient to a particular clinic.
-    resolved_without_fund: This is used to indicate that a patient does not require or want our services any longer.
-    shared_cases: These are patients who require a little more attention. This list is shared across all case managers working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.
-    solidarity: Indicates a case to which this fund is providing support, but not handling.
-    solidarity_lead: This is the fund serving as point-of-contact or coordinating funding for this patient.
+    referred_to_clinic: Check this box if you as a care coordinator referred the patient to a particular clinic.
+    resolved_without_org: This is used to indicate that a patient does not require or want our services any longer.
+    shared_cases: These are patients who require a little more attention. This list is shared across all care coordinators working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.
+    solidarity: Indicates a case to which this org is providing support, but not handling.
+    solidarity_lead: This is the org serving as point-of-contact or coordinating funding for this patient.
     status_definition: Status definition
     unconfirmed_support: These are patients who have unconfirmed practical supports.
   user:
@@ -551,7 +563,7 @@ en:
       user_account_management: User Account Management
     new:
       create_user: Create User
-      edit_role_after_creating: New users by default have CM permissions, which let them use the case management workflow. To give someone data access or admin permissions, edit them after you create their accounts here.
+      edit_role_after_creating: New users by default have care coordinator permissions, which let them use the care coordination workflow. To give someone data access or admin permissions, edit them after you create their accounts here.
     profile_edit:
       awaiting_confirmation: 'Currently waiting for confirmation for: %{email}'
       change_password: Change your password
@@ -560,9 +572,13 @@ en:
       update_info_button: Update info
       user_panel: User panel for %{email} (%{name})
     roles:
-      admin: 'The admin role is for people who are managing their fund''s DARIA instance or case manager corps. This gives access to what CMs and Data Volunteers have, plus the following: user management tools, clinic management tools, DARIA instance configuration tools, and the ability to delete patients from the individual patient record page (such as in the case of a duplicate entry).'
-      cm: The Case Manager role is for people doing patient intake and making calls. This gives access to the main call list dashboard, the individual patient record page (minus the ability to edit fulfillment info), and the data entry page.
-      data_volunteer: 'The Data Volunteer role is for people who require access to data or accounting tools. This gives access to what CMs have, plus the following: accounting tools for pledge reconcilling, reporting tools with summary data on patient intake, the fulfillment tab on the individual patient record page (for marking pledges as paid out), and the ability to download an anonymized spreadsheet of data for analysis.'
+      admin: 'The admin role is for people who are managing their org''s DARIA instance or care coordinator corps. This gives access to what care coordinators and Data Volunteers have, plus the following: user management tools, clinic management tools, DARIA instance configuration tools, and the ability to delete patients from the individual patient record page (such as in the case of a duplicate entry).'
+      care_coordinator: The Care Coordinator role is for people doing patient intake and making calls. This gives access to the main call list dashboard, the individual patient record page (minus the ability to edit fulfillment info), and the data entry page.
+      data_volunteer: 'The Data Volunteer role is for people who require access to data or accounting tools. This gives access to what CCs have, plus the following: accounting tools for pledge reconcilling, reporting tools with summary data on patient intake, the fulfillment tab on the individual patient record page (for marking pledges as paid out), and the ability to download an anonymized spreadsheet of data for analysis.'
+      coord_admin: 'The admin care coordination role is for people managing regional information on care recipients including new care recipients, new volunteers, and reimbursements. This gives access to what care coordinators have, plus the following: accounting tools for reimbursements, care recipient management tools, and volunteer management tools.'
+      finance_admin:
+      cr: The care recipient role is for people who are requesting care. This gives them access to their own demographic data, procedure data, care shift data, and reimbursement data.
+      volunteer: The volunteer role is for people who are providing in person or remote care. This gives them access to their own demographic data, their care shift data, and minimal information on potential care shifts in their region.
     search:
       button: Search
       text_field: Name or Email

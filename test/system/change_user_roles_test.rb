@@ -5,7 +5,7 @@ class ChangeUserRolesTest < ApplicationSystemTestCase
   before do
     create :region
     @user = create :user, role: 'admin', name: 'Billy'
-    @user2 = create :user, role: 'cm', name: 'Susie'
+    @user2 = create :user, role: 'care_coordinator', name: 'Susie'
     log_in_as @user
   end
 
@@ -18,8 +18,8 @@ class ChangeUserRolesTest < ApplicationSystemTestCase
       click_link "Change Susie's role to Data Volunteer"
       assert has_content? 'Role: data_volunteer'
 
-      click_link "Change Susie's role to Cm"
-      assert has_content? 'Role: cm'
+      click_link "Change Susie's role to Care_coordinator"
+      assert has_content? 'Role: care_coordinator'
     end
   end
 

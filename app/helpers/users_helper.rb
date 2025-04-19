@@ -2,16 +2,18 @@
 module UsersHelper
   def user_role_options
     [
-      ['Case manager', 'cm'],
-      ['Data volunteer', 'data_volunteer'],
+      ['Care coordinator', 'care_coordinator'], # renamed from Case manager, cm
+      ['Data volunteer', 'data_volunteer'], # don't need?
       ['Admin', 'admin'],
-      ['Care Recipient', 'cr'],
-      ['Volunteer', 'volunteer']
+      ['Care Recipient', 'cr'], # added
+      ['Volunteer', 'volunteer'], # added
+      ['Finance admin', 'finance_admin'], # added
+      ['Care coordination admin', 'coord_admin'] # added
     ]
   end
 
   def user_lock_status(user)
-    if user.disabled_by_fund?
+    if user.disabled_by_org?
       'Locked by admin'
     elsif user.access_locked?
       'Temporarily locked'
@@ -28,7 +30,7 @@ module UsersHelper
   end
 
   def disabled_toggle_button(user)
-    verb = user.disabled_by_fund? ? 'Unlock' : 'Lock'
+    verb = user.disabled_by_org? ? 'Unlock' : 'Lock'
     link_to "#{verb} account",
             toggle_disabled_path(user),
             method: :post,

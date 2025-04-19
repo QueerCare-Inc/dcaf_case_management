@@ -3,7 +3,7 @@ require 'test_helper'
 class CallListsControllerTest < ActionDispatch::IntegrationTest
   before do
     @user = create :user, role: 'admin'
-    @user_2 = create :user, role: 'cm', name: 'Billy Everyteen'
+    @user_2 = create :user, role: 'care_coordinator', name: 'Billy Everyteen'
     @region = create :region
     @patient_1 = create :patient, name: 'Susan Everyteen', region: @region
     @patient_2 = create :patient, name: 'Yolo Goat', region: @region

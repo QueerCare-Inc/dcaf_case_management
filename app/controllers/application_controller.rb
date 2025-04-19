@@ -1,6 +1,6 @@
 # Sets a few devise configs and security measures
 class ApplicationController < ActionController::Base
-  set_current_tenant_by_subdomain(:fund, :subdomain)
+  set_current_tenant_by_subdomain(:org, :subdomain)
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -36,21 +36,21 @@ class ApplicationController < ActionController::Base
     raise ActsAsTenant::Errors::NoTenantSet
   end
 
-  # In development only, set first fund as tenant by default.
+  # In development only, set first org as tenant by default.
   def confirm_tenant_set_development
-    # If you need to access the other fund in dev, hit catbox.lvh.me:3000
+    # If you need to access the other org in dev, hit catbox.lvh.me:3000
     # to tunnel in.
     return unless ActsAsTenant.current_tenant.nil? && !ActsAsTenant.unscoped?
 
     # If this errors, make sure you've run rails db:seed to populate db!
-    ActsAsTenant.current_tenant = Fund.find_by! name: 'CatFund'
+    ActsAsTenant.current_tenant = Org.find_by! name: 'CatFund'
   end
 
-  # In test only, set CATF fund as tenant by default.
+  # In test only, set CATF org as tenant by default.
   def confirm_tenant_set_test
     return unless ActsAsTenant.current_tenant.nil? && !ActsAsTenant.unscoped?
 
-    ActsAsTenant.current_tenant = Fund.find_by! name: 'CATF'
+    ActsAsTenant.current_tenant = Org.find_by! name: 'CATF'
   end
 
   # allowlist attributes in devise
@@ -97,7 +97,7 @@ class ApplicationController < ActionController::Base
   end
 
   def confirm_user_not_disabled!
-    return unless current_user.disabled_by_fund?
+    return unless current_user.disabled_by_org?
 
     flash[:danger] = t('flash.account_locked')
     sign_out current_user

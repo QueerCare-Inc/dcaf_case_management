@@ -23,7 +23,7 @@ class EventTest < ActiveSupport::TestCase
       end
     end
 
-    [:patient_name, :patient_id, :cm_name, :event_type].each do |req_field|
+    [:patient_name, :patient_id, :care_coordinator_name, :event_type].each do |req_field|
       it "requires #{req_field}" do
         @event[req_field] = nil
         assert_not @event.valid?

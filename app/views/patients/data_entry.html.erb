@@ -99,10 +99,10 @@
       <div class="row">
         <div class="col">
           <%= f.check_box :special_circumstances, {
-                          label: t('patient.information.special_circumstances.fetal_diagnosis'), 
+                          label: t('patient.information.special_circumstances.housing_insecure'), 
                           name: 'patient[special_circumstances][]',
-                          id: 'fetal_patient_special_circumstances' },
-                          'Fetal diagnosis', '' %>
+                          id: 'housing_insecure_patient_special_circumstances' },
+                          'Housing insecure', '' %>
           <%= f.check_box :special_circumstances, {
                           label: t('patient.information.special_circumstances.homelessness'),
                           name: 'patient[special_circumstances][]',
@@ -135,6 +135,11 @@
                           name: 'patient[special_circumstances][]',
                           id: 'prison_patient_special_circumstances' },
                           'Prison', '' %>
+          <%= f.check_box :special_circumstances, {
+                          label: t('patient.information.special_circumstances.medicaid_eligible'),
+                          name: 'patient[special_circumstances][]',
+                          id: 'medicaid_eligible_patient_special_circumstances' },
+                          'Medicaid eligible', '' %>
         </div>
       </div>
     <% end %>

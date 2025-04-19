@@ -248,7 +248,7 @@ class PatientsHelperTest < ActionView::TestCase
       ['Legal clinic', 'Legal clinic'],
       %w[NAF NAF],
       %w[NNAF NNAF],
-      ['Other abortion fund', 'Other abortion fund'],
+      ['Other abortion org', 'Other abortion org'],
       ['Previous patient', 'Previous patient'],
       %w[School School],
       ['Sexual assault crisis org', 'Sexual assault crisis org'],

@@ -38,7 +38,7 @@ class UserTest < ActiveSupport::TestCase
                    @user.errors.messages[:password].first
     end
 
-    it 'should not allow the name of the fund' do
+    it 'should not allow the name of the org' do
       @user.password = 'AbortionsAreAHumanRight1CATF'
       @user.password_confirmation = 'AbortionsAreAHumanRight1CATF'
       assert_not @user.valid?
@@ -238,30 +238,46 @@ class UserTest < ActiveSupport::TestCase
       assert create(:user, role: :data_volunteer).allowed_data_access?
     end
 
-    it 'should not allow for CMs' do
-      assert_not create(:user, role: :cm).allowed_data_access?
+    it 'should allow for finance admins' do
+      assert create(:user, role: :finance_admin).allowed_data_access?
+    end
+
+    it 'should allow for care coordination admins' do
+      assert create(:user, role: :coord_admin).allowed_data_access?
+    end
+
+    it 'should not allow for care coordinators' do
+      assert_not create(:user, role: :care_coordinator).allowed_data_access?
+    end
+
+    it 'should not allow for CRs' do
+      assert_not create(:user, role: :cr).allowed_data_access?
+    end
+
+    it 'should not allow for volunteers' do
+      assert_not create(:user, role: :volunteer).allowed_data_access?
     end
   end
 
-  describe 'manual account shutoff (disabled_by_fund)' do
+  describe 'manual account shutoff (disabled_by_org)' do
     before { @user = create :user }
     it 'should default to enabled' do
-      assert_not @user.disabled_by_fund?
+      assert_not @user.disabled_by_org?
     end
 
     it 'is toggleable' do
-      @user.toggle_disabled_by_fund
+      @user.toggle_disabled_by_org
       @user.reload
-      assert @user.disabled_by_fund
+      assert @user.disabled_by_org
     end
 
     it 'resets the current sign in token only on reenable' do
       assert_nil @user.current_sign_in_at
-      @user.toggle_disabled_by_fund
+      @user.toggle_disabled_by_org
       @user.reload
       assert_nil @user.current_sign_in_at
 
-      @user.toggle_disabled_by_fund
+      @user.toggle_disabled_by_org
       @user.reload
       assert_not_nil @user.current_sign_in_at
     end
@@ -277,12 +293,12 @@ class UserTest < ActiveSupport::TestCase
 
       it 'should find inactive users with logins before cutoff and disable' do
         # disabled and no-login should be shut off
-        assert @disabled_user.reload.disabled_by_fund?
-        assert @no_login_user.reload.disabled_by_fund?
+        assert @disabled_user.reload.disabled_by_org?
+        assert @no_login_user.reload.disabled_by_org?
 
         # No locking admins or users with recent activity
-        assert_not @admin.disabled_by_fund?
-        assert_not @nondisabled_user.disabled_by_fund?
+        assert_not @admin.disabled_by_org?
+        assert_not @nondisabled_user.disabled_by_org?
       end
     end
   end

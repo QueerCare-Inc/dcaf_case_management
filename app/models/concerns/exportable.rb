@@ -25,7 +25,7 @@ module Exportable
     'Procedure Type' => :procedure_type,
     'Income' => :income,
     'Referred By' => :referred_by,
-    'Referred to clinic by fund' => :referred_to_clinic,
+    'Referred to clinic by org' => :referred_to_clinic,
     'Procedure Date' => :procedure_date,
     'Intake Date' => :intake_date,
     'Shared?' => :shared_flag,

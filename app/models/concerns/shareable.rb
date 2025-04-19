@@ -4,7 +4,7 @@ module Shareable
 
   def still_shared?
     # Verify that a pregnancy has not been shared in the past six days
-    recent = versions.where('created_at > ?', Config.shared_reset.days.ago)
+    recent = versions.where('created_at > ?', Config.shared_reset_days.days.ago)
     return true if recent.any?(&:marked_shared?)
 
     false

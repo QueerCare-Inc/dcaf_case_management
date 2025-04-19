@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "no-reply@#{FUND_MAILER_DOMAIN}"
+  default from: "no-reply@#{ORG_MAILER_DOMAIN}"
   layout 'mailer'
 end

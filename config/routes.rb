@@ -20,9 +20,11 @@ Rails.application.routes.draw do
     # For user management
     patch 'users/:id/change_role_to_admin', to: 'users#change_role_to_admin', as: 'change_role_to_admin'
     patch 'users/:id/change_role_to_data_volunteer', to: 'users#change_role_to_data_volunteer', as: 'change_role_to_data_volunteer'
-    patch 'users/:id/change_role_to_cm', to: 'users#change_role_to_cm', as: 'change_role_to_cm'
+    patch 'users/:id/change_role_to_care_coordinator', to: 'users#change_role_to_care_coordinator', as: 'change_role_to_care_coordinator'
     patch 'users/:id/change_role_to_cr', to: 'users#change_role_to_cr', as: 'change_role_to_cr'
     patch 'users/:id/change_role_to_volunteer', to: 'users#change_role_to_volunteer', as: 'change_role_to_volunteer'
+    patch 'users/:id/change_role_to_finance_admin', to: 'users#change_role_to_finance_admin', as: 'change_role_to_finance_admin'
+    patch 'users/:id/change_role_to_coord_admin', to: 'users#change_role_to_coord_admin', as: 'change_role_to_coord_admin'
     post 'users/:id/toggle_disabled', to: 'users#toggle_disabled', as: 'toggle_disabled'
 
     # Patient routes

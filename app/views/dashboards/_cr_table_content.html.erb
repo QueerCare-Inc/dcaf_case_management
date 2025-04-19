@@ -1,0 +1,107 @@
+<!-- locals: title, table_type (for div id and tbody div id), pregnancies, sortable, autosortable -->
+
+<div id="<%= table_type %>" class="margin-bottom mt-4">
+  <h1 class="border-bottom title">
+    <%= title %>
+    <%= dashboard_table_content_tooltip_shell table_type %>
+  </h1>
+
+  <table class="table border-side" id="<%= table_type %>_table">
+    <thead>
+      <tr>
+        <th scope="col"><!-- handle/spacer --></th>
+        <th scope="col"><%= t 'common.phone' %></th>
+        <th scope="col"><%= t 'common.name' %></th>
+        <th scope="col"><%= t 'common.email' %></th>
+        <% if table_type == 'assigned_cr' %>
+          <th scope="col"><%= t 'common.care_coordinator' %>
+        <% else %>
+          <%= th_autosortable t('activerecord.attributes.patient.intake_date'), 'string', local_assigns %>
+          <%= th_autosortable t('common.procedure_date_short'), 'string', local_assigns %>
+          <%= th_autosortable t('common.procedure_type'), 'string', local_assigns %>
+          <%= th_autosortable t('common.support_dates'), 'string', local_assigns %>
+          <th scope="col"><%= t 'common.services' %></th>
+        <% end %>
+        <%= th_autosortable t('common.status'), 'string', local_assigns %>
+        <th scope="col"><%= t 'common.notes' %></th>
+        <th scope="col"><!-- add/delete from call list --></th>
+        <th scope="col"><!-- call --></th>
+      </tr>
+    </thead>
+
+    <tbody id="<%= table_type %>_content">
+      <% patients.each do |patient| %>
+        <tr class="patient-data" id="<%= patient.id %>">
+          <% if local_assigns[:sortable] %>
+            <td class="handle" scope="row">
+              <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
+            </td>
+          <% else %>
+            <td scope="row"><!-- spacer --></td>
+          <% end %>
+
+          <td><%= patient.primary_phone_display %></td>
+          <td><%= link_to patient.name, edit_patient_path(patient) %></td>
+          <td><%= patient.email_display %></td>
+
+
+          <% if table_type == 'assigned_cr' %>
+            <td><%= patient%>
+          <% end %>
+
+          <td><%= patient.intake_date.display_date %></td>
+
+
+          <td><%= patient.status %></td>
+          <td><%= procedure_date_display patient %></td>
+          <td><%= patient.most_recent_note_display_text %> </td>
+
+          <% if table_type == 'completed_calls' || table_type == 'shared_cases' %>
+            <td class="blank-td"></td>
+          <% else %>
+            <% if current_user.call_list_entries.map(&:patient_id).include?(patient.id) %>
+              <td>
+                <%= link_to remove_patient_path(patient),
+                            method: :patch,
+                            data: { confirm: t('dashboard.table_content.remove_from_call_list_confirm',
+                                    name: patient.name) },
+                            aria: { label: t('dashboard.table_content.remove_from_call_list_confirm',
+                                    name: patient.name)},
+                            remote: true do %>
+                  <i class="fas fa-xmark fa-fw text-danger" aria-hidden="true"></i>
+                  <span class="sr-only">Remove call</span>
+                <% end %>
+              </td>
+            <% else %>
+              <td>
+                <%= link_to t('common.add'),
+                            add_patient_path(patient),
+                            method: :patch,
+                            remote: true %>
+              </td>
+            <% end %>
+          <% end %>
+
+          <td>
+            <%= link_to new_patient_call_path(patient),
+                        class: "call_button call-#{patient.primary_phone_display}",
+                        aria: { label: "Call #{patient.primary_phone_display}" },
+                        remote: true do %>
+              <i class="fas fa-phone-alt fa-lg fa-fw call-icon"></i>
+              <span class="sr-only">Call</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if table_type == 'call_list' && current_user.call_list_entries.count.nonzero? %>
+    <%= link_to t('dashboard.table_content.clear_call_list'),
+                clear_current_user_call_list_path,
+                class: "float-right text-danger",
+                data: { confirm: t('dashboard.table_content.clear_call_list_confirm') },
+                method: :patch,
+                remote: true %>
+  <% end %>
+</div>

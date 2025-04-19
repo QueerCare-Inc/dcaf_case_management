@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :practical_support do
     patient
     sequence :source do |n|
-      "Fund #{n}"
+      "Org #{n}"
     end
     sequence :support_type do |n|
       "Support #{n}"

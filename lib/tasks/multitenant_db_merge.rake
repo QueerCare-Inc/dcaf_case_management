@@ -1,14 +1,14 @@
 desc 'Merge an ext daria db into main db'
 task multitenant_db_merge: :environment do
-  raise 'SET MIGRATION_FUND_ID ENV VAR' if not ENV['MIGRATION_FUND_ID']
+  raise 'SET MIGRATION_ORG_ID ENV VAR' if not ENV['MIGRATION_ORG_ID']
   raise 'SET MIGRATION_DB_URL ENV VAR' if not ENV['MIGRATION_DB_URL']
 
-  # Make absolutely sure the new fund has been created!
-  fund = Fund.find ENV['MIGRATION_FUND_ID']
-  @fund_id = fund.id
+  # Make absolutely sure the new org has been created!
+  org = Org.find ENV['MIGRATION_ORG_ID']
+  @org_id = org.id
 
-  # Scope funds and turn off papertrail
-  ActsAsTenant.current_tenant = fund
+  # Scope orgs and turn off papertrail
+  ActsAsTenant.current_tenant = org
   PaperTrail.enabled = false # We're porting these over more directly and don't need extra versions
 
   # Database we're migrating things into
@@ -29,10 +29,10 @@ task multitenant_db_merge: :environment do
     )
   end
 
-  puts "Migrating into fund_id #{@fund_id}..."
+  puts "Migrating into org_id #{@org_id}..."
 
   if Patient.count() > 0 || Config.count() > 0
-    raise 'Possibly already ported? patients belonging to that fund_id are found'
+    raise 'Possibly already ported? patients belonging to that org_id are found'
   end
 
   # Store the mappings between an old id and new id, and update them as we port the goods
@@ -85,12 +85,12 @@ task multitenant_db_merge: :environment do
     id_mapping
   end
 
-  # Create each object's lamba function for copying the object, including handling for the new fund_id, cleaned timestamps, and any fields each model may need
+  # Create each object's lamba function for copying the object, including handling for the new org_id, cleaned timestamps, and any fields each model may need
   # Port configs
   config_map = -> (x) {
-    x.except('id', 'fund_id', 'config_value', 'created_at', 'updated_at')
+    x.except('id', 'org_id', 'config_value', 'created_at', 'updated_at')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
        'config_value' => JSON.parse(x['config_value'])
@@ -100,9 +100,9 @@ task multitenant_db_merge: :environment do
 
   # Port clinics
   clinic_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at')
+    x.except('id', 'org_id', 'created_at', 'updated_at')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York")
      })
@@ -111,9 +111,9 @@ task multitenant_db_merge: :environment do
 
   # Port regions
   region_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at')
+    x.except('id', 'org_id', 'created_at', 'updated_at')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York")
      })
@@ -122,9 +122,9 @@ task multitenant_db_merge: :environment do
 
   # Port users
   user_map = -> (x) {
-    x.except('id', 'fund_id', 'region', 'created_at', 'updated_at')
+    x.except('id', 'org_id', 'region', 'created_at', 'updated_at')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York")
      })
@@ -133,9 +133,9 @@ task multitenant_db_merge: :environment do
 
   # Port patients
   patient_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id', 'last_edited_by_id')
+    x.except('id', 'org_id', 'created_at', 'updated_at', 'region_id', 'clinic_id', 'last_edited_by_id')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
        'region_id' => @region_mappings[x['region_id']],
@@ -147,9 +147,9 @@ task multitenant_db_merge: :environment do
 
   # Port archived patients
   archived_patient_map = -> (x) {
-    x.except('id', 'fund_id', 'created_at', 'updated_at', 'region_id', 'clinic_id')
+    x.except('id', 'org_id', 'created_at', 'updated_at', 'region_id', 'clinic_id')
      .merge({
-       'fund_id' => @fund_id,
+       'org_id' => @org_id,
        'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
        'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
        'region_id' => @region_mappings[x['region_id']],
@@ -162,9 +162,9 @@ task multitenant_db_merge: :environment do
   # so we don't count check on these
   # Port calls
   call_map = -> (x) {
-    res = x.except('id', 'can_call_id', 'fund_id', 'created_at', 'updated_at')
+    res = x.except('id', 'can_call_id', 'org_id', 'created_at', 'updated_at')
       .merge({
-        'fund_id' => @fund_id,
+        'org_id' => @org_id,
         'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
         'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
         'can_call_id' => if x['can_call_type'] == 'Patient'
@@ -181,9 +181,9 @@ task multitenant_db_merge: :environment do
 
   # Port fulfillments
   fulfillment_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'can_fulfill_id', 'fund_id')
+    res = x.except('id', 'created_at', 'updated_at', 'can_fulfill_id', 'org_id')
       .merge({
-        'fund_id' => @fund_id,
+        'org_id' => @org_id,
         'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
         'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
         'can_fulfill_id' => if x['can_fulfill_type'] == 'Patient'
@@ -200,9 +200,9 @@ task multitenant_db_merge: :environment do
 
   # Port practical supports
   psup_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'can_support_id', 'fund_id')
+    res = x.except('id', 'created_at', 'updated_at', 'can_support_id', 'org_id')
       .merge({
-        'fund_id' => @fund_id,
+        'org_id' => @org_id,
         'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
         'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
         'can_support_id' => if x['can_support_type'] == 'Patient'
@@ -219,9 +219,9 @@ task multitenant_db_merge: :environment do
 
   # Port notes
   note_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'fund_id', 'patient_id')
+    res = x.except('id', 'created_at', 'updated_at', 'org_id', 'patient_id')
            .merge({
-             'fund_id' => @fund_id,
+             'org_id' => @org_id,
              'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
              'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
              'patient_id' => @patient_mappings[x['patient_id']]
@@ -232,9 +232,9 @@ task multitenant_db_merge: :environment do
 
   # Port call list entries
   cle_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'fund_id', 'region_id', 'patient_id', 'user_id')
+    res = x.except('id', 'created_at', 'updated_at', 'org_id', 'region_id', 'patient_id', 'user_id')
            .merge({
-             'fund_id' => @fund_id,
+             'org_id' => @org_id,
              'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
              'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
              'region_id' => @region_mappings[x['region_id']],
@@ -247,9 +247,9 @@ task multitenant_db_merge: :environment do
 
   # Port events
   event_map = -> (x) {
-    res = x.except('id', 'created_at', 'updated_at', 'fund_id', 'region_id', 'patient_id')
+    res = x.except('id', 'created_at', 'updated_at', 'org_id', 'region_id', 'patient_id')
            .merge({
-             'fund_id' => @fund_id,
+             'org_id' => @org_id,
              'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
              'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
              'region_id' => @region_mappings[x['region_id']],
@@ -265,7 +265,7 @@ task multitenant_db_merge: :environment do
   # This is essentially a more complicated version of the lambdas above, except it changes anything that's known to be an id
   # to the new value that's just been inserted into db. End effect is that all the ids stowed in versions change to the new appropriate value.
   @fkey_mappings = {
-    'fund_id' => {@fund_id => @fund_id},
+    'org_id' => {@org_id => @org_id},
     'clinic_id' => @clinic_mappings,
     'last_edited_by_id' => @user_mappings,
     'user_id' => @user_mappings,
@@ -320,7 +320,7 @@ task multitenant_db_merge: :environment do
 
   # Transfer versions, porting keys along the way
   version_map = -> (x) {
-    res = x.except('id', 'created_at', 'item_id', 'fund_id', 'object', 'object_changes', 'whodunnit')
+    res = x.except('id', 'created_at', 'item_id', 'org_id', 'object', 'object_changes', 'whodunnit')
            .merge({
              'item_id' => @item_type_mappings[x['item_type']][x['item_id']],
              'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
@@ -332,5 +332,5 @@ task multitenant_db_merge: :environment do
   }
   @version_mappings = easy_mass_insert PaperTrailVersion, 'versions', version_map, false
 
-  puts "Fund id #{@fund_id} completed #{Time.zone.now}"
+  puts "Org id #{@org_id} completed #{Time.zone.now}"
 end

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class ConfigsControllerTest < ActionDispatch::IntegrationTest
   describe 'non-admin redirects' do
-    [:data_volunteer, :cm].each do |role|
+    [:data_volunteer, :care_coordinator, :cr, :volunteer].each do |role|
       it "should deny access as a #{role}" do
         delete destroy_user_session_path
         user = create :user, role: role
@@ -15,7 +15,7 @@ class ConfigsControllerTest < ActionDispatch::IntegrationTest
         patch config_path(config, params: { options: ['no'] })
         assert_redirected_to authenticated_root_path
         config.reload
-        refute_equal config.options, ['no']
+        assert_not_equal config.options, ['no']
       end
     end
   end

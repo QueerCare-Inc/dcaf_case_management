@@ -1,9 +1,9 @@
 require 'application_system_test_case'
 
-# Confirm behavior around updating fund-editable settings
+# Confirm behavior around updating org-editable settings
 class UpdatingConfigsTest < ApplicationSystemTestCase
   describe 'non-admin redirect' do
-    [:data_volunteer, :cm].each do |role|
+    [:data_volunteer, :care_coordinator, :cr, :volunteer].each do |role|
       it "should deny access as a #{role}" do
         user = create :user, role: role
         create :region

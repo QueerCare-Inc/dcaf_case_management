@@ -19,7 +19,12 @@
     <div class="btn-group" role='group'>
       <%= role_toggle_button @user, 'admin' %>
       <%= role_toggle_button @user, 'data_volunteer' %>
-      <%= role_toggle_button @user, 'cm' %>
+      <%= role_toggle_button @user, 'care_coordinator' %>
+      <%= role_toggle_button @user, 'finance_admin' %>
+      <%= role_toggle_button @user, 'coord_admin' %>
+      <%# TODO: should these two be here? %>
+      <%= role_toggle_button @user, 'cr' %> 
+      <%= role_toggle_button @user, 'volunteer' %>
     </div>
     <br /><br />
     <% User.roles.keys.each do |r| %>

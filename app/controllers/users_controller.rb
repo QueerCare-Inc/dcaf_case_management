@@ -2,16 +2,20 @@
 class UsersController < ApplicationController
   before_action :confirm_admin_user, only: [:new, :index, :update, :edit,
                                             :change_role_to_admin,
+                                            :change_role_to_finance_admin,
+                                            :change_role_to_coord_admin,
+                                            :change_role_to_care_coordinator,
                                             :change_role_to_data_volunteer,
-                                            :change_role_to_cm,
                                             :change_role_to_cr,
                                             :change_role_to_volunteer,
                                             :toggle_disabled]
-  before_action :confirm_admin_user_async, only: [:search]
+  before_action :confirm_admin_user_async, only: [:search] # should finance_admin be added here??
   before_action :find_user, only: [:update, :edit,
                                    :change_role_to_admin,
+                                   :change_role_to_finance_admin,
+                                   :change_role_to_coord_admin,
+                                   :change_role_to_care_coordinator,
                                    :change_role_to_data_volunteer,
-                                   :change_role_to_cm,
                                    :change_role_to_cr,
                                    :change_role_to_volunteer,
                                    :toggle_disabled]
@@ -75,13 +79,23 @@ class UsersController < ApplicationController
     render 'edit'
   end
 
+  def change_role_to_finance_admin
+    @user.update role: 'finance_admin'
+    render 'edit'
+  end
+
+  def change_role_to_coord_admin
+    @user.update role: 'coord_admin'
+    render 'edit'
+  end
+
   def change_role_to_data_volunteer
     @user.update role: 'data_volunteer' if user_not_demoting_themself?(@user)
     render 'edit'
   end
 
-  def change_role_to_cm
-    @user.update role: 'cm' if user_not_demoting_themself?(@user)
+  def change_role_to_care_coordinator
+    @user.update role: 'care_coordinator' if user_not_demoting_themself?(@user)
     render 'edit'
   end
 
@@ -99,8 +113,8 @@ class UsersController < ApplicationController
     if @user == current_user
       flash[:alert] = t('flash.cant_lock_own_account')
     else
-      @user.toggle_disabled_by_fund
-      verb = @user.disabled_by_fund? ? t('flash.locked') : t('flash.unlocked')
+      @user.toggle_disabled_by_org
+      verb = @user.disabled_by_org? ? t('flash.locked') : t('flash.unlocked')
       flash[:notice] = t('flash.action_on_account', verb: verb, name: @user.name)
     end
     redirect_to users_path

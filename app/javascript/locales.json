@@ -5663,7 +5663,7 @@
         "check_number": "Check #",
         "clinic": "Clinic",
         "date_of_check": "Date of check",
-        "fund_payout": "%{fund} payout",
+        "org_payout": "%{org} payout",
         "region": "Region"
       },
       "title": "Accountant dashboard"
@@ -5709,7 +5709,6 @@
           "employment_status": "Employment status",
           "end_time": "End time",
           "fulfilled": "Fulfilled",
-          "fund_id": "Fund ID",
           "household_size_adults": "Adults in household",
           "household_size_children": "Minors in household",
           "income": "Income",
@@ -5718,6 +5717,7 @@
           "language": "Language",
           "multiday_appointment": "Multi-day appointment",
           "name": "Name",
+          "org_id": "Org ID",
           "practical_support_waiver": "Practical support waiver",
           "primary_phone": "Primary phone",
           "procedure_date": "Procedure date",
@@ -5782,8 +5782,8 @@
         },
         "voicemail_instructions": {
           "no_voicemail": "Do not leave this patient a voicemail",
-          "voicemail_identify": "Voicemail OK; Okay to identify as %{fund}",
-          "voicemail_no_identify": "Voicemail OK; Do not identify as %{fund}"
+          "voicemail_identify": "Voicemail OK; Okay to identify as %{org}",
+          "voicemail_no_identify": "Voicemail OK; Do not identify as %{org}"
         }
       },
       "status": {
@@ -5828,6 +5828,7 @@
     "common": {
       "add": "Add",
       "back": "Back",
+      "care_coordinator": "Coordinator",
       "clinic": "Clinic",
       "close": "Close",
       "detail": "Detail",
@@ -5844,10 +5845,13 @@
       "phone": "Phone",
       "prefer_not_to_answer": "Prefer not to answer",
       "procedure_date_short": "Proc date",
+      "procedure_type": "Procedure",
       "purchased_on": "Purchased on",
       "save": "Save",
       "search": "Search",
+      "services": "Services",
       "status": "Status",
+      "support_dates": "Support dates",
       "update": "Update",
       "weeks_days": "%{weeks} weeks, %{days} days",
       "weeks_days_short": "%{weeks}w %{days}d",
@@ -6234,7 +6238,7 @@
       "unknown_action": "interacted with"
     },
     "flash": {
-      "account_locked": "Account currently locked, check with your fund.",
+      "account_locked": "Account currently locked, check with your org.",
       "action_on_account": "%{verb} %{name}'s account.",
       "actions": {
         "create": {
@@ -6264,7 +6268,7 @@
       "patient_removed_database": "Patient successfully removed from database.",
       "patient_removed_database_error": "Can't delete patients with pledges; please correct the patient record and try again.",
       "patient_save_error": "Errors prevented this patient from being saved - %{error}",
-      "patient_save_success": "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{fund} pledge amounts are the same, and you're set.",
+      "patient_save_success": "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set.",
       "pledge_download_alert": "You need to enter your name in the box to sign and download the pledge",
       "unlocked": "Unlocked",
       "user_created": "User created!",
@@ -6331,7 +6335,7 @@
             "out_format": "Output format: %{valid_text}",
             "pattern_router": "Use pattern router: keys moved per config data.write",
             "strict": "Avoid inferring dynamic key usages such as t(\"cats.#{cat}.name\"). Takes precedence over the config setting if set.",
-            "translation_backend": "Translation backend (google or deepl)",
+            "translation_backend": "Translation backend [google, deepl, yandex, openai])",
             "value": "Value. Interpolates: %%{value}, %%{human_key}, %%{key}, %%{default}, %%{value_or_human_key}, %%{value_or_default_or_human_key}"
           }
         },
@@ -6377,6 +6381,7 @@
           "invalid": "%{invalid} is not one of: %{valid}."
         },
         "errors": {
+          "invalid_backend": "Invalid backend: %{invalid}. Must be one of %{valid}.",
           "invalid_format": "invalid format: %{invalid}. valid: %{valid}.",
           "invalid_locale": "invalid locale: %{invalid}",
           "invalid_missing_type": {
@@ -6444,6 +6449,13 @@
       "usages": {
         "none": "No key usages found."
       },
+      "watsonx_translate": {
+        "errors": {
+          "no_api_key": "Set watsonx API key via WATSONX_API_KEY environment variable or translation.watsonx_api_key in config/i18n-tasks.yml. Get the key at https://www.ibm.com/products/watsonx-ai.",
+          "no_project_id": "Set watsonx Project ID via WATSONX_PROJECT_ID environment variable or translation.watsonx_api_key in config/i18n-tasks.yml. Get the key at https://www.ibm.com/products/watsonx-ai.",
+          "no_results": "watsonx returned no results."
+        }
+      },
       "yandex_translate": {
         "errors": {
           "no_api_key": "Set Yandex API key via YANDEX_API_KEY environment variable or translation.yandex_api_key in config/i18n-tasks.yml. Get the key at https://tech.yandex.com/translate.",
@@ -6499,8 +6511,8 @@
         "label": "Admin",
         "user_management": "User Management"
       },
-      "cm_resources": {
-        "label": "CM Resources"
+      "care_coordinator_resources": {
+        "label": "Care Coordinator Resources"
       },
       "current_region": {
         "helper": "Your current region"
@@ -6592,7 +6604,7 @@
         "record_new_call": "Record new call",
         "table": {
           "actions": "ACTIONS",
-          "case_manager": "CM",
+          "care_coordinator": "Care Coordinator",
           "date": "DATE",
           "remove_button": "Remove",
           "result": "RESULT",
@@ -6607,7 +6619,7 @@
           "practical_support": "Practical support"
         },
         "table": {
-          "case_manager": "CM",
+          "care_coordinator": "Care Coordinator",
           "change": "Change (from -> to)",
           "modified_date": "Modified Date"
         },
@@ -6685,12 +6697,12 @@
           "domestic_violence_org": "Domestic violence crisis/intervention org",
           "family": "Family member",
           "friend": "Friend",
-          "fund": "%{fund} website or social media",
           "homeless": "Homeless shelter",
           "legal_clinic": "Legal clinic",
           "naf": "NAF",
           "nnaf": "NNAF",
-          "other_fund": "Other abortion fund",
+          "org": "%{org} website or social media",
+          "other_org": "Other abortion org",
           "prev_patient": "Previous patient",
           "school": "School",
           "sexual_assault_crisis_org": "Sexual assault crisis org",
@@ -6705,11 +6717,18 @@
       },
       "information": {
         "emergency_contact": {
-          "emergency_reference_wording": "How do you want %{fund} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?",
+          "emergency_contact_options": "How do you want %{org} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?",
           "name": "Emergency contact name",
           "phone": "Emergency contact phone",
           "relationship": "Relationship to emergency contact",
           "title": "Emergency Contact"
+        },
+        "emergency_contact_options": {
+          "other": "Other",
+          "title": "Emergency Contact Communication Options",
+          "use_legal_name": "Use legal name",
+          "use_name": "Use name",
+          "use_pronouns": "Use pronouns"
         },
         "household_help": "(including patient)",
         "identifier": "Identifier",
@@ -6721,21 +6740,23 @@
             "medical_emergency": "Medical emergency",
             "mental_health_emergency": "Mental health emergency",
             "missing_person": "Missing or lost persons",
-            "title": "Under what circumstances, if any, would you want a %{fund} volunteer to call 911?"
+            "title": "Under what circumstances, if any, would you want a %{org} volunteer to call 911?"
           },
-          "ident_disclosure_permission": "Does %{fund} have permission to disclose your name, gender, sex, and medical history to emergency response teams?",
+          "ident_disclosure_permission": "Does %{org} have permission to disclose your name, gender, sex, and medical history to emergency response teams?",
           "title": "In Case of Emergency"
         },
         "income_help": "Employment, Food Stamps, SS, TANF, etc.",
         "insurance": "Patient insurance",
         "language": "Preferred Language",
         "legal_name": "Legal Name (if different)",
-        "referred_by": "How patient heard about %{fund}",
+        "referred_by": "How patient heard about %{org}",
         "special_circumstances": {
           "domestic_violence": "Domestic violence",
           "fetal_diagnosis": "Fetal diagnosis",
           "homelessness": "Homelessness",
+          "housing_insecure": "Housing insecure",
           "incest": "Incest",
+          "medicaid_eligible": "Medicaid eligible",
           "other_medical_issue": "Other medical issue",
           "prison": "Prison",
           "rape": "Rape",
@@ -6760,7 +6781,7 @@
       },
       "notes": {
         "placeholder": "Enter notes here",
-        "shared_flag": "Share this patient for other case managers",
+        "shared_flag": "Share this patient for other care coordinators",
         "submit": "Create Note",
         "title": "Notes"
       },
@@ -6768,7 +6789,7 @@
         "create": "Create new practical support entry",
         "delete": "Delete",
         "delete_confirm": "Are you sure you want to delete this practical support entry?",
-        "guidance_link": "%{fund} practical support guidance",
+        "guidance_link": "%{org} practical support guidance",
         "new": "Record new practical support info:",
         "practical_support_waiver": "Has signed a practical support waiver",
         "title": "Practical support"
@@ -6795,13 +6816,13 @@
         "help": {
           "dropoff": "Patient has not been heard from in 120+ days.",
           "fulfilled": "Patient has been marked fulfilled.",
-          "fundraising": "The patient has an appointment date, and is working on raising funds.",
-          "needs_appt": "The patient has spoken to the fund, but has not yet set an appointment date with a clinic.",
-          "no_contact": "A patient has initiated contact, but nobody from the fund has spoken to them yet.",
+          "fundraising": "The patient has an appointment date, and is working on raising orgs.",
+          "needs_appt": "The patient has spoken to the org, but has not yet set an appointment date with a clinic.",
+          "no_contact": "A patient has initiated contact, but nobody from the org has spoken to them yet.",
           "pledge_paid": "Accountant has paid back the clinic for the pledge.",
-          "pledge_sent": "A case manager has sent a pledge to the clinic on behalf of the patient.",
+          "pledge_sent": "A care coordinator has sent a pledge to the clinic on behalf of the patient.",
           "pledge_unfulfilled": "Patient had a pledge sent 150+ days ago but has not cashed it.",
-          "resolved": "Patient has decided to not involve the fund in their plans."
+          "resolved": "Patient has decided to not involve the org in their plans."
         },
         "key": {
           "dropoff": "Probable Dropoff",
@@ -6812,14 +6833,14 @@
           "pledge_paid": "Pledge Paid",
           "pledge_sent": "Pledge Sent",
           "pledge_unfulfilled": "Pledge Not Fulfilled",
-          "resolved": "Resolved Without %{fund}"
+          "resolved": "Resolved Without %{org}"
         }
       }
     },
     "regions": {
       "new": {
         "start": "Get started",
-        "welcome_to_daria": "Welcome to DARIA (%{fund} edition)!",
+        "welcome_to_daria": "Welcome to DARIA (%{org} edition)!",
         "what_region": "What region are you working in?"
       }
     },
@@ -6840,17 +6861,17 @@
       "pm": "pm"
     },
     "tooltips": {
-      "budget_bar": "The budget bar lists money tentatively set aside for a patient (by entering a value in the %{fund} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.",
+      "budget_bar": "The budget bar lists money tentatively set aside for a patient (by entering a value in the %{org} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.",
       "call_list": "This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.",
       "completed_calls": "This is a list of patients you have called within the last 8 hours.",
       "patient_identifier": "Semi-unique internal identifier for this patient, based on their phone number.",
       "practical_support_confirmed": "Check this box if this practical support is confirmed by the point of contact.",
       "practical_support_fulfilled": "Check this box if this practical support is completed or paid out, and requires no further attention.",
-      "referred_to_clinic": "Check this box if you as a case manager referred the patient to a particular clinic.",
-      "resolved_without_fund": "This is used to indicate that a patient does not require or want our services any longer.",
-      "shared_cases": "These are patients who require a little more attention. This list is shared across all case managers working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
-      "solidarity": "Indicates a case to which this fund is providing support, but not handling.",
-      "solidarity_lead": "This is the fund serving as point-of-contact or coordinating funding for this patient.",
+      "referred_to_clinic": "Check this box if you as a care coordinator referred the patient to a particular clinic.",
+      "resolved_without_org": "This is used to indicate that a patient does not require or want our services any longer.",
+      "shared_cases": "These are patients who require a little more attention. This list is shared across all care coordinators working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
+      "solidarity": "Indicates a case to which this org is providing support, but not handling.",
+      "solidarity_lead": "This is the org serving as point-of-contact or coordinating funding for this patient.",
       "status_definition": "Status definition",
       "unconfirmed_support": "These are patients who have unconfirmed practical supports."
     },
@@ -6871,7 +6892,7 @@
       },
       "new": {
         "create_user": "Create User",
-        "edit_role_after_creating": "New users by default have CM permissions, which let them use the case management workflow. To give someone data access or admin permissions, edit them after you create their accounts here."
+        "edit_role_after_creating": "New users by default have care coordinator permissions, which let them use the care coordination workflow. To give someone data access or admin permissions, edit them after you create their accounts here."
       },
       "profile_edit": {
         "awaiting_confirmation": "Currently waiting for confirmation for: %{email}",
@@ -6882,9 +6903,13 @@
         "user_panel": "User panel for %{email} (%{name})"
       },
       "roles": {
-        "admin": "The admin role is for people who are managing their fund's DARIA instance or case manager corps. This gives access to what CMs and Data Volunteers have, plus the following: user management tools, clinic management tools, DARIA instance configuration tools, and the ability to delete patients from the individual patient record page (such as in the case of a duplicate entry).",
-        "cm": "The Case Manager role is for people doing patient intake and making calls. This gives access to the main call list dashboard, the individual patient record page (minus the ability to edit fulfillment info), and the data entry page.",
-        "data_volunteer": "The Data Volunteer role is for people who require access to data or accounting tools. This gives access to what CMs have, plus the following: accounting tools for pledge reconcilling, reporting tools with summary data on patient intake, the fulfillment tab on the individual patient record page (for marking pledges as paid out), and the ability to download an anonymized spreadsheet of data for analysis."
+        "admin": "The admin role is for people who are managing their org's DARIA instance or care coordinator corps. This gives access to what care coordinators and Data Volunteers have, plus the following: user management tools, clinic management tools, DARIA instance configuration tools, and the ability to delete patients from the individual patient record page (such as in the case of a duplicate entry).",
+        "care_coordinator": "The Care Coordinator role is for people doing patient intake and making calls. This gives access to the main call list dashboard, the individual patient record page (minus the ability to edit fulfillment info), and the data entry page.",
+        "coord_admin": "The admin care coordination role is for people managing regional information on care recipients including new care recipients, new volunteers, and reimbursements. This gives access to what care coordinators have, plus the following: accounting tools for reimbursements, care recipient management tools, and volunteer management tools.",
+        "cr": "The care recipient role is for people who are requesting care. This gives them access to their own demographic data, procedure data, care shift data, and reimbursement data.",
+        "data_volunteer": "The Data Volunteer role is for people who require access to data or accounting tools. This gives access to what CCs have, plus the following: accounting tools for pledge reconcilling, reporting tools with summary data on patient intake, the fulfillment tab on the individual patient record page (for marking pledges as paid out), and the ability to download an anonymized spreadsheet of data for analysis.",
+        "finance_admin": null,
+        "volunteer": "The volunteer role is for people who are providing in person or remote care. This gives them access to their own demographic data, their care shift data, and minimal information on potential care shifts in their region."
       },
       "search": {
         "button": "Search",
@@ -9954,7 +9979,7 @@
         "check_number": "# de cheque",
         "clinic": "Clínica",
         "date_of_check": "Fecha del cheque",
-        "fund_payout": "Pago de %{fund}",
+        "org_payout": "Pago de %{org}",
         "pledge_amount": "Cantidad de promesa",
         "pledge_sent": "Promesa enviada",
         "region": "Región",
@@ -9991,8 +10016,8 @@
           "check_number": "Cheque #",
           "date_of_check": "Fecha del cheque",
           "fulfilled": "Promesa cumplida",
-          "fund_payout": "Pago de fund",
           "gestation_at_procedure": "Semanas a lo largo del pocedimiento",
+          "org_payout": "Pago de org",
           "procedure_date": "Fecha de procedimiento"
         },
         "patient": {
@@ -10013,10 +10038,6 @@
           "employment_status": "Estatus de empleo",
           "end_time": "Tiempo de finalización del supporte",
           "fulfilled": "Cumplida",
-          "fund_id": "ID del fondo",
-          "fund_payout": "Pago de fondos",
-          "fund_pledge": "Promesa de fondos",
-          "fund_pledged_at": "Fondo prometido en",
           "gestation_at_procedure": "Semanas a lo largo del pocedimiento",
           "household_size_adults": "Adultos en el Hogar",
           "household_size_children": "Menores en el Hogar",
@@ -10027,6 +10048,10 @@
           "multiday_appointment": "Cita de varios días",
           "naf_pledge": "Promesa de la NAF",
           "name": "Nombre",
+          "org_id": "ID del fondo",
+          "org_payout": "Pago de fondos",
+          "org_pledge": "Promesa de fondos",
+          "org_pledged_at": "Fondo prometido en",
           "patient_contribution": "Contribución del paciente",
           "pledge_generated_at": "Promesa generada en",
           "pledge_generated_by_id": "Promesa generada por",
@@ -10042,7 +10067,7 @@
           "referred_by": "Referido por",
           "referred_to_clinic": "Referido a la clínica",
           "region_id": "ID de la región",
-          "resolved_without_fund": "Resuelto sin ayuda de fondo",
+          "resolved_without_org": "Resuelto sin ayuda de fondo",
           "shared_flag": "Bandera compartida",
           "solidarity": "Promesa solidaria",
           "source": "Fuente",
@@ -10123,8 +10148,8 @@
         },
         "voicemail_instructions": {
           "no_voicemail": "No deje un mensaje de voz a este paciente",
-          "voicemail_identify": "Si se puede dejar mensaje de voz; Y tambien, identificarse como %{fund}",
-          "voicemail_no_identify": "Si se puede dejar mensaje de voz; Pero no identificarse como %{fund}"
+          "voicemail_identify": "Si se puede dejar mensaje de voz; Y tambien, identificarse como %{org}",
+          "voicemail_no_identify": "Si se puede dejar mensaje de voz; Pero no identificarse como %{org}"
         }
       },
       "status": {
@@ -10173,6 +10198,7 @@
     "common": {
       "add": "Añadir",
       "back": "Atrás",
+      "care_coordinator": "Coordinador",
       "clinic": "Clínica",
       "close": "Cierre",
       "days_along": "Días de embarazo al inicio",
@@ -10190,10 +10216,13 @@
       "phone": "Teléfono",
       "prefer_not_to_answer": "Prefiere no contestar",
       "procedure_date_short": "Día de la cita",
+      "procedure_type": "Procedimiento",
       "purchased_on": "Comprado en",
       "save": "Guardar",
       "search": "Buscar",
+      "services": "Servicios",
       "status": "Estatus",
+      "support_dates": "Fechas de soporte",
       "update": "Actualizar",
       "weeks_along_short": "Semanas a lo largo",
       "weeks_days": "%{weeks} semanas, %{days} días",
@@ -10640,7 +10669,7 @@
     },
     "external_pledge": {
       "edit": {
-        "fund_pledge": "%{source} promesa"
+        "org_pledge": "%{source} promesa"
       },
       "new": {
         "amount": "Cantidad",
@@ -10650,7 +10679,7 @@
       },
       "sources": {
         "clinic_discount": "Descuento de clinica",
-        "other_funds": "Otros fondos (ver notas)"
+        "other_orgs": "Otros fondos (ver notas)"
       }
     },
     "flash": {
@@ -10672,7 +10701,7 @@
       "patient_removed_database": "Paciente eliminado exitosamente de la base de datos.",
       "patient_removed_database_error": "No se puede eliminar a los pacientes con promesas; Por favor, corrija el registro del paciente y vuelva a intentarlo.",
       "patient_save_error": "Los errores impidieron salvar a este paciente - %{error}",
-      "patient_save_success": "%{patient} ha sido salvado con éxito! Agregue notas y promesas externos, confirme al promesa dura y los montos de la promesa del %{fund} son las mismas, y está listo.",
+      "patient_save_success": "%{patient} ha sido salvado con éxito! Agregue notas y promesas externos, confirme al promesa dura y los montos de la promesa del %{org} son las mismas, y está listo.",
       "pledge_download_alert": "Debe ingresar su nombre en el cuadro para firmar y descargar la promesa",
       "unlocked": "Desbloqueado",
       "user_created": "¡Usuario creado!",
@@ -10763,7 +10792,7 @@
         "label": "Administración",
         "user_management": "Manejo de Usuarios"
       },
-      "cm_resources": {
+      "care_coordinator_resources": {
         "label": "Recursos del Administrador de Casos"
       },
       "current_region": {
@@ -10859,7 +10888,7 @@
         "record_new_call": "Grabar nueva llamada",
         "table": {
           "actions": "ACCIONES",
-          "case_manager": "CM",
+          "care_coordinator": "CC",
           "date": "FECHA",
           "remove_button": "Retirar",
           "result": "RESULTADO",
@@ -10875,7 +10904,7 @@
           "practical_support": "Apoyo Practico"
         },
         "table": {
-          "case_manager": "CM",
+          "care_coordinator": "CC",
           "change": "Cambiar (de -> a)",
           "modified_date": "Fecha modificada"
         },
@@ -10952,12 +10981,12 @@
           "domestic_violence_org": "Violencia doméstica crisis / intervención org",
           "family": "Miembro de la familia",
           "friend": "Amigo",
-          "fund": "%{fund} sitio de internet o redes sociales",
           "homeless": "Refugio para indigentes",
           "legal_clinic": "Clínica legal",
           "naf": "NAF",
           "nnaf": "NNAF",
-          "other_fund": "Otro fondo de aborto",
+          "org": "%{org} sitio de internet o redes sociales",
+          "other_org": "Otro fondo de aborto",
           "prev_patient": "Paciente anterior",
           "school": "Escuela",
           "sexual_assault_crisis_org": "Agresión de asalto sexual org",
@@ -10982,12 +11011,14 @@
         "income_help": "Empleo, Cupones de Alimentos, SS, TANF, etc.",
         "insurance": "Seguro médico del patiente",
         "language": "Idioma preferido",
-        "referred_by": "Cómo escuchó el paciente sobre %{fund}",
+        "referred_by": "Cómo escuchó el paciente sobre %{org}",
         "special_circumstances": {
           "domestic_violence": "Violencia doméstica",
           "fetal_diagnosis": "Diagnostico fetal",
           "homelessness": "La falta de vivienda",
+          "housing_insecure": null,
           "incest": "Incesto",
+          "medicaid_eligible": "Elegible para medicaid",
           "other_medical_issue": "Otro problema médico",
           "prison": "Prisión",
           "rape": "Violación",
@@ -11027,7 +11058,7 @@
         "errors": {
           "blank_appt": "La fecha de la cita no puede estar en blanco",
           "blank_clinic": "El nombre de la clínica no puede estar en blanco",
-          "blank_fund": "El campo de promesa %{fund} no puede estar en blanco",
+          "blank_org": "El campo de promesa %{org} no puede estar en blanco",
           "blank_patient": "El nombre del paciente no puede estar en blanco",
           "data_required": "Información requerida:"
         },
@@ -11043,7 +11074,7 @@
           "completed": "Una vez que haya completado el proceso de envio, indique aquí que se ha enviado la promesa.",
           "downloads": "Su documento de promesa aparecerá en las descargas de su computadora.",
           "fax_service": "Servicio de fax",
-          "generated": "Impresionante, ¡generaste una promesa de %{fund}! ¡Gracias!",
+          "generated": "Impresionante, ¡generaste una promesa de %{org}! ¡Gracias!",
           "sent_checkbox": "Yo envié la promesa",
           "submit": "Envíe la promesa para su cliente aquí:",
           "title": "Descarga y envíe su promesa:"
@@ -11066,7 +11097,7 @@
         "confirmation": {
           "clinic": "Clínica:",
           "confirm_info": "Por favor, confirme que la clínica y la cantidad de la promesa son correctos:",
-          "fund_pledge_amount": "Cantidad de promesa de %{fund}:",
+          "org_pledge_amount": "Cantidad de promesa de %{org}:",
           "pledge_generated_at": "Promesa generada en:",
           "pledge_generated_by": "Promesa generada por:",
           "pledge_sent_at": "Promesa enviada en:",
@@ -11075,7 +11106,7 @@
         "form": {
           "check_num": "Cheque #",
           "date_of_check": "Fecha del cheque",
-          "fund_payout": "Pago de %{fund}",
+          "org_payout": "Pago de %{org}",
           "pledge_fulfilled_box": "Promesa cumplida",
           "procedure_cost": "Costo del procedimiento",
           "procedure_date": "Fecha de procedimiento",
@@ -11087,7 +11118,7 @@
         "create": "Crear una nueva entrada de soporte práctico",
         "delete": "Elimina",
         "delete_confirm": "¿Está seguro de que desea eliminar esta entrada de soporte práctico?",
-        "guidance_link": "Orientacíon de soporte práctico de %{fund}",
+        "guidance_link": "Orientacíon de soporte práctico de %{org}",
         "new": "Grabar nueva información de soporte práctico:",
         "practical_support_waiver": "Aa firmado una renuncia de soporte práctico",
         "title": "Apoyo practico"
@@ -11100,18 +11131,18 @@
           "medicaid_only_toggle": "Enseñar solo las clínicas de Medicaid",
           "multi_day": "múltiples días",
           "naf_only_toggle": "Enseñar solo clínicas de la NAF",
-          "not_currently_working_with_fund": "(Actualmente no trabaja con %{fund}) - %{clinic_name}",
+          "not_currently_working_with_org": "(Actualmente no trabaja con %{org}) - %{clinic_name}",
           "procedure_type": "Tipo de procedimiento",
           "referred_to_clinic": "Referido a la clínica",
-          "resolved_without_fund": "Resuelto sin ayuda de %{fund}",
+          "resolved_without_org": "Resuelto sin ayuda de %{org}",
           "solidarity": "Promesa solidaria",
           "solidarity_lead": "Plomo de solidaridad",
           "title": "Detalles de la clínica"
         },
         "cost_section": {
           "abortion_cost": "Costo del aborto",
-          "fund_pledge": "Promesa de %{fund}",
           "naf_pledge": "Promesa de la Federación Nacional de Aborto",
+          "org_pledge": "Promesa de %{org}",
           "outstanding_balance": "Cantidad pendiente",
           "patient_contribution": "Contribución del paciente",
           "title": "Detalles del costo"
@@ -11144,14 +11175,14 @@
           "pledge_paid": "Pledge Pagada",
           "pledge_sent": "Promesa Enviada",
           "pledge_unfulfilled": "Promesa No Cumplida",
-          "resolved": "Resuelto Sin %{fund}"
+          "resolved": "Resuelto Sin %{org}"
         }
       }
     },
     "regions": {
       "new": {
         "start": "Empezar",
-        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{fund})!",
+        "welcome_to_daria": "¡Bienvenido a DARIA (edición de %{org})!",
         "what_region": "¿En cuál región estás trabajando?"
       }
     },
@@ -11172,7 +11203,7 @@
       "pm": "pm"
     },
     "tooltips": {
-      "budget_bar": "La barra de presupuesto indica el dinero provisionalmente reservado para un paciente (cuando ingresa la cantidad de promesa %{fund}) y el dinero enviado a una clínica para un paciente (cuando marca la casilla de verificación \"envié la promesa\") durante un período determinado.",
+      "budget_bar": "La barra de presupuesto indica el dinero provisionalmente reservado para un paciente (cuando ingresa la cantidad de promesa %{org}) y el dinero enviado a una clínica para un paciente (cuando marca la casilla de verificación \"envié la promesa\") durante un período determinado.",
       "call_list": "Esta lista organiza los pacientes para cuando quiera devolver llamadas durante su turno. Utiliza la búsqueda para rellenar la lista.",
       "completed_calls": "Esta es una lista de pacientes a los que ha llamado en las últimas 8 horas.",
       "patient_identifier": "Identificador interno semiúnico para este paciente, basado en su número de teléfono.",
@@ -11180,7 +11211,7 @@
       "practical_support_fulfilled": "Marque esta casilla si este soporte práctico está completo o pagado y no requiere mayor atención.",
       "record_new_external_pledge": "\"Promesas externas\" significa las promesas hechas por otros fondos de aborto también trabajando con un paciente.",
       "referred_to_clinic": "Marque esta casilla si usted, como administrador de casos, refirió al paciente a un clínica particular.",
-      "resolved_without_fund": "Esto se utiliza para indicar que un paciente ya no necesita o quiere nuestros servicios.",
+      "resolved_without_org": "Esto se utiliza para indicar que un paciente ya no necesita o quiere nuestros servicios.",
       "shared_cases": "Estos son pacientes que requieren un poco más de atención. Esta lista es compartido entre todos los administradores de casos que trabajan en una sola línea. Los pacientes son eliminados de esta lista automáticamente después de que estén marcado como \"resuelto sin ayuda\", o después de %{shared_reset} días de inactividad.",
       "solidarity": "Indica un caso al que este fondo está brindando apoyo, pero no manejando.",
       "solidarity_lead": "Este es el fondo que sirve como punto de contacto o coordinación de fondos para este paciente.",
@@ -11204,7 +11235,7 @@
       },
       "new": {
         "create_user": "Crear Usuario",
-        "edit_role_after_creating": "Los nuevos usuarios por defecto tienen permisos CM, lo que les permite usar el flujo de trabajo de administración de casos. Para dar a alguien acceso a datos o permisos de administrador, edítelos después de crear sus cuentas aquí."
+        "edit_role_after_creating": "Los nuevos usuarios por defecto tienen permisos CC, lo que les permite usar el flujo de trabajo de administración de casos. Para dar a alguien acceso a datos o permisos de administrador, edítelos después de crear sus cuentas aquí."
       },
       "profile_edit": {
         "awaiting_confirmation": "Actualmente en espera de confirmación para: %{email}",
@@ -11215,9 +11246,13 @@
         "user_panel": "Panel de usuario para %{email} (%{name})"
       },
       "roles": {
-        "admin": "El rol de administrador es para las personas que administran la instancia DARIA de su fondo o el cuerpo de administrador de casos. Esto da acceso a lo que tienen los CM y los voluntarios de datos, además de lo siguiente: herramientas de administración de usuarios, herramientas de administración de clínicas, herramientas de configuración de instancias DARIA y la capacidad de eliminar pacientes de la página de registro de pacientes individuales (como en el caso de una entrada duplicada).",
-        "cm": "El rol de administrador de casos es para las personas que ingresan pacientes y hacen llamadas. Esto le da acceso al panel principal de la lista de llamadas, la página de registro individual del paciente (menos la capacidad de editar la información de cumplimiento) y la página de entrada de datos.",
-        "data_volunteer": "El rol del voluntario de datos es para las personas que requieren acceso a datos o herramientas de contabilidad. Esto da acceso a lo que tienen los CM, además de lo siguiente: herramientas de contabilidad para la conciliación de compromisos, herramientas de informes con datos resumidos sobre la admisión del paciente, la pestaña de cumplimiento en la página de registro individual del paciente (para marcar compromisos como pagados) y la capacidad de descargar Una hoja de cálculo anónima de datos para el análisis."
+        "admin": "El rol de administrador es para las personas que administran la instancia DARIA de su fondo o el cuerpo de administrador de casos. Esto da acceso a lo que tienen los CC y los voluntarios de datos, además de lo siguiente: herramientas de administración de usuarios, herramientas de administración de clínicas, herramientas de configuración de instancias DARIA y la capacidad de eliminar pacientes de la página de registro de pacientes individuales (como en el caso de una entrada duplicada).",
+        "care_coordinator": "El rol de administrador de casos es para las personas que ingresan pacientes y hacen llamadas. Esto le da acceso al panel principal de la lista de llamadas, la página de registro individual del paciente (menos la capacidad de editar la información de cumplimiento) y la página de entrada de datos.",
+        "coord_admin": null,
+        "cr": null,
+        "data_volunteer": "El rol del voluntario de datos es para las personas que requieren acceso a datos o herramientas de contabilidad. Esto da acceso a lo que tienen los CC, además de lo siguiente: herramientas de contabilidad para la conciliación de compromisos, herramientas de informes con datos resumidos sobre la admisión del paciente, la pestaña de cumplimiento en la página de registro individual del paciente (para marcar compromisos como pagados) y la capacidad de descargar Una hoja de cálculo anónima de datos para el análisis.",
+        "finance_admin": null,
+        "volunteer": null
       },
       "search": {
         "button": "Buscar",
@@ -29432,7 +29467,7 @@
             "out_format": "Формат вывода: %{valid_text}.",
             "pattern_router": "Использовать pattern_router: ключи распределятся по файлам согласно data.write",
             "strict": "Не угадывать динамические использования ключей, например `t(\"category.#{category.key}\")`",
-            "translation_backend": "Движок перевода (google или deepl)",
+            "translation_backend": "Движок перевода [google, deepl, yandex, openai]",
             "value": "Значение, интерполируется с %%{value}, %%{human_key}, %%{key}, %%{default}, %%{value_or_human_key}, %%{value_or_default_or_human_key}"
           }
         },
@@ -29478,6 +29513,7 @@
           "invalid": "%{invalid} не является одним из: %{valid}."
         },
         "errors": {
+          "invalid_backend": "Недопустимый источник данных: %{invalid}. Должен быть одним из %{valid}.",
           "invalid_format": "Неизвестный формат %{invalid}. Форматы: %{valid}.",
           "invalid_locale": "Неверный язык %{invalid}",
           "invalid_missing_type": {
@@ -29548,6 +29584,13 @@
       },
       "usages": {
         "none": "Не найдено использований."
+      },
+      "watsonx_translate": {
+        "errors": {
+          "no_api_key": "Установите ключ API watsonx через переменную среды WATSONX_API_KEY или translation.watsonx_api_key в config/i18n-tasks.yml. Получите ключ на https://www.ibm.com/products/watsonx-ai.",
+          "no_project_id": "Установите идентификатор проекта watsonx через переменную среды WATSONX_PROJECT_ID или translation.watsonx_api_key в config/i18n-tasks.yml. Получите ключ на https://www.ibm.com/products/watsonx-ai.",
+          "no_results": "watsonx не вернул результатов."
+        }
       },
       "yandex_translate": {
         "errors": {

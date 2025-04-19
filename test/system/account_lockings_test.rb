@@ -4,8 +4,8 @@ class AccountLockingsTest < ApplicationSystemTestCase
   before do
     create :region
     @admin = create :user, role: :admin
-    @locked_user = create :user, role: :cm, disabled_by_fund: true
-    @unlocked_user = create :user, role: :cm
+    @locked_user = create :user, role: :care_coordinator, disabled_by_org: true
+    @unlocked_user = create :user, role: :care_coordinator
   end
 
   describe 'admin locking' do

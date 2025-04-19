@@ -3,6 +3,6 @@ FactoryBot.define do
     sequence :name do |n|
       "Region#{n}"
     end
-    fund
+    org
   end
 end

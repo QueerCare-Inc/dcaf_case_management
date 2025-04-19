@@ -148,7 +148,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
       select 'Other state Medicaid', from: 'patient_insurance'
       wait_for_ajax
 
-      select 'Other abortion fund', from: 'patient_referred_by'
+      select 'Other abortion org', from: 'patient_referred_by'
       check 'Homelessness'
       check 'Prison'
       click_away_from_field
@@ -178,7 +178,7 @@ class UpdatePatientInfoTest < ApplicationSystemTestCase
         assert_equal '1', find('#patient_household_size_adults').value
         assert_equal '3', find('#patient_household_size_children').value
         assert_equal 'Other state Medicaid', find('#patient_insurance').value
-        assert_equal 'Other abortion fund', find('#patient_referred_by').value
+        assert_equal 'Other abortion org', find('#patient_referred_by').value
         assert_equal 'yes', find('#patient_voicemail_preference').value
         assert_equal 'Spanish', find('#patient_language').value
         assert has_checked_field? 'Homelessness'

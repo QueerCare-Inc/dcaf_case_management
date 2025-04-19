@@ -1,13 +1,13 @@
-# Class so that funds can set their own dropdown lists of things
+# Class so that orgs can set their own dropdown lists of things
 class Config < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Concerns
   include PaperTrailable
 
   # Define overrides for particular config fields help text.
   HELP_TEXT_OVERRIDES = {
-    resources_url: 'A link to a Google Drive folder with CM resources. ' \
+    resources_url: 'A link to a Google Drive folder with care coordinator resources. ' \
                    'Ex: https://drive.google.com/drive/my-resource-dir',
     practical_support_guidance_url: 'A link to a Google Drive folder with Practical Support resources. ' \
                    'Ex: https://drive.google.com/drive/my-practical_support',
@@ -20,11 +20,11 @@ class Config < ApplicationRecord
     aggregate_statistics: 'Enter "yes" to show aggregate statistics on the budget bar.',
     hide_standard_dropdown_values: 'Enter "yes" to hide standard dropdown values. Only custom options (specified on this page) will be used.',
     time_zone: 'Time zone to use for displaying dates. Default is Eastern. Valid options are Eastern, Central, Mountain, Pacific, Alaska, Hawaii, Arizona, Indiana (East), or Puerto Rico.',
-    procedure_type: 'Any kind of distinction in procedure your fund would like to track. Field hides if no options ' \
+    procedure_type: 'Any kind of distinction in procedure your org would like to track. Field hides if no options ' \
                     'are added here. Please separate with commas.',
     show_patient_identifier: 'Enter "yes" to show the patient\' Daria Identifier on the patient information tab.',
-    display_practical_support_attachment_url: 'CAUTION: Whether or not to allow people to enter attachment URLs for practical support entries; for example, a link to a file in Google Drive. Please ensure that any system storing these is properly secured by your fund!',
-    display_practical_support_waiver: 'For funds that use waivers for practical support recipients. Enables the display of a checkbox for indicating if a patient has signed a practical support waiver. '
+    display_practical_support_attachment_url: 'CAUTION: Whether or not to allow people to enter attachment URLs for practical support entries; for example, a link to a file in Google Drive. Please ensure that any system storing these is properly secured by your org!',
+    display_practical_support_waiver: 'For orgs that use waivers for practical support recipients. Enables the display of a checkbox for indicating if a patient has signed a practical support waiver. '
   }.freeze
 
   # Whether a config should show a current options dropdown to the right
@@ -38,6 +38,30 @@ class Config < ApplicationRecord
     :referred_by,
     :voicemail
   ]
+
+  DEFAULTS = {
+    insurance: nil,
+    external_pledge_source: nil,
+    pledge_limit_help_text: nil,
+    language: nil,
+    resources_url: nil,
+    practical_support_guidance_url: nil,
+    fax_service: nil,
+    referred_by: nil,
+    practical_support: nil,
+    hide_practical_support: false,
+    start_of_week: 'monday',
+    budget_bar_max: 1_000,
+    voicemail: 12,
+    days_to_keep_fulfilled_patients: 90,
+    days_to_keep_all_patients: 365,
+    shared_reset_days: 6,
+    hide_budget_bar: false,
+    aggregate_statistics: false,
+    hide_standard_dropdown_values: false,
+    county: nil,
+    time_zone: 'Eastern'
+  }.freeze
 
   enum :config_key, {
     insurance: 0,
@@ -158,34 +182,34 @@ class Config < ApplicationRecord
 
   def self.start_day
     start = Config.find_or_create_by(config_key: 'start_of_week').options.try :last
-    start ||= 'monday'
+    start ||= DEFAULTS[:start_of_week]
     start.downcase.to_sym
   end
 
   def self.time_zone
     tz = Config.find_or_create_by(config_key: 'time_zone').options.try :last
-    tz ||= 'Eastern'
+    tz ||= DEFAULTS[:time_zone]
     ActiveSupport::TimeZone.new(TIME_ZONE[tz])
   end
 
   def self.archive_fulfilled_patients
     archive_days = Config.find_or_create_by(config_key: 'days_to_keep_fulfilled_patients').options.try :last
     # default 3 months
-    archive_days ||= 90
+    archive_days ||= DEFAULTS[:days_to_keep_fulfilled_patients]
     archive_days.to_i
   end
 
   def self.archive_all_patients
     archive_days = Config.find_or_create_by(config_key: 'days_to_keep_all_patients').options.try :last
     # default 1 year
-    archive_days ||= 365
+    archive_days ||= DEFAULTS[:days_to_keep_call_patients]
     archive_days.to_i
   end
 
-  def self.shared_reset
+  def self.shared_reset_days
     shared_reset_days = Config.find_or_create_by(config_key: 'shared_reset').options.try :last
     # default 6 days
-    shared_reset_days ||= 6
+    shared_reset_days ||= DEFAULTS[:shared_reset]
     shared_reset_days.to_i
   end
 
@@ -241,10 +265,11 @@ class Config < ApplicationRecord
 
     # run the validators and get a boolean, exit if all are true
     # (see comment above in `clean_config_value` for an explainer)
-    return if validators.all? { |validator| method(validator).call }
+    validation_errors = validators.map { |validator| method(validator).call }
+    return if validation_errors.all? { |validation_error| validation_error.nil? }
 
     errors.add(:invalid_value_for,
-               "#{config_key.humanize(capitalize: false)}: #{options.join(', ')}")
+               "#{config_key.humanize(capitalize: false)}: #{validation_errors.compact.join(', ')}")
   end
 
   # generic cleaner for words (so we have standardized capitalization)
@@ -259,12 +284,16 @@ class Config < ApplicationRecord
 
   # generic validator for numerics
   def validate_number
-    options.last =~ /\A\d+\z/
+    return unless options.last != ~ /\A\d+\z/
+
+    'Must be number'
   end
 
   # validator for singletons (no lists allowed)
   def validate_singleton
-    options.length == 1
+    return unless options.length != 1
+
+    'No lists allowed'
   end
 
   ### URL fields
@@ -298,7 +327,9 @@ class Config < ApplicationRecord
   ].freeze
 
   def validate_start_of_week
-    START_OF_WEEK.include?(options.last.capitalize)
+    return if START_OF_WEEK.include?(options.last.capitalize)
+
+    'Must be a day of the week (or the word monthly)'
   end
 
   ### Time zone
@@ -316,14 +347,18 @@ class Config < ApplicationRecord
   }.stringify_keys!
 
   def validate_time_zone
-    TIME_ZONE.keys.include?(options.last.titleize)
+    return if TIME_ZONE.keys.include?(options.last.titleize)
+
+    'Timezone provided is not supported'
   end
 
   ### Practical support
 
   def validate_yes_or_no
     # allow yes or no, to be nice (technically only yes is considered)
-    options.last =~ /\A(yes|no)\z/i
+    return if options.last =~ /\A(yes|no)\z/i
+
+    "Field must be either 'yes' or 'no'"
   end
 
   ### Patient archive
@@ -331,7 +366,9 @@ class Config < ApplicationRecord
   ARCHIVE_MAX_DAYS = 550  # 1.5 years
 
   def validate_patient_archive
-    validate_number && options.last.to_i.between?(ARCHIVE_MIN_DAYS, ARCHIVE_MAX_DAYS)
+    return unless !validate_number || !options.last.to_i.between?(ARCHIVE_MIN_DAYS, ARCHIVE_MAX_DAYS)
+
+    "Must be between #{ARCHIVE_MIN_DAYS} and #{ARCHIVE_MAX_DAYS} days."
   end
 
   ### shared reset
@@ -339,15 +376,16 @@ class Config < ApplicationRecord
   SHARED_MAX_DAYS = 7 * 6  # 6 weeks
 
   def validate_shared_reset
-    validate_number && options.last.to_i.between?(SHARED_MIN_DAYS, SHARED_MAX_DAYS)
+    return unless !validate_number || !options.last.to_i.between?(SHARED_MIN_DAYS, SHARED_MAX_DAYS)
+
+    "Must be between #{SHARED_MIN_DAYS} and #{SHARED_MAX_DAYS} days."
   end
 
   def validate_length
     total_length = 0
     options.each do |option|
       total_length += option.length
-      return false if total_length > 4000
     end
-    true
+    'Length of provided values is too long (over 4000 characters)' if total_length > 4000
   end
 end
