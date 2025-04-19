@@ -46,7 +46,7 @@ class CreateUserTest < ApplicationSystemTestCase
 
   describe 'non admin user' do
     before do
-      @user = create :user, role: :cm
+      @user = create :user, role: :care_coordinator
       log_in_as @user
     end
 

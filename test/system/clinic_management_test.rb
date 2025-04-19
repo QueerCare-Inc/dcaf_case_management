@@ -1,13 +1,13 @@
 require 'application_system_test_case'
 
-# Test workflows around administering lists of clinics a fund works with
+# Test workflows around administering lists of clinics a org works with
 class ClinicManagementTest < ApplicationSystemTestCase
   before do
     create :region
     @clinic = create :clinic, accepts_medicaid: true
 
     @user = create :user, role: 'admin'
-    @nonadmin = create :user, role: 'cm'
+    @nonadmin = create :user, role: 'care_coordinator'
     log_in_as @user
     visit clinics_path
   end
@@ -90,7 +90,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
   private
 
   def fill_in_all_clinic_fields
-    new_clinic_name = 'Games Done Quick Throw a Benefit for Abortion Funds'
+    new_clinic_name = 'Games Done Quick Throw a Benefit for Abortion Orgs'
     fill_in 'Name', with: new_clinic_name
     fill_in 'Street address', with: '123 Fake Street'
     fill_in 'City', with: 'Yolo'
@@ -104,7 +104,7 @@ class ClinicManagementTest < ApplicationSystemTestCase
   end
 
   def assert_fields_have_proper_content
-    assert has_field? 'Name', with: 'Games Done Quick Throw a Benefit for Abortion Funds'
+    assert has_field? 'Name', with: 'Games Done Quick Throw a Benefit for Abortion Orgs'
     assert has_field? 'Street address', with: '123 Fake Street'
     assert has_field? 'City', with: 'Yolo'
     assert_equal 'TX', find('#clinic_state').value

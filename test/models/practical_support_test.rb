@@ -5,7 +5,7 @@ class PracticalSupportTest < ActiveSupport::TestCase
     @user = create :user
     @patient = create :patient
     @patient.practical_supports.create support_type: 'Concert Tickets',
-                                       source: 'Metallica Abortion Fund'
+                                       source: 'Metallica Abortion Org'
     @patient.practical_supports.create support_type: 'Swag',
                                        source: 'YOLO AF',
                                        confirmed: true,
@@ -28,7 +28,7 @@ class PracticalSupportTest < ActiveSupport::TestCase
 
     describe 'most_recent_note_display_text' do
       before do
-        @note = @psupport1.notes.create full_text: (1..100).map(&:to_s).join('')          
+        @note = @psupport1.notes.create full_text: (1..100).map(&:to_s).join('')
       end
 
       it 'returns 22 characters of the notes text' do
@@ -39,11 +39,11 @@ class PracticalSupportTest < ActiveSupport::TestCase
   end
 
   describe 'validations' do
-    # note: amount is not required
+    # NOTE: amount is not required
     [:source, :support_type].each do |field|
       it "should enforce presence of #{field}" do
         @psupport1[field.to_sym] = nil
-        refute @psupport1.valid?
+        assert_not @psupport1.valid?
       end
     end
   end

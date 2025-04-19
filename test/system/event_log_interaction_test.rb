@@ -3,7 +3,7 @@ require 'application_system_test_case'
 class EventLogInteractionTest < ApplicationSystemTestCase
   before do
     @user = create :user, role: 'admin', name: 'Billy'
-    @user2 = create :user, role: 'cm', name: 'Susie'
+    @user2 = create :user, role: 'care_coordinator', name: 'Susie'
 
     @patient = create :patient, name: 'tester',
                                 primary_phone: '1231231234',

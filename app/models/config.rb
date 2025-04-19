@@ -1,13 +1,13 @@
-# Class so that funds can set their own dropdown lists of things
+# Class so that orgs can set their own dropdown lists of things
 class Config < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Concerns
   include PaperTrailable
 
   # Define overrides for particular config fields help text.
   HELP_TEXT_OVERRIDES = {
-    resources_url: 'A link to a Google Drive folder with CM resources. ' \
+    resources_url: 'A link to a Google Drive folder with care coordinator resources. ' \
                    'Ex: https://drive.google.com/drive/my-resource-dir',
     practical_support_guidance_url: 'A link to a Google Drive folder with Practical Support resources. ' \
                    'Ex: https://drive.google.com/drive/my-practical_support',
@@ -20,11 +20,11 @@ class Config < ApplicationRecord
     aggregate_statistics: 'Enter "yes" to show aggregate statistics on the budget bar.',
     hide_standard_dropdown_values: 'Enter "yes" to hide standard dropdown values. Only custom options (specified on this page) will be used.',
     time_zone: 'Time zone to use for displaying dates. Default is Eastern. Valid options are Eastern, Central, Mountain, Pacific, Alaska, Hawaii, Arizona, Indiana (East), or Puerto Rico.',
-    procedure_type: 'Any kind of distinction in procedure your fund would like to track. Field hides if no options ' \
+    procedure_type: 'Any kind of distinction in procedure your org would like to track. Field hides if no options ' \
                     'are added here. Please separate with commas.',
     show_patient_identifier: 'Enter "yes" to show the patient\' Daria Identifier on the patient information tab.',
-    display_practical_support_attachment_url: 'CAUTION: Whether or not to allow people to enter attachment URLs for practical support entries; for example, a link to a file in Google Drive. Please ensure that any system storing these is properly secured by your fund!',
-    display_practical_support_waiver: 'For funds that use waivers for practical support recipients. Enables the display of a checkbox for indicating if a patient has signed a practical support waiver. '
+    display_practical_support_attachment_url: 'CAUTION: Whether or not to allow people to enter attachment URLs for practical support entries; for example, a link to a file in Google Drive. Please ensure that any system storing these is properly secured by your org!',
+    display_practical_support_waiver: 'For orgs that use waivers for practical support recipients. Enables the display of a checkbox for indicating if a patient has signed a practical support waiver. '
   }.freeze
 
   # Whether a config should show a current options dropdown to the right

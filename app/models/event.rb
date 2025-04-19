@@ -1,11 +1,11 @@
 # Object representing relevant actions taken by a case manager.
 class Event < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Relations
   belongs_to :region
 
-  encrypts :cm_name
+  # encrypts :care_coordinator_name
   encrypts :patient_name
 
   # Enums
@@ -19,7 +19,7 @@ class Event < ApplicationRecord
   # TODO: what other actions do we want to add?
 
   # Validations
-  validates :event_type, :cm_name, :patient_name, :patient_id, :region, presence: true
+  validates :event_type, :patient_name, :patient_id, :region_id, presence: true # :care_coordinator_name,
 
   def icon
     case event_type

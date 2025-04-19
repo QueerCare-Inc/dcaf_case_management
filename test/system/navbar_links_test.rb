@@ -72,7 +72,7 @@ class NavbarLinksTest < ApplicationSystemTestCase
     describe 'case manager view' do
       before do
         sign_out
-        @user3 = create :user, role: :cm
+        @user3 = create :user, role: :care_coordinator
         log_in_as @user3
         visit authenticated_root_path
       end

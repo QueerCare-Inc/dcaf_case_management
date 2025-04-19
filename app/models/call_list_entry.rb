@@ -1,6 +1,6 @@
 # Object representing a patient's call list.
 class CallListEntry < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Relationships
   belongs_to :user

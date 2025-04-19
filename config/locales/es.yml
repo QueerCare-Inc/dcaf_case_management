@@ -8,7 +8,7 @@ es:
       check_number: "# de cheque"
       clinic: Clínica
       date_of_check: Fecha del cheque
-      fund_payout: Pago de %{fund}
+      org_payout: Pago de %{org}
       region: Región
       pledge_amount: Cantidad de promesa
       pledge_sent: Promesa enviada
@@ -41,7 +41,7 @@ es:
         check_number: 'Cheque #'
         date_of_check: Fecha del cheque
         fulfilled: Promesa cumplida
-        fund_payout: Pago de fund
+        org_payout: Pago de org
         gestation_at_procedure: Semanas a lo largo del pocedimiento
         procedure_date: Fecha de procedimiento
       patient:
@@ -59,10 +59,10 @@ es:
         date_of_check: Fecha del cheque
         employment_status: Estatus de empleo
         fulfilled: Cumplida
-        fund_id: ID del fondo
-        fund_payout: Pago de fondos
-        fund_pledge: Promesa de fondos
-        fund_pledged_at: Fondo prometido en
+        org_id: ID del fondo
+        org_payout: Pago de fondos
+        org_pledge: Promesa de fondos
+        org_pledged_at: Fondo prometido en
         gestation_at_procedure: Semanas a lo largo del pocedimiento
         household_size_adults: Adultos en el Hogar
         household_size_children: Menores en el Hogar
@@ -91,7 +91,7 @@ es:
         race_ethnicity: Raza / Etnicidad
         referred_by: Referido por
         referred_to_clinic: Referido a la clínica
-        resolved_without_fund: Resuelto sin ayuda de fondo
+        resolved_without_org: Resuelto sin ayuda de fondo
         shared_flag: Bandera compartida
         solidarity: Promesa solidaria
         source: Fuente
@@ -128,8 +128,8 @@ es:
         reached_patient: Hablé con el paciente
       voicemail_instructions:
         no_voicemail: No deje un mensaje de voz a este paciente
-        voicemail_identify: Si se puede dejar mensaje de voz; Y tambien, identificarse como %{fund}
-        voicemail_no_identify: Si se puede dejar mensaje de voz; Pero no identificarse como %{fund}
+        voicemail_identify: Si se puede dejar mensaje de voz; Y tambien, identificarse como %{org}
+        voicemail_no_identify: Si se puede dejar mensaje de voz; Pero no identificarse como %{org}
     emergency_contact:
       number: "%{name}'s numero:"
       emergency_contact: "%{name} %{rel} es el contacto principal para este paciente%{punc}"
@@ -172,6 +172,7 @@ es:
     add: Añadir
     procedure_date_short: Día de la cita
     back: Atrás
+    care_coordinator: Coordinador
     clinic: Clínica
     close: Cierre
     days_along: Días de embarazo al inicio
@@ -188,10 +189,13 @@ es:
     patient: Patiente
     phone: Teléfono
     prefer_not_to_answer: Prefiere no contestar
+    procedure_type: Procedimiento
     purchased_on: Comprado en
     save: Guardar
     search: Buscar
+    services: Servicios
     status: Estatus
+    support_dates: Fechas de soporte
     update: Actualizar
     weeks_along_short: Semanas a lo largo
     weeks_days: "%{weeks} semanas, %{days} días"
@@ -275,7 +279,7 @@ es:
     unknown_action: habló o interactuó con
   external_pledge:
     edit:
-      fund_pledge: "%{source} promesa"
+      org_pledge: "%{source} promesa"
     new:
       amount: Cantidad
       create_button: Crear promesa externo
@@ -283,7 +287,7 @@ es:
       title: 'O, grabe un nueva promesa externa:'
     sources:
       clinic_discount: Descuento de clinica
-      other_funds: Otros fondos (ver notas)
+      other_orgs: Otros fondos (ver notas)
   flash:
     account_locked: Cuenta bloqueada, consulte con su fondo.
     action_on_account: Cuenta de %{name} %{verb}
@@ -303,7 +307,7 @@ es:
     patient_removed_database: Paciente eliminado exitosamente de la base de datos.
     patient_removed_database_error: No se puede eliminar a los pacientes con promesas; Por favor, corrija el registro del paciente y vuelva a intentarlo.
     patient_save_error: Los errores impidieron salvar a este paciente - %{error}
-    patient_save_success: "%{patient} ha sido salvado con éxito! Agregue notas y promesas externos, confirme al promesa dura y los montos de la promesa del %{fund} son las mismas, y está listo."
+    patient_save_success: "%{patient} ha sido salvado con éxito! Agregue notas y promesas externos, confirme al promesa dura y los montos de la promesa del %{org} son las mismas, y está listo."
     pledge_download_alert: Debe ingresar su nombre en el cuadro para firmar y descargar la promesa
     unlocked: Desbloqueado
     user_created: "¡Usuario creado!"
@@ -312,7 +316,7 @@ es:
   regions:
     new:
       start: Empezar
-      welcome_to_daria: "¡Bienvenido a DARIA (edición de %{fund})!"
+      welcome_to_daria: "¡Bienvenido a DARIA (edición de %{org})!"
       what_region: "¿En cuál región estás trabajando?"
   multi_factor:
     authenticate: Autenticar
@@ -355,7 +359,7 @@ es:
       export: Exportación anónima de CSV
       label: Administración
       user_management: Manejo de Usuarios
-    cm_resources:
+    care_coordinator_resources:
       label: Recursos del Administrador de Casos
     current_region:
       helper: Tu región actual
@@ -376,16 +380,16 @@ es:
         medicaid_only_toggle: Enseñar solo las clínicas de Medicaid
         multi_day: múltiples días
         naf_only_toggle: Enseñar solo clínicas de la NAF
-        not_currently_working_with_fund: "(Actualmente no trabaja con %{fund}) - %{clinic_name}"
+        not_currently_working_with_org: "(Actualmente no trabaja con %{org}) - %{clinic_name}"
         procedure_type: Tipo de procedimiento
         referred_to_clinic: Referido a la clínica
-        resolved_without_fund: Resuelto sin ayuda de %{fund}
+        resolved_without_org: Resuelto sin ayuda de %{org}
         solidarity: Promesa solidaria
         solidarity_lead: Plomo de solidaridad
         title: Detalles de la clínica
       cost_section:
         abortion_cost: Costo del aborto
-        fund_pledge: Promesa de %{fund}
+        org_pledge: Promesa de %{org}
         naf_pledge: Promesa de la Federación Nacional de Aborto
         outstanding_balance: Cantidad pendiente
         patient_contribution: Contribución del paciente
@@ -396,7 +400,7 @@ es:
       record_new_call: Grabar nueva llamada
       table:
         actions: ACCIONES
-        case_manager: CM
+        care_coordinator: CC
         date: FECHA
         remove_button: Retirar
         result: RESULTADO
@@ -409,7 +413,7 @@ es:
         patient: Paciente
         practical_support: Apoyo Practico
       table:
-        case_manager: CM
+        care_coordinator: CC
         change: Cambiar (de -> a)
         modified_date: Fecha modificada
       title: Historia del paciente
@@ -475,12 +479,12 @@ es:
         domestic_violence_org: Violencia doméstica crisis / intervención org
         family: Miembro de la familia
         friend: Amigo
-        fund: "%{fund} sitio de internet o redes sociales"
+        org: "%{org} sitio de internet o redes sociales"
         homeless: Refugio para indigentes
         legal_clinic: Clínica legal
         naf: NAF
         nnaf: NNAF
-        other_fund: Otro fondo de aborto
+        other_org: Otro fondo de aborto
         prev_patient: Paciente anterior
         school: Escuela
         sexual_assault_crisis_org: Agresión de asalto sexual org
@@ -501,11 +505,12 @@ es:
         phone: Otro teléfono
         relationship: Relación con Otro Contacto
         title: Otro Contacto
-      referred_by: Cómo escuchó el paciente sobre %{fund}
+      referred_by: Cómo escuchó el paciente sobre %{org}
       special_circumstances:
         domestic_violence: Violencia doméstica
         fetal_diagnosis: Diagnostico fetal
         homelessness: La falta de vivienda
+        housing_insecure: 
         incest: Incesto
         other_medical_issue: Otro problema médico
         prison: Prisión
@@ -540,7 +545,7 @@ es:
       errors:
         blank_appt: La fecha de la cita no puede estar en blanco
         blank_clinic: El nombre de la clínica no puede estar en blanco
-        blank_fund: El campo de promesa %{fund} no puede estar en blanco
+        blank_org: El campo de promesa %{org} no puede estar en blanco
         blank_patient: El nombre del paciente no puede estar en blanco
         data_required: 'Información requerida:'
       step_one:
@@ -554,7 +559,7 @@ es:
         completed: Una vez que haya completado el proceso de envio, indique aquí que se ha enviado la promesa.
         downloads: Su documento de promesa aparecerá en las descargas de su computadora.
         fax_service: Servicio de fax
-        generated: Impresionante, ¡generaste una promesa de %{fund}! ¡Gracias!
+        generated: Impresionante, ¡generaste una promesa de %{org}! ¡Gracias!
         sent_checkbox: Yo envié la promesa
         submit: 'Envíe la promesa para su cliente aquí:'
         title: 'Descarga y envíe su promesa:'
@@ -573,7 +578,7 @@ es:
       confirmation:
         clinic: 'Clínica:'
         confirm_info: 'Por favor, confirme que la clínica y la cantidad de la promesa son correctos:'
-        fund_pledge_amount: 'Cantidad de promesa de %{fund}:'
+        org_pledge_amount: 'Cantidad de promesa de %{org}:'
         pledge_generated_at: 'Promesa generada en:'
         pledge_generated_by: 'Promesa generada por:'
         pledge_sent_at: 'Promesa enviada en:'
@@ -581,7 +586,7 @@ es:
       form:
         check_num: 'Cheque #'
         date_of_check: Fecha del cheque
-        fund_payout: Pago de %{fund}
+        org_payout: Pago de %{org}
         pledge_fulfilled_box: Promesa cumplida
         procedure_cost: Costo del procedimiento
         procedure_date: Fecha de procedimiento
@@ -591,7 +596,7 @@ es:
       create: Crear una nueva entrada de soporte práctico
       delete: Elimina
       delete_confirm: "¿Está seguro de que desea eliminar esta entrada de soporte práctico?"
-      guidance_link: Orientacíon de soporte práctico de %{fund}
+      guidance_link: Orientacíon de soporte práctico de %{org}
       new: 'Grabar nueva información de soporte práctico:'
       practical_support_waiver: Aa firmado una renuncia de soporte práctico
       title: Apoyo practico
@@ -619,9 +624,9 @@ es:
         pledge_paid: Pledge Pagada
         pledge_sent: Promesa Enviada
         pledge_unfulfilled: Promesa No Cumplida
-        resolved: Resuelto Sin %{fund}
+        resolved: Resuelto Sin %{org}
   tooltips:
-    budget_bar: La barra de presupuesto indica el dinero provisionalmente reservado para un paciente (cuando ingresa la cantidad de promesa %{fund}) y el dinero enviado a una clínica para un paciente (cuando marca la casilla de verificación "envié la promesa") durante un período determinado.
+    budget_bar: La barra de presupuesto indica el dinero provisionalmente reservado para un paciente (cuando ingresa la cantidad de promesa %{org}) y el dinero enviado a una clínica para un paciente (cuando marca la casilla de verificación "envié la promesa") durante un período determinado.
     call_list: Esta lista organiza los pacientes para cuando quiera devolver llamadas durante su turno. Utiliza la búsqueda para rellenar la lista.
     completed_calls: Esta es una lista de pacientes a los que ha llamado en las últimas 8 horas.
     patient_identifier: Identificador interno semiúnico para este paciente, basado en su número de teléfono.
@@ -629,7 +634,7 @@ es:
     practical_support_fulfilled: Marque esta casilla si este soporte práctico está completo o pagado y no requiere mayor atención.
     record_new_external_pledge: '"Promesas externas" significa las promesas hechas por otros fondos de aborto también trabajando con un paciente.'
     referred_to_clinic: Marque esta casilla si usted, como administrador de casos, refirió al paciente a un clínica particular.
-    resolved_without_fund: Esto se utiliza para indicar que un paciente ya no necesita o quiere nuestros servicios.
+    resolved_without_org: Esto se utiliza para indicar que un paciente ya no necesita o quiere nuestros servicios.
     shared_cases: Estos son pacientes que requieren un poco más de atención. Esta lista es compartido entre todos los administradores de casos que trabajan en una sola línea. Los pacientes son eliminados de esta lista automáticamente después de que estén marcado como "resuelto sin ayuda", o después de %{shared_reset} días de inactividad.
     solidarity: Indica un caso al que este fondo está brindando apoyo, pero no manejando.
     solidarity_lead: Este es el fondo que sirve como punto de contacto o coordinación de fondos para este paciente.
@@ -649,7 +654,7 @@ es:
       user_account_management: Administración de Cuentas de Usuario
     new:
       create_user: Crear Usuario
-      edit_role_after_creating: Los nuevos usuarios por defecto tienen permisos CM, lo que les permite usar el flujo de trabajo de administración de casos. Para dar a alguien acceso a datos o permisos de administrador, edítelos después de crear sus cuentas aquí.
+      edit_role_after_creating: Los nuevos usuarios por defecto tienen permisos CC, lo que les permite usar el flujo de trabajo de administración de casos. Para dar a alguien acceso a datos o permisos de administrador, edítelos después de crear sus cuentas aquí.
     profile_edit:
       awaiting_confirmation: 'Actualmente en espera de confirmación para: %{email}'
       change_password: Cambia tu contraseña
@@ -658,9 +663,13 @@ es:
       update_info_button: Actualizar información
       user_panel: Panel de usuario para %{email} (%{name})
     roles:
-      admin: 'El rol de administrador es para las personas que administran la instancia DARIA de su fondo o el cuerpo de administrador de casos. Esto da acceso a lo que tienen los CM y los voluntarios de datos, además de lo siguiente: herramientas de administración de usuarios, herramientas de administración de clínicas, herramientas de configuración de instancias DARIA y la capacidad de eliminar pacientes de la página de registro de pacientes individuales (como en el caso de una entrada duplicada).'
-      cm: El rol de administrador de casos es para las personas que ingresan pacientes y hacen llamadas. Esto le da acceso al panel principal de la lista de llamadas, la página de registro individual del paciente (menos la capacidad de editar la información de cumplimiento) y la página de entrada de datos.
-      data_volunteer: 'El rol del voluntario de datos es para las personas que requieren acceso a datos o herramientas de contabilidad. Esto da acceso a lo que tienen los CM, además de lo siguiente: herramientas de contabilidad para la conciliación de compromisos, herramientas de informes con datos resumidos sobre la admisión del paciente, la pestaña de cumplimiento en la página de registro individual del paciente (para marcar compromisos como pagados) y la capacidad de descargar Una hoja de cálculo anónima de datos para el análisis.'
+      admin: 'El rol de administrador es para las personas que administran la instancia DARIA de su fondo o el cuerpo de administrador de casos. Esto da acceso a lo que tienen los CC y los voluntarios de datos, además de lo siguiente: herramientas de administración de usuarios, herramientas de administración de clínicas, herramientas de configuración de instancias DARIA y la capacidad de eliminar pacientes de la página de registro de pacientes individuales (como en el caso de una entrada duplicada).'
+      care_coordinator: El rol de administrador de casos es para las personas que ingresan pacientes y hacen llamadas. Esto le da acceso al panel principal de la lista de llamadas, la página de registro individual del paciente (menos la capacidad de editar la información de cumplimiento) y la página de entrada de datos.
+      data_volunteer: 'El rol del voluntario de datos es para las personas que requieren acceso a datos o herramientas de contabilidad. Esto da acceso a lo que tienen los CC, además de lo siguiente: herramientas de contabilidad para la conciliación de compromisos, herramientas de informes con datos resumidos sobre la admisión del paciente, la pestaña de cumplimiento en la página de registro individual del paciente (para marcar compromisos como pagados) y la capacidad de descargar Una hoja de cálculo anónima de datos para el análisis.'
+      finance_admin:
+      cr:
+      coord_admin:
+      volunteer:
     search:
       button: Buscar
       text_field: Nombre o Correo Electrónico

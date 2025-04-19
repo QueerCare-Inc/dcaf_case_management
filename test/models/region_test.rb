@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class RegionTest < ActiveSupport::TestCase
   before { @region = create :region }
@@ -11,18 +11,18 @@ class RegionTest < ActiveSupport::TestCase
     [:name].each do |attrib|
       it "should require #{attrib}" do
         @region[attrib] = nil
-        refute @region.valid?
+        assert_not @region.valid?
       end
     end
 
-    it 'should be unique on name within a fund' do
+    it 'should be unique on name within a org' do
       create :region, name: 'DC'
       region2 = create :region
       assert region2.valid?
       region2.name = 'DC'
-      refute region2.valid?
+      assert_not region2.valid?
 
-      ActsAsTenant.with_tenant(create(:fund)) do
+      ActsAsTenant.with_tenant(create(:org)) do
         region3 = create :region, name: 'DC'
         assert region3.valid?
       end

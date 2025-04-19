@@ -39,7 +39,7 @@ module CallListable
   end
 
   def reorder_call_list(order, region)
-    current_entries = call_list_entries.includes(:patient, :fund, :region, :user).where(region: region).to_a
+    current_entries = call_list_entries.includes(:patient, :org, :region, :user).where(region: region).to_a
     order.each_with_index do |pt, i|
       current = current_entries.find { |x| x.patient_id.to_s == pt }
       current.update order_key: i

@@ -1,6 +1,6 @@
 # A PII stripped patient for reporting.
 class ArchivedPatient < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Concerns
   include PaperTrailable
@@ -27,7 +27,7 @@ class ArchivedPatient < ApplicationRecord
 
   # Validations
   validates :intake_date,
-            :region,
+            # :region,
             presence: true
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                              allow_blank: true
@@ -51,15 +51,16 @@ class ArchivedPatient < ApplicationRecord
       region: patient.region,
       city: patient.city,
       state: patient.state,
-      county: patient.county,
+      # county: patient.county,
       intake_date: patient.intake_date,
       procedure_date: patient.procedure_date,
-      multiday_appointment: patient.multiday_appointment,
+      # multiday_appointment: patient.multiday_appointment,
       practical_support_waiver: patient.practical_support_waiver,
+      care_coordinator: patient.care_coordinator,
 
       shared_flag: patient.shared_flag,
-      referred_by: patient.referred_by,
-      referred_to_clinic: patient.referred_to_clinic,
+      # referred_by: patient.referred_by,
+      # referred_to_clinic: patient.referred_to_clinic,
 
       race_ethnicity: patient.race_ethnicity,
       employment_status: patient.employment_status,

@@ -1,6 +1,6 @@
 # Representation of non-monetary assistance coordinated for a patient.
 class PracticalSupport < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   encrypts :attachment_url
 

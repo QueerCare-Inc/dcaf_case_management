@@ -3,7 +3,7 @@ require 'application_system_test_case'
 # Confirm that the medicaid filter checkbox works
 class FilterMedicaidClinicsTest < ApplicationSystemTestCase
   before do
-    @user = create :user, role: :cm
+    @user = create :user, role: :care_coordinator
     @medicaid_clinic = create :clinic, name: 'Medicaid Accepted', accepts_medicaid: true
     @non_medicaid_clinic = create :clinic, name: 'No Medicaid here', accepts_medicaid: false
     @patient = create :patient

@@ -19,7 +19,7 @@ class UsersHelperTest < ActionView::TestCase
       assert_equal user_lock_status(@user), 'Temporarily locked'
     end
     it 'should return locked' do
-      @user.toggle_disabled_by_fund
+      @user.toggle_disabled_by_org
       assert_equal user_lock_status(@user), 'Locked by admin'
     end
   end

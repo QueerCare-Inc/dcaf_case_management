@@ -2,9 +2,7 @@
 class RegionsController < ApplicationController
   def new
     @regions = ActsAsTenant.current_tenant.regions.sort_by(&:name)
-    if @regions.count == 0
-      raise Exceptions::NoRegionsForFundError
-    end
+    raise Exceptions::NoRegionsForOrgError if @regions.count == 0
 
     if @regions.count == 1
       set_region_session @regions.first

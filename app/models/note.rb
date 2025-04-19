@@ -1,6 +1,6 @@
 # A case manager's log of their interactions with a patient.
 class Note < ApplicationRecord
-  acts_as_tenant :fund
+  acts_as_tenant :org
   encrypts :full_text
 
   # Concerns

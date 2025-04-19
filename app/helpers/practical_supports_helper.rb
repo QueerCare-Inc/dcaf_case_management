@@ -44,7 +44,7 @@ module PracticalSupportsHelper
 
     return unless url.present?
 
-    link_to t('patient.practical_support.guidance_link', fund: ActsAsTenant.current_tenant.name), url.to_s,
+    link_to t('patient.practical_support.guidance_link', org: ActsAsTenant.current_tenant.name), url.to_s,
             target: '_blank', rel: 'noopener'
     # "For guidance on practical support, view the #{link_content}."
   end

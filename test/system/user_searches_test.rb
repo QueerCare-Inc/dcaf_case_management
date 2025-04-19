@@ -5,10 +5,10 @@ class UserSearchesTest < ApplicationSystemTestCase
   before do
     create :region
     @user = create :user, role: 'admin', email: 'admin_user@dcabortionfund.org'
-    @user2 = create :user, role: 'cm',
+    @user2 = create :user, role: 'care_coordinator',
                            email: 'metallica@example.com',
                            name: 'Metallica'
-    @user3 = create :user, role: 'cm', email: 'mind_eraser@example.com'
+    @user3 = create :user, role: 'care_coordinator', email: 'mind_eraser@example.com'
     log_in_as @user
     visit users_path
   end

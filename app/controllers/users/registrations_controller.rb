@@ -27,10 +27,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def confirm_user_not_disabled!
-    if current_user&.disabled_by_fund?
-      flash[:danger] = t('flash.account_locked')
-      sign_out current_user
-    end
+    return unless current_user&.disabled_by_org?
+
+    flash[:danger] = t('flash.account_locked')
+    sign_out current_user
   end
 
   # protected

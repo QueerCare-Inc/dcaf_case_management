@@ -16,19 +16,19 @@ task nightly_cleanup: :environment do
     puts "#{Time.now} -- refreshed coordinates on all clinics"
   end
 
-  Fund.all.each do |fund|
-    ActsAsTenant.with_tenant(fund) do
+  Org.all.each do |org|
+    ActsAsTenant.with_tenant(org) do
       User.all.each { |user| user.clean_call_list_between_shifts }
-      puts "#{Time.now} -- cleared all recently reached patients from call lists for fund #{fund.name}"
+      puts "#{Time.now} -- cleared all recently reached patients from call lists for org #{org.name}"
 
       User.disable_inactive_users
-      puts "#{Time.now} -- locked accounts of users who have not logged in since #{User::TIME_BEFORE_DISABLED_BY_FUND.ago} for fund #{fund.name}"
+      puts "#{Time.now} -- locked accounts of users who have not logged in since #{User::TIME_BEFORE_DISABLED_BY_ORG.ago} for org #{org.name}"
 
       Patient.trim_shared_patients
-      puts "#{Time.now} -- trimmed shared patients for fund #{fund.name}"
+      puts "#{Time.now} -- trimmed shared patients for org #{org.name}"
 
       ArchivedPatient.archive_eligible_patients!
-      puts "#{Time.now} -- archived patients for today for fund #{fund.name}"
+      puts "#{Time.now} -- archived patients for today for org #{org.name}"
     end
   end
 end

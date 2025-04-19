@@ -425,7 +425,7 @@ class PatientTest < ActiveSupport::TestCase
 
         # confirmed support, should not show up
         @patient2.practical_supports.create support_type: 'Lodging',
-                                            source: 'Fund',
+                                            source: 'Org',
                                             amount: 100,
                                             confirmed: true
 
@@ -455,7 +455,7 @@ class PatientTest < ActiveSupport::TestCase
           @patient.practical_supports.first.update confirmed: false
 
           @patient.practical_supports.create support_type: 'Lodging',
-                                             source: 'Fund',
+                                             source: 'Org',
                                              amount: 200,
                                              confirmed: false
         end

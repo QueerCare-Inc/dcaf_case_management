@@ -3,5 +3,5 @@ module Exceptions
 
   class NoGoogleGeoApiKeyError < StandardError; end
 
-  class NoRegionsForFundError < StandardError; end
+  class NoRegionsForOrgError < StandardError; end
 end

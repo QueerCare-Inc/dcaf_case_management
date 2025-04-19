@@ -33,7 +33,7 @@ gem 'devise-security'
 gem 'omniauth-google-oauth2', '~> 1.2.1'
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 
-# Run multiple funds on one server
+# Run multiple orgs on one server
 gem 'acts_as_tenant', '~> 0.6'
 
 # Strong Password for user password validation for folks not on oauth

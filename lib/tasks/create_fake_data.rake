@@ -3,7 +3,7 @@ namespace :db do
     desc 'Generate fake patient entries for data wranglers'
     task :create_fake_data => :environment do
 
-        ActsAsTenant.current_tenant = Fund.first
+        ActsAsTenant.current_tenant = Org.first
         users = User.all
         clinics = Clinic.all
 
@@ -47,7 +47,7 @@ namespace :db do
           
           if has_appt
             patient.practical_supports.create!(
-              source: 'Metallica Abortion Fund',
+              source: 'Metallica Abortion Org',
               support_type: support_types[gen.rand(5)],
               created_by: users.sample
             )

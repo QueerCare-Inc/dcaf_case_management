@@ -1,6 +1,6 @@
 # Extensions to base class of PaperTrail.
 class PaperTrailVersion < PaperTrail::Version
-  acts_as_tenant :fund
+  acts_as_tenant :org
 
   # Relations
   belongs_to :user, foreign_key: :whodunnit, optional: true
@@ -13,7 +13,7 @@ class PaperTrailVersion < PaperTrail::Version
     identifier
     updated_at
     created_at
-    fund_id
+    org_id
     can_fulfill_type
     can_fulfill_id
     can_support_type

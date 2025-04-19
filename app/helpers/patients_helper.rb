@@ -51,7 +51,7 @@ module PatientsHelper
       nil,
       [t('patient.helper.referred_by.clinic'),                       'Clinic'],
       [t('patient.helper.referred_by.crime_victim_advocacy_center'), 'Crime victim advocacy center'],
-      [t('patient.helper.referred_by.fund', fund: ActsAsTenant.current_tenant.name),
+      [t('patient.helper.referred_by.org', org: ActsAsTenant.current_tenant.name),
        "#{ActsAsTenant.current_tenant.name} website or social media"],
       [t('patient.helper.referred_by.domestic_violence_org'),        'Domestic violence crisis/intervention org'],
       [t('patient.helper.referred_by.family'),                       'Family member'],
@@ -61,7 +61,7 @@ module PatientsHelper
       [t('patient.helper.referred_by.legal_clinic'),                 'Legal clinic'],
       [t('patient.helper.referred_by.naf'),                          'NAF'],
       [t('patient.helper.referred_by.nnaf'),                         'NNAF'],
-      [t('patient.helper.referred_by.other_fund'),                   'Other abortion fund'],
+      [t('patient.helper.referred_by.other_org'), 'Other abortion org'],
       [t('patient.helper.referred_by.prev_patient'),                 'Previous patient'],
       [t('patient.helper.referred_by.school'),                       'School'],
       [t('patient.helper.referred_by.sexual_assault_crisis_org'),    'Sexual assault crisis org'],
@@ -170,8 +170,8 @@ module PatientsHelper
     inactive_clinics = clinics.reject(&:active)
                               .map do |clinic|
       [
-        t('patient.procedure_information.clinic_section.not_currently_working_with_fund',
-          fund: ActsAsTenant.current_tenant.name, clinic_name: clinic.name),
+        t('patient.procedure_information.clinic_section.not_currently_working_with_org',
+          org: ActsAsTenant.current_tenant.name, clinic_name: clinic.name),
         clinic.id,
         { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
       ]
@@ -199,8 +199,8 @@ module PatientsHelper
     inactive_surgeons = surgeons.reject(&:active)
                                 .map do |surgeon|
       [
-        t('patient.procedure_information.surgeon_section.not_currently_working_with_fund',
-          fund: ActsAsTenant.current_tenant.name, surgeon_name: surgeon.name),
+        t('patient.procedure_information.surgeon_section.not_currently_working_with_org',
+          org: ActsAsTenant.current_tenant.name, surgeon_name: surgeon.name),
         surgeon.id
       ]
     end

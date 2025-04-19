@@ -5,7 +5,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   before do
     @user = create :user, role: 'admin'
-    @user_2 = create :user, role: 'cm', name: 'Billy Everyteen'
+    @user_2 = create :user, role: 'care_coordinator', name: 'Billy Everyteen'
     @patient_1 = create :patient, name: 'Susan Everyteen'
     @patient_2 = create :patient, name: 'Yolo Goat'
 
@@ -23,7 +23,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    it "should redirect if user is not admin - edit_user" do
+    it 'should redirect if user is not admin - edit_user' do
       User.roles.keys.reject { |role| role == 'admin' }.each do |role|
         @user_2 = create :user
         @user.update role: role
@@ -32,7 +32,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    %w[admin data_volunteer cm].each do |endpoint|
+    # added finance admin, volunteer, coord admin
+    %w[admin data_volunteer care_coordinator finance_admin volunteer coord_admin].each do |endpoint|
       it "should redirect if user is not admin - #{endpoint}" do
         User.roles.keys.reject { |role| role == 'admin' }.each do |role|
           @user.update role: role
@@ -103,14 +104,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   describe 'create method' do
-    it 'should create a user with the role cm' do
+    it 'should create a user with the role care coordinator' do
       attributes = attributes_for(:user)
       assert_difference 'User.count', 1 do
         post users_path, params: { user: attributes }
       end
-      assert_equal "cm", User.last.role
+      assert_equal 'care coordinator', User.last.role
     end
-
 
     it 'should show errors if creation fails' do
       attributes = attributes_for(:user)
@@ -194,7 +194,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       assert_equal 'admin', @user_2.role
     end
 
-    %w(data_volunteer cm).each do |role|
+    # added coord admin
+    %w[data_volunteer care_coordinator coord_admin].each do |role|
       it "should let you change another user - #{role}" do
         patch send("change_role_to_#{role}_path".to_sym, @user_2)
         @user_2.reload
@@ -214,14 +215,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     it 'should prevent current users from locking themselves' do
       post toggle_disabled_path(@user)
       @user.reload
-      refute @user.disabled_by_fund?
+      assert_not @user.disabled_by_org?
     end
 
     it 'should toggle locked status from false to true' do
-      refute @user_2.disabled_by_fund?
+      assert_not @user_2.disabled_by_org?
       post toggle_disabled_path(@user_2)
       @user_2.reload
-      assert @user_2.disabled_by_fund?
+      assert @user_2.disabled_by_org?
     end
   end
 
@@ -234,7 +235,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       params = { email: 'nope@nope.com', current_password: @user.password }
       put registration_path, params: { user: params }
       @user.reload
-      refute_equal @user.email, 'nope@nope.com'
+      assert_not_equal @user.email, 'nope@nope.com'
     end
   end
 end

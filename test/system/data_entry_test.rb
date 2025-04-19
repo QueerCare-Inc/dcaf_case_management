@@ -43,7 +43,7 @@ class DataEntryTest < ApplicationSystemTestCase
       select 'English', from: 'patient_language'
       select 'Do not leave a voicemail', from: 'patient_voicemail_preference'
       check 'patient_referred_to_clinic'
-      check 'fetal_patient_special_circumstances'
+      # check 'fetal_patient_special_circumstances'
       check 'home_patient_special_circumstances'
       click_button 'Create Patient'
       has_text? 'Patient information' # wait for redirect

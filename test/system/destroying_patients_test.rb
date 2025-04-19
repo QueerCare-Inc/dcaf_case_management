@@ -3,19 +3,18 @@
 # class DestroyingPatientsTest < ApplicationSystemTestCase
 #   describe 'destroying a patient' do
 #     before do
-#       @user = create :user, role: :cm
+#       @user = create :user, role: :care_coordinator
 #       @admin = create :user, role: :admin
 #       @data_volunteer = create :user, role: :data_volunteer
 #       @patient = create :patient
 #       @pledged_patient = create :patient, appointment_date: 2.days.from_now,
 #                                           clinic: (create :clinic),
-#                                           fund_pledge: 100,
+#                                           org_pledge: 100,
 #                                           pledge_sent: true
 #     end
 
-
 #     describe 'hide the button for nonadmins' do
-#       it "should not show the destroy button to CMs" do
+#       it "should not show the destroy button to care coordinators" do
 #         log_in_as @user
 #         visit edit_patient_path @patient
 #         refute has_button? 'Delete duplicate'
