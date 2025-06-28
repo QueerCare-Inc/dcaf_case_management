@@ -11,6 +11,8 @@ class AuthFactor < ApplicationRecord
   attr_accessor :current_form_step
 
   before_validation :clean_fields
+  before_save :clean_auth_factor_phone_number #, if: :phone_number_changed?
+
 
   belongs_to :user
 
