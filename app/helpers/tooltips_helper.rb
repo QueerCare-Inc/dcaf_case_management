@@ -18,13 +18,46 @@ module TooltipsHelper
     tooltip_shell help_text
   end
 
-  def call_list_help_text
-    t('tooltips.call_list').strip
+  # TODO: add care coordinate options
+  def care_coordinate_help_text
+    t('tooltips.care_coordinate').strip
   end
 
-  def completed_calls_help_text
-    t('tooltips.completed_calls').strip
+  # def procedure_list_help_text
+  #   t('tooltips.procedure_list').strip
+  # end
+
+  def new_care_requests_list_help_text
+    t('tooltips.new_care_request_list').strip
   end
+
+  def assigned_care_requests_list_help_text
+    t('tooltips.assigned_care_requests_list').strip
+  end
+
+  def intake_complete_list_help_text
+    t('tooltips.intake_complete_list').strip
+  end
+
+  def active_care_requests_list_help_text
+    t('tooltips.active_care_requests_list').strip
+  end
+
+  def procedure_confirmed_list_help_text
+    t('tooltips.procedure_confirmed_list').strip
+  end
+
+  def under_care_list_help_text
+    t('tooltips.under_care_list').strip
+  end
+
+  def assigned_care_requests_list_help_text
+    t('tooltips.assigned_care_requests_list').strip
+  end
+
+  # def completed_calls_help_text
+  #   t('tooltips.completed_calls').strip
+  # end
 
   def shared_cases_help_text
     t('tooltips.shared_cases', shared_reset: Config.shared_reset_days).strip
@@ -35,10 +68,10 @@ module TooltipsHelper
   end
 
   def status_help_text(patient)
-    status = Statusable::STATUSES.find { |x, hsh| hsh[:key] == patient.status }
-                                 .second
+    patient_status = Statusable::STATUSES.find { |x, hsh| hsh[:key] == patient.patient_status }
+                                         .second
 
-    status_def = "#{status[:key]}: #{status[:help_text]}"
+    status_def = "#{patient_status[:key]}: #{patient_status[:help_text]}"
 
     safe_join(["#{t('tooltips.status_definition')}:"].concat([status_def]), tag.br)
   end

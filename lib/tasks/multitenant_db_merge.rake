@@ -40,13 +40,13 @@ task multitenant_db_merge: :environment do
   @clinic_mappings = {}
   @region_mappings = {}
   @user_mappings = {}
-  @call_mappings = {}
   @fulfillment_mappings = {}
   @practical_support_mappings = {}
   @note_mappings = {}
   @patient_mappings = {}
+  @procedure_mappings = {}
   @archived_patient_mappings = {}
-  @call_list_entry_mappings = {}
+  @care_request_list_entry_mappings = {}
   @event_mappings = {}
 
   # object agnostic function for handling each insert 
@@ -62,7 +62,7 @@ task multitenant_db_merge: :environment do
     end
 
     connect_to_target_db
-    clean_rows = obj_for_migrate.map { |x| map_func.call x }
+    clean_rows = obj_for_migrate.map { |x| map_func.call x } #is this a reference to calls or a function??
 
     result = model.insert_all clean_rows.reject(&:nil?)
 
@@ -161,23 +161,37 @@ task multitenant_db_merge: :environment do
   # Note about subobjects: there are some abandoned records (e.g. from patients who were deleted)
   # so we don't count check on these
   # Port calls
-  call_map = -> (x) {
-    res = x.except('id', 'can_call_id', 'org_id', 'created_at', 'updated_at')
+  # ToDo: revisit
+  # call_map = -> (x) {
+  #   res = x.except('id', 'can_call_id', 'org_id', 'created_at', 'updated_at')
+  #     .merge({
+  #       'org_id' => @org_id,
+  #       'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
+  #       'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
+  #       'can_call_id' => if x['can_call_type'] == 'Patient'
+  #                          @patient_mappings[x['can_call_id']]
+  #                        elsif x['can_call_type'] == 'ArchivedPatient'
+  #                          @archived_patient_mappings[x['can_call_id']]
+  #                        else
+  #                          raise "unexpected type - row #{x}"
+  #                        end
+  #     })
+  #   res['can_call_id'].nil? ? nil : res
+  # }
+  # @call_mappings = easy_mass_insert Call, 'calls', call_map, false
+
+  # Port calls
+  # ToDo: revisit
+  procedure_map = -> (x) {
+    res = x.except('id', 'org_id', 'created_at', 'updated_at', 'region_id', 'created_at', 'updated_at')
       .merge({
         'org_id' => @org_id,
         'created_at' => x['created_at'].asctime.in_time_zone("America/New_York"),
         'updated_at' => x['updated_at'].asctime.in_time_zone("America/New_York"),
-        'can_call_id' => if x['can_call_type'] == 'Patient'
-                           @patient_mappings[x['can_call_id']]
-                         elsif x['can_call_type'] == 'ArchivedPatient'
-                           @archived_patient_mappings[x['can_call_id']]
-                         else
-                           raise "unexpected type - row #{x}"
-                         end
+        'region_id' => @region_mappings[x['region_id']],
       })
-    res['can_call_id'].nil? ? nil : res
   }
-  @call_mappings = easy_mass_insert Call, 'calls', call_map, false
+  @procedure_mappings = easy_mass_insert Procedure, 'procedures', procedure_map, false
 
   # Port fulfillments
   fulfillment_map = -> (x) {
@@ -243,7 +257,7 @@ task multitenant_db_merge: :environment do
            })
     res['patient_id'].nil? ? nil : res
   }
-  @call_list_entry_mappings = easy_mass_insert CallListEntry, 'call_list_entries', cle_map, false
+  @care_request_list_entry_mappings = easy_mass_insert CareRequestListEntry, 'care_request_list_entries', cle_map, false
 
   # Port events
   event_map = -> (x) {
@@ -271,14 +285,14 @@ task multitenant_db_merge: :environment do
     'user_id' => @user_mappings,
     'region_id' => @region_mappings,
     'patient_id' => @patient_mappings,
-    'can_call_id' => @patient_mappings,
+    # 'can_call_id' => @patient_mappings,
     'can_fulfill_id' => @patient_mappings,
     'can_support_id' => @patient_mappings
   }
   @item_type_mappings = {
     'ArchivedPatient' => @archived_patient_mappings,
-    'Call' => @call_mappings,
-    'CallListEntry' => @call_list_entry_mappings,
+    # 'Call' => @call_mappings,
+    'CareRequestListEntry' => @care_request_list_entry_mappings,
     'Clinic' => @clinic_mappings,
     'Config' => @config_mappings,
     'Event' => @event_mappings,
@@ -301,9 +315,7 @@ task multitenant_db_merge: :environment do
 
       # Process the object mappings to handle polymorphic properly
       if _is_an_obj_key? k
-        polymorphic_aware_mappings = if k == 'can_call_id'
-                                       obj['can_call_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings
-                                     elsif k == 'can_fulfill_id'
+        polymorphic_aware_mappings = if k == 'can_fulfill_id'
                                        obj[k] = obj['can_fulfill_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings
                                      elsif k == 'can_support_id'
                                        obj[k] = obj['can_support_type'] == 'Patient' ? @patient_mappings : @archived_patient_mappings

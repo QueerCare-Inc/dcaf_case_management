@@ -59,10 +59,10 @@ class OrgTest < ActiveSupport::TestCase
         ActsAsTenant.with_tenant(org) do
           @patient = create :patient
           @patient.notes.create attributes_for(:note)
-          @patient.calls.create attributes_for(:call)
+          # @patient.calls.create attributes_for(:call)
           @patient.practical_supports.create attributes_for(:practical_support)
           @archived_patient = create :archived_patient
-          @archived_patient.calls.create attributes_for(:call)
+          # @archived_patient.calls.create attributes_for(:call)
           @archived_patient.practical_supports.create attributes_for(:practical_support)
         end
       end
@@ -74,8 +74,9 @@ class OrgTest < ActiveSupport::TestCase
          ArchivedPatient,
          Note,
          Fulfillment,
-         PracticalSupport,
-         Call].each do |model|
+         PracticalSupport
+        #  Call
+        ].each do |model|
           assert_equal 0, model.count
         end
       end
@@ -88,8 +89,8 @@ class OrgTest < ActiveSupport::TestCase
           assert_equal 1, model.count
         end
         [
-          PracticalSupport,
-          Call
+          PracticalSupport
+          # Call
         ].each do |model|
           assert_equal 2, model.count
         end

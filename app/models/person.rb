@@ -4,7 +4,7 @@ class Person < ApplicationRecord
 
   # Concerns
   include PaperTrailable
-  include Callable
+  include CareRequestListable
   include Notetakeable
   include AttributeDisplayable
   include EventLoggable

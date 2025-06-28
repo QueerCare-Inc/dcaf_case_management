@@ -1,0 +1,27 @@
+// Styling related to log-a-call modals.
+
+@use './_variables';
+
+// Core new call modal
+.care_requests-layout {
+  padding: 1rem .5rem 1rem 2rem;
+
+  .care_requests-request {
+    font-size: variables.$font-size-large;
+  }
+
+  .care_requests-phone {
+    font-size: variables.$font-size-xlarge;
+    font-weight: 900;
+  }
+
+  .care_requests-response {
+    font-size: variables.$font-size;
+    text-decoration: underline;
+  }
+
+  .care_requests-btn {
+    font-size: variables.$font-size;
+    padding: 10px 40px;
+  }
+}

@@ -8,17 +8,18 @@ class TooltipsTest < ApplicationSystemTestCase
     log_in_as @user
   end
 
-  describe 'an inline tooltip' do
-    # Using call list as an example of this
-    it 'should pop up with content' do
-      visit authenticated_root_path
+  # ToDo: replace with appropriate care coordinatable objects
+  # describe 'an inline tooltip' do
+  #   # Using call list as an example of this
+  #   it 'should pop up with content' do
+  #     visit authenticated_root_path
 
-      within :css, '#call_list' do
-        find('.daria-tooltip').hover
-      end
-      assert has_content? 'This sortable list is used'
-    end
-  end
+  #     within :css, '#call_list' do
+  #       find('.daria-tooltip').hover
+  #     end
+  #     assert has_content? 'This sortable list is used'
+  #   end
+  # end
 
   describe 'a checkbox label tooltip' do
     # Using resolved without assistance as an example of this

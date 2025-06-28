@@ -4,13 +4,12 @@ class ArchivedPatient < ApplicationRecord
 
   # Concerns
   include PaperTrailable
-  include Exportable
+  # include Exportable
 
   # Relationships
   belongs_to :clinic, optional: true
   belongs_to :region
   has_one :fulfillment, as: :can_fulfill
-  has_many :calls, as: :can_call
   has_many :practical_supports, as: :can_support
 
   # Enums
@@ -90,12 +89,12 @@ class ArchivedPatient < ApplicationRecord
 
     patient.fulfillment.update! can_fulfill: archived_patient
 
-    patient.calls.each do |call|
-      call.update! can_call: archived_patient
-    end
-    patient.practical_supports.each do |support|
-      support.update! can_support: archived_patient
-    end
+    # patient.calls.each do |call|
+    #   call.update! can_call: archived_patient
+    # end
+    # patient.practical_supports.each do |support|
+    #   support.update! can_support: archived_patient
+    # end
 
     archived_patient.save!
     archived_patient

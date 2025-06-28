@@ -15,25 +15,26 @@ class ActivityLogTest < ApplicationSystemTestCase
     visit edit_patient_path @patient
   end
 
-  describe 'logging phone calls' do
-    it 'should log a phone call into the activity log' do
-      wait_for_element 'Call Log'
-      click_link 'Call Log'
-      click_link 'Record new call'
-      wait_for_element 'I left a voicemail for the patient'
-      click_link 'I left a voicemail for the patient'
-      wait_for_ajax
+  # ToDo: replace with appropriate care coordinatable objects
+  # describe 'logging phone calls' do
+  #   it 'should log a phone call into the activity log' do
+  #     wait_for_element 'Call Log'
+  #     click_link 'Call Log'
+  #     click_link 'Record new call'
+  #     wait_for_element 'I left a voicemail for the patient'
+  #     click_link 'I left a voicemail for the patient'
+  #     wait_for_ajax
 
-      visit authenticated_root_path
-      wait_for_css '#activity_log_content'
-      wait_for_css '#event-item'
-      wait_for_ajax
-      wait_for_no_css '.sk-spinner'
+  #     visit authenticated_root_path
+  #     wait_for_css '#activity_log_content'
+  #     wait_for_css '#event-item'
+  #     wait_for_ajax
+  #     wait_for_no_css '.sk-spinner'
 
-      within :css, '#activity_log_content' do
-        assert has_content? "#{@user.name} left a voicemail for " \
-                            "#{@patient.name}"
-      end
-    end
-  end
+  #     within :css, '#activity_log_content' do
+  #       assert has_content? "#{@user.name} left a voicemail for " \
+  #                           "#{@patient.name}"
+  #     end
+  #   end
+  # end
 end

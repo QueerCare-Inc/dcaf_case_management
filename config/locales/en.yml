@@ -157,6 +157,7 @@ en:
     'no': 'No'
     notes: Notes
     on_: 'on'
+    other: 'Other'
     patient: Patient
     phone_number: Phone
     prefer_not_to_answer: Prefer not to answer
@@ -205,6 +206,13 @@ en:
       shared_cases: Shared cases
       unconfirmed_support: Unconfirmed Practical Support
       coordinator_cr: Your Care Recipient Shifts
+      care_recipients: Your Care Recipients
+      new_care_request: New Care Requests
+      procedure_confirmed: Procedure Confirmed
+      assigned_care_requests: Assigned Care Requests
+      intake_complete: Intake Complete
+      active_care_requests: Active Care Requests
+      under_care: Under Care
     search:
       header: Build your call list
       input_placeholder: Name (Susan Smith) or Phone (555-555-5555)
@@ -519,6 +527,19 @@ en:
       new: 'Record new practical support info:'
       practical_support_waiver: Has signed a practical support waiver
       title: Practical support
+    procedure:
+      helper:
+        procedure_type:
+          breast_augmentation: "Breast augmentation"
+          breast_reduction: "Breast reduction"
+          ffs: "Facial feminization"
+          fms: "Facial masculinization"
+          hysterectomy: "Hysterectomy"
+          mastectomy: "Mastectomy"
+          metoidioplasty: "Metoidioplasty (aka meta)"
+          orchiectomy: "Orchiectomy"
+          phalloplasty: "Phalloplasty"
+          vaginoplasty: "Vaginoplasty"
     shared:
       proc_date: Procedure date
       name: First and last name
@@ -544,13 +565,44 @@ en:
         pledge_sent: Pledge Sent
         pledge_unfulfilled: Pledge Not Fulfilled
         resolved: Resolved Without %{org}
+  procedure:
+    new:
+      call_now: 'Call %{name} now:'
+      result:
+        did_not_reach_patient: I couldn't reach the patient
+        left_voicemail: I left a voicemail for the patient
+        reached_patient: I reached the patient
+      voicemail_instructions:
+        no_voicemail: Do not leave this patient a voicemail
+        voicemail_identify: Voicemail OK; Okay to identify as %{org}
+        voicemail_no_identify: Voicemail OK; Do not identify as %{org}
+    status:
+      help:
+        accepted_care_request: Care request has been accepted.
+        care_complete: Care has been completed.
+        coordinator_assigned: A care coordinator has been assigned to the care request.
+        intake_complete: Care request intake has been completed.
+        new_care_request: A new care request is waiting for assignment.
+        procedure_confirmed: The procedure date has been confirmed.
+        under_care: The patient is currently under care.
+      key:
+        accepted_care_request: Accepted Care Request
+        care_complete: Care Complete
+        coordinator_assigned: Care Coordinator Assigned
+        intake_complete: Imtale Complete
+        new_care_request: New Care Request
+        procedure_confirmed: Procedure Confirmed
+        under_care: Under Care
   tooltips:
     budget_bar: The budget bar lists money tentatively set aside for a patient (by entering a value in the %{org} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.
     call_list: This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.
+    care_coordinate: This sortable list is used to keep track of patients. Use the search to populate it.
+    care_request_list: This sortable list is used to keep track of procedures. Use the search to populate it.
     completed_calls: This is a list of patients you have called within the last 8 hours.
     patient_identifier: Semi-unique internal identifier for this patient, based on their phone number.
     practical_support_confirmed: Check this box if this practical support is confirmed by the point of contact.
     practical_support_fulfilled: Check this box if this practical support is completed or paid out, and requires no further attention.
+    procedure_list: This sortable list is used to keep track of procedures. Use the search to populate it.
     referred_to_clinic: Check this box if you as a care coordinator referred the patient to a particular clinic.
     resolved_without_org: This is used to indicate that a patient does not require or want our services any longer.
     shared_cases: These are patients who require a little more attention. This list is shared across all care coordinators working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.
@@ -558,6 +610,13 @@ en:
     solidarity_lead: This is the org serving as point-of-contact or coordinating funding for this patient.
     status_definition: Status definition
     unconfirmed_support: These are patients who have unconfirmed practical supports.
+
+    new_care_requests: This sortable list is used to keep track of new care requests. Use the search to populate it.
+    assigned_care_requests: This sortable list is used to keep track of care requests assigned to a care coordinator. 
+    intake_complete: This sortable list is used to keep track of care requests that have gone through intake. 
+    active_care_requests: This sortable list is used to keep track of care requests that have been approved after intake. 
+    procedure_confirmed: This sortable list is used to keep track of care requests that have had their procedure confirmed. 
+    under_care: This sortable list is used to keep track of care requests with patients currently receiving care. 
   user:
     common:
       last_login: Last Login

@@ -5,7 +5,10 @@ class User < ApplicationRecord
 
   # Concerns
   include PaperTrailable
+  include CareRequestListable
+  include AttributeDisplayable
   include PhoneCleanable
+
 
   # Devise modules
   devise  :database_authenticatable,
@@ -45,6 +48,7 @@ class User < ApplicationRecord
 
   # Relationships
   # has_many :call_list_entries # TODO: this should be only used for care coordinators, care_coordinator admin?, finance admin?
+  has_many :care_request_list_entries
   has_many :auth_factors, dependent: :destroy
   belongs_to :region, optional: true
   # has_one :person, as: :person, foreign_key: :id, inverse_of: :user, required: false
@@ -60,6 +64,8 @@ class User < ApplicationRecord
             :role,
             :email,
             presence: true
+  # validates :primary_phone, format: /\A\d{10}\z/,
+  #                           length: { is: 10 }
   validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10 }
   validate :confirm_unique_phone_number
 
@@ -164,7 +170,7 @@ class User < ApplicationRecord
   end
 
   def allowed_data_access? # TODO: should this include care coordinators? finance admin?, care_coordinator admin?
-    admin? || data_volunteer?
+    admin? || data_volunteer? || finance_admin? || coord_admin?
   end
 
   def self.search(name_or_email_str)

@@ -58,7 +58,7 @@ class ProceduresController < ApplicationController
       :service_start,
       :intensive_service_end,
       :service_end,
-      :status,
+      :care_status,
       { services: [] },
       { care_addresses: [] },
       { shifts: [] },

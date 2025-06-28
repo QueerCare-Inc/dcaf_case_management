@@ -41,7 +41,7 @@ namespace :org_management do
   private
   def print_counts
     models_org_agnostic = [ Org, ActiveRecord::SessionStore::Session, PaperTrail::Version, PaperTrailVersion]
-    models_org_dependent = [ ArchivedPatient, Patient, Fulfillment, PracticalSupport, Note, Call, Event, CallListEntry, Clinic, Region, Config, User ]
+    models_org_dependent = [ ArchivedPatient, Patient, Fulfillment, PracticalSupport, Note, Event, CareCoordinateEntry, Clinic, Region, Config, User ]
     starting_counts = {}
     Org.all.sort.each do |org|
       org_counts = {}

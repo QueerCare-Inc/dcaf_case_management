@@ -166,6 +166,12 @@ org2 = Org.create!(
                   password_confirmation: password,
                   role: :care_coordinator
     )
+    cc_person1 = cc_user1.create_new_person
+    care_coordinator1 = cc_person1.create_new_care_coordinator
+    care_coordinator1.update!(
+      volunteer_types: ["remote", "transportation"]
+    )
+
     cc_user2 = User.create!(
                   name: "testuser three", 
                   email: "test3@example.com",
@@ -283,39 +289,237 @@ org2 = Org.create!(
         intake_date: 3.days.ago,
         shared_flag: i.even?
       )
+      procedure = patient.create_new_procedure
+      care_progress = procedure.care_progress
+      care_progress[0] = true
+      procedure.update!(
+        care_status: :new_care_request,
+        care_progress: care_progress
+      )
       
       # Create associated objects
-      case i
-      when 0
-        10.times do
-          patient.calls.create!(
-            status: :reached_patient,
-            created_at: 3.days.ago
+      if i.even? && i < 6
+        PaperTrail.request(whodunnit: admin_user.id) do
+          patient.update!(
+            care_coordinator_id: care_coordinator1.id
+          )
+          care_progress = procedure.care_progress
+          care_progress[1] = true
+          procedure.update!(
+            care_status: :coordinator_assigned,
+            care_progress: care_progress
           )
         end
-      when 1
+      elsif i < 6
         PaperTrail.request(whodunnit: admin_user.id) do
-          cr_user.update!(name: "Other Contact info - one")
+          patient.update!(
+            care_coordinator_id: care_coordinator2.id
+          )
+          
+          care_progress = procedure.care_progress
+          care_progress[1] = true
+
+          procedure.update!(
+            care_status: :coordinator_assigned,
+            care_progress: care_progress
+          )
+        end
+      end
+
+      case i
+      
+      when 0
+        PaperTrail.request(whodunnit: cc_user1.id) do
           cr_person.update!(
+            emergency_contact: "Jane Doe",
+            emergency_contact_phone: generate_random_us_phone_number, #"234-456-6789", 
+            emergency_contact_relationship: "Sister",
+            language: 'English',
+            age: 32,
+            city: 'San Francisco',
+            state: 'CA'
+          )
+          patient.update!(
+            intake_date: i.day.from_now,
+          )
+
+          care_progress = procedure.care_progress
+          care_progress[2] = true
+
+          procedure.update!(
+            procedure_date: (i+7).days.from_now,
+            service_start: (i+10).days.from_now,
+            intensive_service_end: (i+24).days.from_now,
+            service_end: (i+40).days.from_now,
+            care_status: :intake_complete,
+            care_progress: care_progress,
+            surgeon_id: surgeon1.id,
+            clinic_id: clinic1.id
+          )
+        end  
+      when 1
+        PaperTrail.request(whodunnit: cc_user2.id) do
+          cr_person.update!(
+            emergency_contact: "June Doe",
+            emergency_contact_phone: generate_random_us_phone_number, #"134-456-6789", 
+            emergency_contact_relationship: "Spouse",
+            language: 'English',
+            age: 35,
+            city: 'San Francisco',
+            state: 'CA'
+          )
+          patient.update!(
+            intake_date: i.day.from_now,
+          )
+          care_progress = procedure.care_progress
+          care_progress[2] = true
+          procedure.update!(
+            procedure_date: (i+7).days.from_now,
+            service_start: (i+10).days.from_now,
+            intensive_service_end: (i+24).days.from_now,
+            service_end: (i+40).days.from_now,
+            care_status: :intake_complete,
+            care_progress: care_progress,
+            surgeon_id: surgeon2.id,
+            clinic_id: clinic3.id
+          )
+        end
+      when 2
+        PaperTrail.request(whodunnit: cc_user2.id) do
+          cr_person.update!(
+            emergency_contact: "Henry Doe",
+            emergency_contact_phone: generate_random_us_phone_number, #"904-456-6789", 
+            emergency_contact_relationship: "Sibling",
+            language: 'English',
+            age: 26,
+            city: 'San Francisco',
+            state: 'CA'
+          )
+          patient.update!(
+            intake_date: i.day.from_now,
+          )
+          care_progress = procedure.care_progress
+          care_progress[2] = true
+          procedure.update!(
+            procedure_date: (i+7).days.from_now,
+            service_start: (i+10).days.from_now,
+            intensive_service_end: (i+24).days.from_now,
+            service_end: (i+40).days.from_now,
+            care_status: :intake_complete,
+            care_progress: care_progress,
+            surgeon_id: surgeon3.id,
+            clinic_id: clinic2.id
+          )
+        end
+        care_progress = procedure.care_progress
+        care_progress[3] = true
+        PaperTrail.request(whodunnit: admin_user.id) do
+          procedure.update!(
+            care_status: :accepted_care_request,
+            care_progress: care_progress
+          )
+        end
+      when 3
+        PaperTrail.request(whodunnit: cc_user1.id) do
+          cr_person.update!(
+            emergency_contact: "Jason Doe",
             emergency_contact_phone: generate_random_us_phone_number, #"111-456-6789", 
+            emergency_contact_relationship: "Spouse",
+            language: 'English',
+            age: 29,
+            city: 'San Francisco',
+            state: 'CA'
+          )
+          patient.update!(
+            intake_date: (i+10).days.ago,
+          )
+          care_progress = procedure.care_progress
+          care_progress[2] = true
+          procedure.update!(
+            procedure_date: (i+7).days.ago,
+            service_start: (i+6).days.ago,
+            intensive_service_end: (i+8).days.from_now,
+            service_end: (i+20).days.from_now,
+            care_status: :intake_complete,
+            care_progress: care_progress,
+            surgeon_id: surgeon4.id,
+            clinic_id: clinic4.id
+          )
+        end
+        care_progress = procedure.care_progress
+        care_progress[3] = true
+        PaperTrail.request(whodunnit: admin_user.id) do
+          procedure.update!(
+            care_status: :accepted_care_request,
+            care_progress: care_progress
+          )
+        end
+        care_progress = procedure.care_progress
+        care_progress[4] = true
+        procedure.update!(
+          care_status: :procedure_confirmed,
+          care_progress: care_progress
+        )
       when 4
+        PaperTrail.request(whodunnit: cc_user1.id) do
+          cr_person.update!(
+            emergency_contact: "Jimmy Doe",
+            emergency_contact_phone: generate_random_us_phone_number, #"222-456-6789", 
+            emergency_contact_relationship: "Son",
+            language: 'English',
+            age: 45,
+            city: 'San Francisco',
+            state: 'CA'
+          )
+          patient.update!(
+            intake_date: (i+10).days.ago,
+          )
+          care_progress = procedure.care_progress
+          care_progress[2] = true
+          procedure.update!(
+            procedure_date: (i+7).days.ago,
+            service_start: (i+6).days.ago,
+            intensive_service_end: (i+8).days.from_now,
+            service_end: (i+20).days.from_now,
+            care_status: :intake_complete,
+            care_progress: care_progress,
+            surgeon_id: surgeon4.id,
+            clinic_id: clinic4.id
+          )
+        end
+        care_progress = procedure.care_progress
+        care_progress[3] = true
+        PaperTrail.request(whodunnit: admin_user.id) do
+          procedure.update!(
+            care_status: :accepted_care_request,
+            care_progress: care_progress
+          )
+        end
+        care_progress = procedure.care_progress
+        care_progress[4] = true
+        care_progress[5] = true
+        procedure.update!(
+          care_status: :under_care,
+          care_progress: care_progress
+        )
+      when 5
         PaperTrail.request(whodunnit: admin_user.id) do
           # With special circumstances
           cr_user.update!(name: "Special Circumstances - four")
           cr_person.update!(special_circumstances: ["Prison", "Fetal anomaly"])
-          # And a recent call on file
-          patient.calls.create!(status: :left_voicemail)
+          # # And a recent call on file
+          # patient.calls.create!(status: :left_voicemail)
         end
       end
 
-      if i != 9
-        5.times do
-          patient.calls.create!(
-            status: :left_voicemail,
-            created_at: 3.days.ago
-          )
-        end
-      end
+      # if i != 9
+      #   5.times do
+      #     patient.calls.create!(
+      #       status: :left_voicemail,
+      #       created_at: 3.days.ago
+      #     )
+      #   end
+      # end
 
       # Add notes for most patients
       unless [0, 1].include? i
@@ -437,11 +641,11 @@ org2 = Org.create!(
         created_at: 140.days.ago
       )
 
-      # Call, but no answer. leave a VM.
-      patient.calls.create(status: :left_voicemail, created_at: 139.days.ago)
+      # # Call, but no answer. leave a VM.
+      # patient.calls.create(status: :left_voicemail, created_at: 139.days.ago)
 
-      # Call, which updates patient info, maybe flags shared, make a note.
-      patient.calls.create(status: :reached_patient, created_at: 138.days.ago)
+      # # Call, which updates patient info, maybe flags shared, make a note.
+      # patient.calls.create(status: :reached_patient, created_at: 138.days.ago)
 
       patient.update!(
         # procedure_date: 130.days.ago,
@@ -479,8 +683,8 @@ org2 = Org.create!(
         created_at: 137.days.ago
       )
 
-      # another call. get abortion information, create pledges, a note.
-      patient.calls.create!(status: :reached_patient, created_at: 136.days.ago)
+      # # another call. get abortion information, create pledges, a note.
+      # patient.calls.create!(status: :reached_patient, created_at: 136.days.ago)
 
       # notes tab
       PaperTrail.request(whodunnit: cc_user1.id) do
@@ -522,11 +726,11 @@ org2 = Org.create!(
         created_at: 640.days.ago
       )
 
-      # Call, but no answer. leave a VM.
-      patient.calls.create(status: :left_voicemail, created_at: 639.days.ago)
+      # # Call, but no answer. leave a VM.
+      # patient.calls.create(status: :left_voicemail, created_at: 639.days.ago)
 
-      # Call, which updates patient info, maybe flags, make a note.
-      patient.calls.create(status: :reached_patient, created_at: 138.days.ago)
+      # # Call, which updates patient info, maybe flags, make a note.
+      # patient.calls.create(status: :reached_patient, created_at: 138.days.ago)
 
       # Patient 1 drops off immediately
       next if patient_number.odd?
@@ -591,19 +795,19 @@ org2 = Org.create!(
     regina.update!(
       intake_date: 30.days.ago
     )
-    regina.calls.create!(
-      created_at: 30.days.ago,
-      status: "reached_patient"
-    )
+    # regina.calls.create!(
+    #   created_at: 30.days.ago,
+    #   status: "reached_patient"
+    # )
     # regina.update(
     #   # procedure_date: 18.days.ago,
     #   # clinic: Clinic.first
     # )
 
-    regina.calls.create!(
-      created_at: 22.days.ago,
-      status: "reached_patient"
-    )
+    # regina.calls.create!(
+    #   created_at: 22.days.ago,
+    #   status: "reached_patient"
+    # )
     regina.fulfillment.update(
       fulfilled: true,
       # procedure_date: 18.days.ago
@@ -628,22 +832,22 @@ org2 = Org.create!(
       intake_date: 40.days.ago
     ) 
     
-    janis.calls.create!(
-      created_at: 40.days.ago,
-      status: "left_voicemail"
-    )
-    janis.calls.create!(
-      created_at: 40.days.ago,
-      status: "left_voicemail"
-    )
-    janis.calls.create!(
-      created_at: 39.days.ago,
-      status: "left_voicemail"
-    )
-    janis.calls.create!(
-      created_at: 40.days.ago,
-      status: "couldnt_reach_patient"
-    )
+    # janis.calls.create!(
+    #   created_at: 40.days.ago,
+    #   status: "left_voicemail"
+    # )
+    # janis.calls.create!(
+    #   created_at: 40.days.ago,
+    #   status: "left_voicemail"
+    # )
+    # janis.calls.create!(
+    #   created_at: 39.days.ago,
+    #   status: "left_voicemail"
+    # )
+    # janis.calls.create!(
+    #   created_at: 40.days.ago,
+    #   status: "couldnt_reach_patient"
+    # )
     janis.notes.create(full_text: "SCENARIO: Janis calls us on 6-17. We call her back and leave a voicemail. We try again at the end of the night, but do not reach her. Janis calls us back on 6-18. We return her call and leave a voicemail. Janis calls us back on 6-24. We return her call, but her voicemail is turned off. We do not hear from Janis again.")
 
 
@@ -702,8 +906,7 @@ ActsAsTenant.without_tenant do
   puts "Seed completed! \n" \
        "Inserted #{Config.count} Config objects. \n" \
        "Inserted #{Event.count} Event objects. \n" \
-       "Inserted #{Call.count} Call objects. \n" \
-       "Inserted #{CallListEntry.count} CallListEntry objects. \n" \
+       "Inserted #{CareRequestEntry.count} CareRequestEntry objects. \n" \
        "Inserted #{Fulfillment.count} Fulfillment objects. \n" \
        "Inserted #{Note.count} Note objects. \n" \
        "Inserted #{Patient.count} Patient objects. \n" \

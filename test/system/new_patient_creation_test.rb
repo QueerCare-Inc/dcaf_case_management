@@ -43,8 +43,9 @@ class NewPatientCreationTest < ApplicationSystemTestCase
       assert_equal current_path, authenticated_root_path
     end
 
-    it 'should autopopulate the call list' do
-      within :css, '#call_list' do
+    # ToDo: replace with appropriate care_request list objects
+    it 'should autopopulate the care_request list' do
+      within :css, '#care_request_list' do
         assert has_link? 'Susan Everyteen 2'
       end
     end

@@ -5,17 +5,18 @@ class Patient < ApplicationRecord
   # Concerns
   include PaperTrailable
   include Shareable
-  include Callable
+  include CareRequestListable
   include Notetakeable
-  include PatientSearchable
-  include Statusable
-  include Exportable
+  include PersonSearchable
+  # include Statusable
+  # include Exportable
   include EventLoggable
 
   # Callbacks
   after_create :initialize_fulfillment
   after_update :confirm_still_shared, if: :shared_flag?
-  after_update :update_call_list_regions, if: :saved_change_to_region_id?
+  after_update :update_care_coordinate_regions, if: :saved_change_to_region_id?
+  after_update :update_current_procedure_id, if: :care_request_list_populated?
   after_destroy :destroy_associated
 
   # Relationships
@@ -23,13 +24,12 @@ class Patient < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :user, optional: true
   has_many :notes, as: :can_note
-  has_many :call_list_entries, dependent: :destroy
-  # has_many :users, through: :call_list_entries
+  has_many :care_coordinate_entries, dependent: :destroy
   # belongs_to :clinic, optional: true
   has_one :fulfillment, as: :can_fulfill
-  has_many :calls, as: :can_call
   # has_many :practical_supports, as: :can_support
   has_many :procedures
+  accepts_nested_attributes_for :procedures
 
   # Enable mass posting in forms
   accepts_nested_attributes_for :fulfillment
@@ -75,8 +75,8 @@ class Patient < ApplicationRecord
     Reimbursement.where(patient_id: id).destroy_all # NOTE: these should be archived before they can be deleted here
   end
 
-  def update_call_list_regions
-    CallListEntry.where(patient: self)
+  def update_care_request_list_regions
+    CareRequestListEntry.where(patient: self, procedure_id: self.current_procedure_id)
                  .update(region_id: region_id, order_key: 999)
   end
 
@@ -112,6 +112,51 @@ class Patient < ApplicationRecord
   def get_person
     base_person = Person
     base_person.where(id: person_id)
+  end
+
+  def create_new_procedure
+    Procedure.create(
+      org_id: org_id,
+      region_id: region_id,
+      person_id: person_id,
+      patient_id: id,
+      procedure_date: Date.today,
+      procedure_type: :other,
+      care_status: :new_care_request
+    )
+  end
+
+  def procedure_search(search_limit: 5)
+      
+    base_procedure = Procedure
+    procedure_matches = base_procedure.where(patient_id: id)
+    
+    procedure_matches.limit(search_limit) if search_limit.present?
+  end
+
+  def care_request_list_populated?
+    procedure_search.length > 0
+  end
+
+  def update_current_procedure_id
+    base_procedure = procedure_search
+    future_procedures = base_procedure.where('procedure_date > ?', DateTime.now)
+    # ToDo: add a way to remove procedures that were an error
+    current_procedure = future_procedures.first
+    if current_procedure != nil
+      self.current_procedure_id = current_procedure.id
+    end
+  end
+
+  def get_current_procedure_id
+    update_current_procedure_id
+    return current_procedure_id
+  end
+
+  def intake_date_display
+    return nil unless intake_date.present?
+    # "#{intake_date.display_date}"
+    intake_date.display_date
   end
 
   private

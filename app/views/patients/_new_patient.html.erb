@@ -1,6 +1,6 @@
 <h3 class="mt-5 mb-5"><small><%= t('patient.new.title') %></small></h3>
 
-<%= bootstrap_form_with model: patient, local: true do |f| %>
+<%= bootstrap_form_for @new_patient_form, remote: true do |f| %>
   <div class="row">
     <div class="col">
       <%= f.telephone_field :primary_phone,
@@ -11,33 +11,39 @@
     </div>
     <div class="col-4">
       <%= f.text_field :name,
-                       label: t('common.name'),
-                       value: name,
-                       required: true %>
+                      label: t('common.name'),
+                      value: name,
+                      required: true %>
     </div>
 
+    <%# TODO: fix this and add any other required variables for a new Person object %>
     <div class="col">
-      <%= f.select :language,
-                   options_for_select(language_options, patient.language),
-                   label: t('patient.information.language'),
-                   autocomplete: 'off' %>
-    </div>
+      <%= f.text_field :email,
+                        label: t('common.email'),
+                        value: email,
+                        required: true,
+                        pattern: "*@*.*" %>
+    </div>  
   </div>
 
   <div class="row">
     <div class="col">
-      <%= f.date_field :intake_date,
-                       label: t('patient.new.intake_date'),
-                       value: today,
-                       required: "required" %>
+      <%= f.date_field :procedure_date,
+                      label: t('common.procedure_date_short'),
+                      value: procedure_date,
+                      required: true %>
     </div>
-
     <div class="col">
-      <%= f.select :voicemail_preference,
-                   options_for_select(voicemail_options),
-                   label: t('patient.information.voicemail_preference') %>
+      <%= f.select :procedure_type,
+                      options_for_select(procedure_options),
+                      label: t('common.procedure_type'),
+                      value: procedure_type,
+                      required: true %>
     </div>
+  </div>
 
+
+  <div class="row">
     <div class="col">
       <%= f.select :region_id, options_for_select(region_options, current_region.id) %>
     </div>

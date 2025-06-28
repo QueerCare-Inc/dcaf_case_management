@@ -1,36 +1,84 @@
 <div class="row">
   <div class="col-sm-12">
     <%= render partial: 'dashboards/shift_calendar',
-               locals: {title: t('dashboard.partial_titles.coordinator_cr'),
+               locals: {
+                        title: t('dashboard.partial_titles.coordinator_cr'),
                         calendar_type: 'coordinator_cr'
-               } %>
+                        } %>
     <%= render partial: 'dashboards/search_form' %>
     <p>Replace with add CR Button</p>
-    <%# <%= render partial: 'dashboards/table_content', %>
-               <%# locals: { title: t('dashboard.partial_titles.call_list'), %>
-                         <%# table_type: 'call_list', %>
-                         <%# patients: current_user.call_list_patients(current_region), %>
-                         <%# sortable: true, %>
-                         <%# autosortable: true } %>
-    <p>Replace with New CR Requests</p>
-    <%# <%= render partial: 'dashboards/table_content',
-               <%# locals: { title: t('dashboard.partial_titles.completed_calls'), %>
-                         <%# table_type: 'completed_calls', %>
-                         <%# patients: current_user.recently_called_patients(current_region), %>
-                         <%# autosortable: true } %>
-    <p>Replace with Your Active CRs</p>
-    <%= render partial: 'dashboards/table_content',
-               locals: { title: t('dashboard.partial_titles.shared_cases'),
-                         table_type: 'shared_cases',
-                         patients: @shared_patients,
-                         autosortable: true } %>
-    <%# <%= render partial: 'dashboards/table_content', %>
-               <%# locals: { title: t('dashboard.partial_titles.unconfirmed_support'), %>
-                         <%# table_type: 'unconfirmed_support', %>
-                         <%# patients: @unconfirmed_support_patients, %>
-                         <%# autosortable: true } %>
-    <p>Replace with Unfulfilled Volunteer Shifts</p>
-    <p>Insert Unfulfilled Reimbursements</p>
+
+    <% if current_user.role == "coord_admin" || current_user.role == "admin" %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.new_care_requests'),
+                        table_type: 'new_care_requests_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'new_care_request'),
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.assigned_care_requests'),
+                        table_type: 'assigned_care_requests_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'coordinator_assigned'), 
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.intake_complete'),
+                        table_type: 'intake_complete_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'intake_complete'), 
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.active_care_requests'),
+                        table_type: 'active_care_requests_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'accepted_care_request'), 
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.procedure_confirmed'),
+                        table_type: 'procedure_confirmed_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'procedure_confirmed'), 
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.under_care'),
+                        table_type: 'under_care_list',
+                        care_requests: current_user.find_care_request_by_status(current_region, 'under_care'), 
+                        sortable: true,
+                        autosortable: true
+                        } %>
+    <% end %>
+    <% if current_user.role == "care_coordinator" %>
+      <%= render partial: 'dashboards/table_content',
+                 locals: {
+                        title: t('dashboard.partial_titles.assigned_care_requests'),
+                        table_type: 'assigned_care_requests_list',
+                        care_requests: current_user.care_coordinator_assigned_care_requests(current_region, current_user),
+                        sortable: true,
+                        autosortable: true
+                        } %>
+      <%# <%= render partial: 'dashboards/table_content',
+                 locals: { 
+                        title: t('dashboard.partial_titles.shared_cases'),
+                        table_type: 'shared_cases',
+                        care_requests: @shared_patients,
+                        autosortable: true 
+                        } %> 
+      <p>Replace with Unfulfilled Volunteer Shifts</p>
+      <p>Insert Unfulfilled Reimbursements</p>
+    <% end %>
+
+    
     <%= render partial: 'dashboards/modal' %>
     <%= render partial: 'dashboards/activity_log' %>
   </div>

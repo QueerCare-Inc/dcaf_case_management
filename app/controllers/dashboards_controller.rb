@@ -23,6 +23,11 @@ class DashboardsController < ApplicationController
     @today = Time.zone.today.to_date
     @phone_number = searched_for_phone?(params[:search]) ? params[:search] : ''
     @name = searched_for_name?(params[:search]) ? params[:search] : ''
+    
+    @new_patient_form = NewPatientForm.new
+    @email = ''
+    @procecure_date = Time.zone.tomorrow.to_date
+    @procedure_type = nil
 
     respond_to { |format| format.js }
   end
@@ -30,7 +35,8 @@ class DashboardsController < ApplicationController
   private
 
   def eager_loaded_patients
-    Patient.includes([:calls, :fulfillment])
+    Patient.includes([]) # :calls, :fulfillment
+    # Patient.includes
   end
 
   def searched_for_phone?(query)

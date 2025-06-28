@@ -22,61 +22,87 @@
     </thead>
 
     <tbody id="<%= table_type %>_content">
-            <td><%= base_user.primary_phone_display %></td> 
-
-          <td><%= patient.intake_date.display_date %></td>
-
-
-          <td><%= patient.status %></td>
-          <td><%= procedure_date_display patient %></td>
-          <td><%= patient.most_recent_note_display_text %> </td>
-
-          <% if table_type == 'completed_calls' || table_type == 'shared_cases' %>
-            <td class="blank-td"></td>
-          <% else %>
-            <% if current_user.call_list_entries.map(&:patient_id).include?(patient.id) %>
-              <td>
-                <%= link_to remove_patient_path(patient),
-                            method: :patch,
-                            data: { confirm: t('dashboard.table_content.remove_from_call_list_confirm',
-                                    name: patient.name) },
-                            aria: { label: t('dashboard.table_content.remove_from_call_list_confirm',
-                                    name: patient.name)},
-                            remote: true do %>
-                  <i class="fas fa-xmark fa-fw text-danger" aria-hidden="true"></i>
-                  <span class="sr-only">Remove call</span>
-                <% end %>
+      <% care_requests.each do |care_request| %>
+        <% base_patient = Patient.where(id: care_request.patient_id).first %>
+        <%# ToDo: care request and procedure are awkwardly clashing here. New care request model?? %>
+        <% if care_request.id == base_patient.get_current_procedure_id %>
+          <% base_person = Person.where(id: care_request.person_id).first %>
+          <% base_user = User.where(id: base_person.user_id).first %>
+        
+          <tr class="care_request-data" id="<%= care_request.id %>">
+            <% if local_assigns[:sortable] %>
+              <td class="handle" scope="row">
+                <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
               </td>
             <% else %>
+              <td scope="row"><!-- spacer --></td>
+            <% end %>
+          
+            <td><%= base_user.primary_phone_display %></td> 
+            <td><%= link_to base_user.name, edit_patient_path(base_patient) %></td>
+
+            <% if base_patient.intake_date.nil? %>
+              <td><%= nil %>
+            <% else %>
+              <td><%= base_patient.intake_date.display_date %></td>
+            <% end %>
+
+
+            <td><%= care_request.care_status %></td>
+            <td><%= care_request.procedure_date %></td>
+            <td><%= base_patient.most_recent_note_display_text %> </td>
+            <%# # ToDo: replace with appropriate care_request list objects %>
+            <% if table_type == 'intake_complete' || table_type == 'shared_cases' %>
+              <td class="blank-td"></td>
+            <% else %>
+              <%# <% if current_user.care_coordinate_entries.map(&:patient_id).include?(base_patient.id) %> 
+                <%# <td>
+                  <%# <%= link_to remove_patient_path(base_patient), %>
+                              <%# method: :patch, %>
+                              <%# data: { confirm: t('dashboard.table_content.remove_from_call_list_confirm', %>
+                                      <%# name: base_patient.name) }, %>
+                              <%# aria: { label: t('dashboard.table_content.remove_from_call_list_confirm', %>
+                                      <%# name: base_patient.name)}, %>
+                              <%# remote: true do %>
+                    <%# <i class="fas fa-xmark fa-fw text-danger" aria-hidden="true"></i> %>
+                    <%# <span class="sr-only">Remove call</span> %>
+                  <%# <% end %>
+                <%# </td> %>
+              <%# <% else %>
               <td>
                 <%= link_to t('common.add'),
-                            add_patient_path(patient),
+                            # add_patient_path(base_patient),
+                            add_care_request_path(care_request),
                             method: :patch,
                             remote: true %>
               </td>
+              <%# <% end %>
             <% end %>
           <% end %>
 
-          <td>
-            <%= link_to new_patient_call_path(patient),
-                        class: "call_button call-#{patient.primary_phone_display}",
-                        aria: { label: "Call #{patient.primary_phone_display}" },
-                        remote: true do %>
-              <i class="fas fa-phone-alt fa-lg fa-fw call-icon"></i>
-              <span class="sr-only">Call</span>
-            <% end %>
-          </td>
+          <%# # ToDo: replace with appropriate care coordinatable objects %>
+          <%# <td> %>
+            <%# <%= base_user = User.where(id: patient.user_id)%>
+            <%# <%= link_to new_patient_call_path(patient), %>
+                        <%# class: "call_button call-#{base_user.primary_phone_display}", %>
+                        <%# aria: { label: "Call #{base_user.primary_phone_display}" }, %>
+                        <%# remote: true do %>
+              <%# <i class="fas fa-phone-alt fa-lg fa-fw call-icon"></i> %>
+              <%# <span class="sr-only">Call</span> %>
+            <%# <% end %>
+          <%# </td> %>
         </tr>
       <% end %>
     </tbody>
   </table>
 
-  <% if table_type == 'call_list' && current_user.call_list_entries.count.nonzero? %>
-    <%= link_to t('dashboard.table_content.clear_call_list'),
-                clear_current_user_call_list_path,
-                class: "float-right text-danger",
-                data: { confirm: t('dashboard.table_content.clear_call_list_confirm') },
-                method: :patch,
-                remote: true %>
-  <% end %>
+  <%# # ToDo: replace with appropriate care_request list objects. Use when moving assigned CR to intake complete. %>
+  <%# <% if table_type == 'new_care_requests' && current_user.care_coordinate_entries.count.nonzero? %>
+    <%# <%= link_to t('dashboard.table_content.clear_call_list'), %>
+                <%# clear_current_user_call_list_path, %>
+                <%# class: "float-right text-danger", %>
+                <%# data: { confirm: t('dashboard.table_content.clear_call_list_confirm') }, %>
+                <%# method: :patch, %>
+                <%# remote: true %>
+  <%# <% end %> 
 </div>

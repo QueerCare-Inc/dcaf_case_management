@@ -1,0 +1,89 @@
+var isOnEditPage = location.pathname.indexOf('edit') !== 1;
+var isOnDashboard = location.pathname === '/';
+
+<%# ToDo: revisit this section %>
+<%# if (isOnEditPage) {
+  $("#call_log").html("<%= escape_javascript(render partial: 'patients/call_log') %>")
+    <%# .promise().done(function() { %>
+      <%# $(".new-call").modal('hide') %>
+      <%# $('body').removeClass('modal-open') %>
+      <%# $('.modal-backdrop').remove() %>
+    <%# }); %>
+<%# } %> 
+
+if (isOnDashboard) {
+  $('#new_care_requests_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.new_care_requests"),
+                                          table_type: "new_care_requests_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'new_care_request'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+$('#assigned_care_requests_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.assigned_care_requests"),
+                                          table_type: "assigned_care_requests_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'coordinator_assigned'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+$('#intake_complete_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.intake_complete"),
+                                          table_type: "intake_complete_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'intake_complete'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+$('#active_care_requests_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.active_care_requests"),
+                                          table_type: "active_care_requests_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'accepted_care_request'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+$('#procedure_confirmed_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.procedure_confirmed"),
+                                          table_type: "procedure_confirmed_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'procedure_confirmed'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+$('#under_care_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.under_care"),
+                                          table_type: "under_care_list",
+                                          care_requests: current_user.find_care_request_by_status(current_region, 'under_care'),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+);
+
+<%# ToDo: fix so that this works on care coordinator pages %>
+<%# $('#assigned_care_requests_list').append(
+  '<%= escape_javascript(render partial: "dashboards/table_content",
+                                locals: { title: t("dashboard.partial_titles.under_care"),
+                                          table_type: "assigned_care_requests_list",
+                                          care_requests: current_user.care_coordinator_assigned_care_requests(current_region, current_user),
+                                          sortable: true,
+                                          autosortable: true }) %>'
+<%# ); %>
+
+  <%# $("#shared_patients").html(
+    '<%= escape_javascript( render partial: "dashboards/table_content",
+                                  locals: { title: t('dashboard.partial_titles.shared_cases'),
+                                            table_type: 'shared_cases',
+                                            patients: Patient.shared_patients(current_region),
+                                            autosortable: true }) %>
+  <%# );  %>
+  $(".new-care_request").modal('hide')
+  $('body').removeClass('modal-open')
+  $('.modal-backdrop').remove()
+}

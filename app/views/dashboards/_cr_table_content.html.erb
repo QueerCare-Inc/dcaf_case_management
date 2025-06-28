@@ -54,13 +54,16 @@
           <td><%= base_patient.intake_date.display_date %></td>
 
 
+          <% current_procedure = Procedure.where(id: base_patient.current_procedure_id) %>
+          <td><%= current_procedure.care_status %></td>
           <td><%= procedure_date_display base_patient %></td>
           <td><%= base_patient.most_recent_note_display_text %> </td>
 
+          <%# # ToDo: replace with appropriate care coordinatable objects %>
           <% if table_type == 'completed_calls' || table_type == 'shared_cases' %>
             <td class="blank-td"></td>
           <% else %>
-            <% if current_user.call_list_entries.map(&:patient_id).include?(patient.id) %>
+            <% if current_user.care_coordinate_entries.map(&:patient_id).include?(base_patient.id) %>
               <td>
                 <%= link_to remove_patient_path(base_patient),
                             method: :patch,
@@ -83,6 +86,7 @@
             <% end %>
           <% end %>
 
+          <%# # ToDo: replace with appropriate care coordinatable objects %>
           <td>
             <%= link_to new_patient_call_path(patient),
                         class: "call_button call-#{base_user.primary_phone_display}",
@@ -96,8 +100,9 @@
       <% end %>
     </tbody>
   </table>
+  <%# # ToDo: replace with appropriate care coordinatable objects %>
 
-  <% if table_type == 'call_list' && current_user.call_list_entries.count.nonzero? %>
+  <% if table_type == 'care_coordinate' && current_user.care_coordinate_entries.count.nonzero? %>
     <%= link_to t('dashboard.table_content.clear_call_list'),
                 clear_current_user_call_list_path,
                 class: "float-right text-danger",
