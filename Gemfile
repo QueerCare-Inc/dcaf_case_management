@@ -58,6 +58,8 @@ gem 'twilio-ruby'
 # Calendar for shift scheduling
 gem 'simple_calendar', '~>3.0.4'
 
+gem 'phonelib', '~> 0.10' # phone number validation and formatting
+
 # Specific useful stuff
 gem 'render_async', '~> 2.1' # load slow partials asynchronously
 gem 'prawn' # pledge pdf generation
