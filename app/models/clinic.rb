@@ -4,6 +4,7 @@ class Clinic < ApplicationRecord
 
   # Concerns
   include PaperTrailable
+  include PhoneCleanable
 
   # Clinics intentionally excluded from ClinicFinder are assigned the zip 99999.
   # e.g. so a org can have an 'OTHER CLINIC' catchall.
@@ -14,19 +15,21 @@ class Clinic < ApplicationRecord
   encrypts :city
   encrypts :state
   encrypts :zip
-  encrypts :phone
+  # encrypts :phone_number
   encrypts :fax
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
+  before_save :clean_clinic_phone_number#, if: :phone_number_changed?
   belongs_to :region
   # has_many :surgeons_clinics
   has_many :surgeons, through: :surgeons_clinics
 
   # Validations
   validates :name, :street_address, :city, :state, :zip, presence: true
-  validates :name, :street_address, :city, :state, :zip, :phone, :fax,
+  validates :name, :street_address, :city, :state, :zip, :fax,
             length: { maximum: 150 }
+  validates :phone_number, phone: { possible: true, allow_blank: true }
   validates_uniqueness_to_tenant :name
 
   # Methods
@@ -63,5 +66,9 @@ class Clinic < ApplicationRecord
     raise Exceptions::NoGoogleGeoApiKeyError.new unless Geokit::Geocoders::GoogleGeocoder.try(:api_key)
 
     all.each { |clinic| clinic.update_coordinates && clinic.save }
+  end
+
+  def clean_clinic_phone_number
+    self.phone_number = clean_phone_number(phone_number)
   end
 end

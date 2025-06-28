@@ -7,7 +7,7 @@ class CreateAuthFactors < ActiveRecord::Migration[7.2]
       t.boolean :enabled, default: false
       t.boolean :registration_complete, default: false
       t.string :external_id
-      t.string :phone
+      t.string :phone_number, limit: 15 # E.164 format max length is 15
       t.string :email
 
       t.timestamps

@@ -20,7 +20,7 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       # new
       t.string :identifier
       t.string :emergency_contact
-      t.string :emergency_contact_phone
+      t.string :emergency_contact_phone, limit: 15
       t.string :emergency_contact_relationship
       # t.string :region #, null: false
       t.string :language

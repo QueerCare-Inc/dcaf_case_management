@@ -21,10 +21,10 @@ describe("Input", () => {
     expect(input).toHaveAttribute("type", "date");
   });
 
-  it("renders a phone input for type='phone'", () => {
-    render(<Input name="input" id="input" label="Input" type="phone" />);
+  it("renders a phone input for type='phone_number'", () => {
+    render(<Input name="input" id="input" label="Input" type="phone_number" />);
     const input = screen.queryByLabelText("Input");
-    expect(input).toHaveAttribute("type", "phone");
+    expect(input).toHaveAttribute("type", "phone_number");
   });
 
   it("renders help text when provided", () => {

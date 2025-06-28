@@ -5679,7 +5679,7 @@
           "fax": "Fax",
           "location": "Location",
           "name": "Name",
-          "phone": "Phone",
+          "phone_number": "Phone",
           "state": "State",
           "street_address": "Street address",
           "zip": "ZIP"
@@ -5841,8 +5841,9 @@
       "no": "No",
       "notes": "Notes",
       "on_": "on",
+      "other": "Other",
       "patient": "Patient",
-      "phone": "Phone",
+      "phone_number": "Phone",
       "prefer_not_to_answer": "Prefer not to answer",
       "procedure_date_short": "Proc date",
       "procedure_type": "Procedure",
@@ -5893,12 +5894,19 @@
         "budget_for": "Budget for %{date_range}"
       },
       "partial_titles": {
+        "active_care_requests": "Active Care Requests",
+        "assigned_care_requests": "Assigned Care Requests",
         "call_list": "Your call list",
+        "care_recipients": "Your Care Recipients",
         "completed_calls": "Your completed calls",
         "coordinator_cr": "Your Care Recipient Shifts",
+        "intake_complete": "Intake Complete",
+        "new_care_request": "New Care Requests",
+        "procedure_confirmed": "Procedure Confirmed",
         "search_results": "Search results",
         "shared_cases": "Shared cases",
-        "unconfirmed_support": "Unconfirmed Practical Support"
+        "unconfirmed_support": "Unconfirmed Practical Support",
+        "under_care": "Under Care"
       },
       "search": {
         "header": "Build your call list",
@@ -6264,11 +6272,18 @@
       "locked": "Locked",
       "new_patient_error": "Errors prevented this patient from being saved - %{error}",
       "new_patient_save": "A new patient has been successfully saved",
+      "new_person_error": "Errors prevented this person from being saved - %{error}",
+      "new_person_save": "A new person has been successfully saved",
       "patient_info_saved": "Patient info successfully saved at %{timestamp}",
       "patient_removed_database": "Patient successfully removed from database.",
       "patient_removed_database_error": "Can't delete patients with pledges; please correct the patient record and try again.",
       "patient_save_error": "Errors prevented this patient from being saved - %{error}",
       "patient_save_success": "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set.",
+      "person_info_saved": "Person info successfully saved at %{timestamp}",
+      "person_removed_database": "Person successfully removed from database.",
+      "person_removed_database_error": "Can't delete people with pledges; please correct the person record and try again.",
+      "person_save_error": "Errors prevented this person from being saved - %{error}",
+      "person_save_success": "%{person} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set.",
       "pledge_download_alert": "You need to enter your name in the box to sign and download the pledge",
       "unlocked": "Unlocked",
       "user_created": "User created!",
@@ -6633,7 +6648,7 @@
         "delete": "Delete duplicate patient record",
         "delete_label": "Admin: Delete",
         "email": "Email",
-        "phone": "Phone number",
+        "phone_number": "Phone number",
         "weeks_along": "Weeks along at intake"
       },
       "data_entry": {
@@ -6719,7 +6734,7 @@
         "emergency_contact": {
           "emergency_contact_options": "How do you want %{org} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?",
           "name": "Emergency contact name",
-          "phone": "Emergency contact phone",
+          "phone_number": "Emergency contact phone",
           "relationship": "Relationship to emergency contact",
           "title": "Emergency Contact"
         },
@@ -6794,6 +6809,22 @@
         "practical_support_waiver": "Has signed a practical support waiver",
         "title": "Practical support"
       },
+      "procedure": {
+        "helper": {
+          "procedure_type": {
+            "breast_augmentation": "Breast augmentation",
+            "breast_reduction": "Breast reduction",
+            "ffs": "Facial feminization",
+            "fms": "Facial masculinization",
+            "hysterectomy": "Hysterectomy",
+            "mastectomy": "Mastectomy",
+            "metoidioplasty": "Metoidioplasty (aka meta)",
+            "orchiectomy": "Orchiectomy",
+            "phalloplasty": "Phalloplasty",
+            "vaginoplasty": "Vaginoplasty"
+          }
+        }
+      },
       "procedure_information": {
         "clinic_section": {
           "clinic": "Clinic",
@@ -6837,6 +6868,41 @@
         }
       }
     },
+    "procedure": {
+      "new": {
+        "call_now": "Call %{name} now:",
+        "result": {
+          "did_not_reach_patient": "I couldn't reach the patient",
+          "left_voicemail": "I left a voicemail for the patient",
+          "reached_patient": "I reached the patient"
+        },
+        "voicemail_instructions": {
+          "no_voicemail": "Do not leave this patient a voicemail",
+          "voicemail_identify": "Voicemail OK; Okay to identify as %{org}",
+          "voicemail_no_identify": "Voicemail OK; Do not identify as %{org}"
+        }
+      },
+      "status": {
+        "help": {
+          "accepted_care_request": "Care request has been accepted.",
+          "care_complete": "Care has been completed.",
+          "coordinator_assigned": "A care coordinator has been assigned to the care request.",
+          "intake_complete": "Care request intake has been completed.",
+          "new_care_request": "A new care request is waiting for assignment.",
+          "procedure_confirmed": "The procedure date has been confirmed.",
+          "under_care": "The patient is currently under care."
+        },
+        "key": {
+          "accepted_care_request": "Accepted Care Request",
+          "care_complete": "Care Complete",
+          "coordinator_assigned": "Care Coordinator Assigned",
+          "intake_complete": "Imtale Complete",
+          "new_care_request": "New Care Request",
+          "procedure_confirmed": "Procedure Confirmed",
+          "under_care": "Under Care"
+        }
+      }
+    },
     "regions": {
       "new": {
         "start": "Get started",
@@ -6861,19 +6927,28 @@
       "pm": "pm"
     },
     "tooltips": {
+      "active_care_requests": "This sortable list is used to keep track of care requests that have been approved after intake.",
+      "assigned_care_requests": "This sortable list is used to keep track of care requests assigned to a care coordinator.",
       "budget_bar": "The budget bar lists money tentatively set aside for a patient (by entering a value in the %{org} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.",
       "call_list": "This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.",
+      "care_coordinate": "This sortable list is used to keep track of patients. Use the search to populate it.",
+      "care_request_list": "This sortable list is used to keep track of procedures. Use the search to populate it.",
       "completed_calls": "This is a list of patients you have called within the last 8 hours.",
+      "intake_complete": "This sortable list is used to keep track of care requests that have gone through intake.",
+      "new_care_requests": "This sortable list is used to keep track of new care requests. Use the search to populate it.",
       "patient_identifier": "Semi-unique internal identifier for this patient, based on their phone number.",
       "practical_support_confirmed": "Check this box if this practical support is confirmed by the point of contact.",
       "practical_support_fulfilled": "Check this box if this practical support is completed or paid out, and requires no further attention.",
+      "procedure_confirmed": "This sortable list is used to keep track of care requests that have had their procedure confirmed.",
+      "procedure_list": "This sortable list is used to keep track of procedures. Use the search to populate it.",
       "referred_to_clinic": "Check this box if you as a care coordinator referred the patient to a particular clinic.",
       "resolved_without_org": "This is used to indicate that a patient does not require or want our services any longer.",
       "shared_cases": "These are patients who require a little more attention. This list is shared across all care coordinators working in a single region. Patients are removed from this list automatically after they are marked as resolved without assistance, or after %{shared_reset} days of inactivity.",
       "solidarity": "Indicates a case to which this org is providing support, but not handling.",
       "solidarity_lead": "This is the org serving as point-of-contact or coordinating funding for this patient.",
       "status_definition": "Status definition",
-      "unconfirmed_support": "These are patients who have unconfirmed practical supports."
+      "unconfirmed_support": "These are patients who have unconfirmed practical supports.",
+      "under_care": "This sortable list is used to keep track of care requests with patients currently receiving care."
     },
     "user": {
       "common": {
@@ -10001,7 +10076,7 @@
           "gestational_limit": "Límite gestacional (en días)",
           "location": "Ubicación",
           "name": "Nombre",
-          "phone": "Teléfono",
+          "phone_number": "Teléfono",
           "state": "Estado",
           "street_address": "Dirección",
           "zip": "Código postal"
@@ -10213,7 +10288,7 @@
       "notes": "Notas",
       "on_": "en",
       "patient": "Patiente",
-      "phone": "Teléfono",
+      "phone_number": "Teléfono",
       "prefer_not_to_answer": "Prefiere no contestar",
       "procedure_date_short": "Día de la cita",
       "procedure_type": "Procedimiento",
@@ -10917,7 +10992,7 @@
         "currently": "Actualmente: %{weeks}s %{days}d",
         "delete": "Eliminar registro de paciente duplicado",
         "delete_label": "Admin: Eliminar",
-        "phone": "Número de teléfono",
+        "phone_number": "Número de teléfono",
         "weeks_along": "Semanas de embarazo al inicio"
       },
       "data_entry": {
@@ -11002,7 +11077,7 @@
       "information": {
         "emergency_contact": {
           "name": "Nombre de Otro Contacto",
-          "phone": "Otro teléfono",
+          "phone_number": "Otro teléfono",
           "relationship": "Relación con Otro Contacto",
           "title": "Otro Contacto"
         },

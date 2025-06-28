@@ -23,7 +23,7 @@ class ClinicsController < ApplicationController
   end
 
   def new
-    # i18n-tasks-use t('activerecord.attributes.clinic.phone')
+    # i18n-tasks-use t('activerecord.attributes.clinic.phone_number')
     # i18n-tasks-use t('activerecord.attributes.clinic.fax')
     # i18n-tasks-use t('activerecord.attributes.clinic.active')
     @clinic = Clinic.new
@@ -49,7 +49,7 @@ class ClinicsController < ApplicationController
 
   def clinic_params
     clinic_params = [:name, :street_address, :city, :state, :zip,
-                     :phone, :fax, :active,
+                     :phone_number, :fax, :active,
                      :accepts_medicaid]
 
     params.require(:clinic).permit(

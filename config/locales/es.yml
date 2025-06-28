@@ -28,7 +28,7 @@ es:
         gestational_limit: Límite gestacional (en días)
         location: Ubicación
         name: Nombre
-        phone: Teléfono
+        phone_number: Teléfono
         state: Estado
         street_address: Dirección
         zip: Código postal
@@ -187,7 +187,7 @@ es:
     notes: Notas
     on_: en
     patient: Patiente
-    phone: Teléfono
+    phone_number: Teléfono
     prefer_not_to_answer: Prefiere no contestar
     procedure_type: Procedimiento
     purchased_on: Comprado en
@@ -424,7 +424,7 @@ es:
       currently: 'Actualmente: %{weeks}s %{days}d'
       delete: Eliminar registro de paciente duplicado
       delete_label: 'Admin: Eliminar'
-      phone: Número de teléfono
+      phone_number: Número de teléfono
       weeks_along: Semanas de embarazo al inicio
     data_entry:
       patient_entry: Entrada de paciente
@@ -502,7 +502,7 @@ es:
       language: Idioma preferido
       emergency_contact:
         name: Nombre de Otro Contacto
-        phone: Otro teléfono
+        phone_number: Otro teléfono
         relationship: Relación con Otro Contacto
         title: Otro Contacto
       referred_by: Cómo escuchó el paciente sobre %{org}

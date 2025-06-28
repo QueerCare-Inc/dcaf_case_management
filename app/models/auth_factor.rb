@@ -3,6 +3,7 @@
 # An authentication factor used for multi factor authentication.
 class AuthFactor < ApplicationRecord
   include PaperTrailable
+  include PhoneCleanable
 
   cattr_accessor :form_steps do
     [:registration, :verification, :confirmation]
@@ -25,13 +26,14 @@ class AuthFactor < ApplicationRecord
 
   with_options if: -> { past_step?(:registration) } do
     validates :name, presence: true, uniqueness: { scope: :user_id }, length: { maximum: 30 }
-    validates :phone, presence: true, format: /\A\d{10}\z/, length: { is: 10 }
+    # validates :phone, presence: true, format: /\A\d{10}\z/, length: { is: 10 }
+    validates :phone_number, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10}
   end
 
   private
 
   def clean_fields
-    phone&.gsub!(/\D/, '')
+    phone_number&.gsub!(/\D/, '')
     name&.strip!
   end
 
@@ -41,5 +43,9 @@ class AuthFactor < ApplicationRecord
     return true if current_form_step.nil?
 
     return true if form_steps.index(current_form_step) >= form_steps.index(step)
+  end
+
+  def clean_auth_factor_phone_number
+    self.phone_number = clean_phone_number(phone_number)
   end
 end

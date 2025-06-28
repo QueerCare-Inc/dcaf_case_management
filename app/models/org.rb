@@ -1,5 +1,6 @@
 class Org < ApplicationRecord
   # TODO: make papertrailable
+  include PhoneCleanable
 
   # Relations
   has_many :regions
@@ -9,14 +10,17 @@ class Org < ApplicationRecord
   has_many :volunteers
   has_many :care_coordinators
 
+  before_save :clean_org_phone_number #, if: :phone_number_changed?
+
   # Validations
   validates :name,
             :subdomain,
             :domain,
             :full_name,
             :site_domain,
-            :phone,
+            :phone_number,
             presence: true
+  validates :phone_number, presence: true, phone: { possible: true, allow_blank: false }
   validates :name, :subdomain, uniqueness: true
 
   def delete_patient_related_data
@@ -34,5 +38,9 @@ class Org < ApplicationRecord
     [Clinic, Config, Region, User].each do |model|
       model.destroy_all
     end
+  end
+
+  def clean_org_phone_number
+    self.phone_number = clean_phone_number(phone_number)
   end
 end

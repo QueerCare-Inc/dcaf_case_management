@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   # Concerns
   include PaperTrailable
-  # include CallListable #TODO: revisit calls and houw they're structured
+  include PhoneCleanable
 
   # Devise modules
   devise  :database_authenticatable,
@@ -39,6 +39,7 @@ class User < ApplicationRecord
 
   # Callbacks
   before_validation :clean_fields
+  before_save :clean_primary_phone_number #, if: primary_phone_changed?
   after_update :send_password_change_email, if: :needs_password_change_email?
   after_create :send_account_created_email, if: :persisted?
 
@@ -59,8 +60,7 @@ class User < ApplicationRecord
             :role,
             :email,
             presence: true
-  validates :primary_phone, format: /\A\d{10}\z/,
-                            length: { is: 10 }
+  validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10 }
   validate :confirm_unique_phone_number
 
   # email presence validated through Devise
@@ -76,7 +76,7 @@ class User < ApplicationRecord
   validate :secure_password, if: :updating_password?
   # i18n-tasks-use t('errors.messages.password.password_strength')
   validates :password, password_strength: { use_dictionary: true }, if: :updating_password?
-  validates :name, :region, :email, :primary_phone, length: { maximum: 150 }
+  validates :name, :region, :email, length: { maximum: 150 }
 
   # To accommodate tenancy, we use our own devise validations
   # See https://github.com/heartcombo/devise/blob/master/lib/devise/models/validatable.rb
@@ -182,11 +182,29 @@ class User < ApplicationRecord
   end
 
   def create_new_person
-    Person.create(
+      primary_phone: primary_phone,
       user_id: id,
       region_id: region_id,
       org_id: org_id
-      # region: region
+  def primary_phone_display
+    return nil unless primary_phone.present?
+    "#{primary_phone[1..3]}-#{primary_phone[4..6]}-#{primary_phone[7..10]}"
+  end
+
+  def email_display
+    return nil unless email.present?
+    "#{email}"
+  end
+
+  # when we update the patient async (via React), we return the updated patient as json
+  # as_json will return the AR attributes stored in the db by default
+  # we extend it here to also include some of the additional custom getters we've written
+  # (that aren't stored in the db but are derived from db values)
+  def as_json
+    super.merge(
+      status: status,
+      primary_phone_display: primary_phone_display,
+      email_display: email_display
     )
   end
 
@@ -222,4 +240,9 @@ class User < ApplicationRecord
     primary_phone.gsub!(/\D/, '') if primary_phone
     name.strip! if name
   end
+
+  def clean_primary_phone_number
+    self.primary_phone = clean_phone_number(self.primary_phone)
+  end
+
 end

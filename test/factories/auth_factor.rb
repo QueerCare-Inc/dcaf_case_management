@@ -9,7 +9,7 @@ FactoryBot.define do
 
     trait :registration_complete do
       name { generate :name }
-      phone { '555-555-5555' }
+      phone_number { '555-555-5555' }
       registration_complete { true }
       enabled { true }
     end

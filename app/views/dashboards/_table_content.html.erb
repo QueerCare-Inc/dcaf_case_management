@@ -10,7 +10,7 @@
     <thead>
       <tr>
         <th scope="col"><!-- handle/spacer --></th>
-        <th scope="col"><%= t 'common.phone' %></th>
+        <th scope="col"><%= t 'common.phone_number' %></th>
         <th scope="col"><%= t 'common.name' %></th>
         <%= th_autosortable t('activerecord.attributes.patient.intake_date'), 'string', local_assigns %>
         <%= th_autosortable t('common.status'), 'string', local_assigns %>
@@ -22,18 +22,7 @@
     </thead>
 
     <tbody id="<%= table_type %>_content">
-      <% patients.each do |patient| %>
-        <tr class="patient-data" id="<%= patient.id %>">
-          <% if local_assigns[:sortable] %>
-            <td class="handle" scope="row">
-              <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
-            </td>
-          <% else %>
-            <td scope="row"><!-- spacer --></td>
-          <% end %>
-
-          <td><%= patient.primary_phone_display %></td>
-          <td><%= link_to patient.name, edit_patient_path(patient) %></td>
+            <td><%= base_user.primary_phone_display %></td> 
 
           <td><%= patient.intake_date.display_date %></td>
 

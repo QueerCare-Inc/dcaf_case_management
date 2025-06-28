@@ -17,7 +17,7 @@ class CreateQcHousings < ActiveRecord::Migration[7.2]
       t.string :state, null: false
       t.string :zip
       t.string :closest_cross_street
-      t.string :phone, null: false
+      t.string :phone_number, limit: 15, null: false
       t.numeric :coordinates, array: true
 
       t.string :accessability

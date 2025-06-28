@@ -81,7 +81,7 @@ export default PatientDashboardForm = ({
       <Input
         id="patient_primary_phone"
         name="patient[primary_phone]"
-        label={i18n.t('patient.dashboard.phone')}
+        label={i18n.t('patient.dashboard.phone_number')}
         value={patientData.primary_phone_display}
         onChange={e => debouncedAutosave({ primary_phone: e.target.value })}
       />

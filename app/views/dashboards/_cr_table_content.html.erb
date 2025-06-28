@@ -10,7 +10,7 @@
     <thead>
       <tr>
         <th scope="col"><!-- handle/spacer --></th>
-        <th scope="col"><%= t 'common.phone' %></th>
+        <th scope="col"><%= t 'common.phone_number' %></th>
         <th scope="col"><%= t 'common.name' %></th>
         <th scope="col"><%= t 'common.email' %></th>
         <% if table_type == 'assigned_cr' %>
@@ -40,9 +40,7 @@
             <td scope="row"><!-- spacer --></td>
           <% end %>
 
-          <td><%= patient.primary_phone_display %></td>
-          <td><%= link_to patient.name, edit_patient_path(patient) %></td>
-          <td><%= patient.email_display %></td>
+          <td><%= base_user.primary_phone_display %></td> 
 
 
           <% if table_type == 'assigned_cr' %>
@@ -84,8 +82,8 @@
 
           <td>
             <%= link_to new_patient_call_path(patient),
-                        class: "call_button call-#{patient.primary_phone_display}",
-                        aria: { label: "Call #{patient.primary_phone_display}" },
+                        class: "call_button call-#{base_user.primary_phone_display}",
+                        aria: { label: "Call #{base_user.primary_phone_display}" },
                         remote: true do %>
               <i class="fas fa-phone-alt fa-lg fa-fw call-icon"></i>
               <span class="sr-only">Call</span>

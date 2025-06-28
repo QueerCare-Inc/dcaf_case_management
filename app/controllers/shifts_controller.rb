@@ -23,7 +23,7 @@ class ShiftsController < ApplicationController
   end
 
   def new
-    # i18n-tasks-use t('activerecord.attributes.shift.phone')
+    # i18n-tasks-use t('activerecord.attributes.shift.phone_number')
     # i18n-tasks-use t('activerecord.attributes.shift.active')
     @shift = Shift.new
   end

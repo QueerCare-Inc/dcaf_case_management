@@ -23,7 +23,7 @@ class QcHousingsController < ApplicationController
   end
 
   def new
-    # i18n-tasks-use t('activerecord.attributes.qc_housing.phone')
+    # i18n-tasks-use t('activerecord.attributes.qc_housing.phone_number')
     # i18n-tasks-use t('activerecord.attributes.qc_housing.active')
     @qc_housing = QcHousing.new
   end
@@ -56,7 +56,7 @@ class QcHousingsController < ApplicationController
       :state,
       :closest_cross_street,
       :zip,
-      :phone,
+      :phone_number,
       :accessability,
       { availabilities: [] },
       { care_addresses: [] }

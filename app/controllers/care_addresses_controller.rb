@@ -23,7 +23,7 @@ class CareAddressesController < ApplicationController
   end
 
   def new
-    # i18n-tasks-use t('activerecord.attributes.care_address.phone')
+    # i18n-tasks-use t('activerecord.attributes.care_address.phone_number')
     # i18n-tasks-use t('activerecord.attributes.care_address.active')
     @care_address = CareAddress.new
   end
@@ -58,7 +58,7 @@ class CareAddressesController < ApplicationController
       :state,
       :zip,
       :closest_cross_street,
-      :phone,
+      :phone_number,
       :start_date,
       :end_date,
       :confirmed,

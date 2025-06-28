@@ -4,27 +4,31 @@ class CareAddress < ApplicationRecord
 
   # Concerns
   include PaperTrailable
+  include PhoneCleanable
 
   encrypts :street_address
   encrypts :city
   encrypts :state
   encrypts :zip
-  encrypts :phone
+  # encrypts :phone_number
   encrypts :start_date
   encrypts :end_date
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
+  before_save :clean_care_address_phone_number #, if: :phone_number_changed?
   belongs_to :region
   belongs_to :procedure
   belongs_to :patient
   belongs_to :qc_housing
   has_many :shifts, as: :can_shift
+  # accepts_nested_attributes_for :shifts
 
   # Validations
   validates :street_address, :city, :state, :zip, :closest_cross_street, :start_date, :end_date, presence: true
-  validates :street_address, :city, :state, :zip, :closest_cross_street, :phone, :start_date, :end_date,
+  validates :street_address, :city, :state, :zip, :closest_cross_street, :phone_number, :start_date, :end_date,
             length: { maximum: 150 }
+  validates :phone_number, presence: true, phone: { possible: true, allow_blank: false }
 
   validate :confirm_care_after_procedure
   validate :confirm_end_date_after_start_date
@@ -78,5 +82,9 @@ class CareAddress < ApplicationRecord
     return unless start_date.present? && end_date.present? && start_date&.send(:>, end_date)
 
     errors.add(:start_date, 'must be before', :end_date)
+  end
+
+  def clean_care_address_phone_number
+    self.phone_number = clean_phone_number(phone_number)
   end
 end

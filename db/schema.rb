@@ -104,7 +104,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.string "city", null: false
     t.string "state", null: false
     t.string "zip"
-    t.string "phone", null: false
+    t.string "phone_number", limit: 15, null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
     t.boolean "confirmed"
@@ -151,7 +151,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.string "city"
     t.string "state"
     t.string "zip"
-    t.string "phone"
+    t.string "phone_number", limit: 15
     t.string "fax"
     t.boolean "active", default: true, null: false
     t.boolean "accepts_medicaid"
@@ -231,7 +231,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.string "domain"
     t.string "full_name", comment: "Full name of the organization. e.g. DC Abortion Fund"
     t.string "site_domain", comment: "URL of the organization's public-facing website. e.g. www.dcabortionfund.org"
-    t.string "phone", comment: "Contact number for the organization, usually the hotline"
+    t.string "phone_number", limit: 15, comment: "Contact number for the organization, usually the hotline"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -278,6 +278,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.bigint "user_id", null: false
     t.bigint "region_id"
     t.bigint "org_id"
+    t.string "primary_phone", limit: 15, default: "-5555", null: false
     t.string "identifier"
     t.string "emergency_contact"
     t.string "emergency_contact_phone"
@@ -297,6 +298,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.boolean "textable"
     t.index ["identifier"], name: "index_people_on_identifier"
     t.index ["org_id"], name: "index_people_on_org_id"
+    t.index ["primary_phone", "org_id", "region_id"], name: "index_people_on_primary_phone_and_org_id_and_region_id", unique: true
     t.index ["region_id"], name: "index_people_on_region_id"
     t.index ["user_id", "region_id", "org_id"], name: "index_people_on_user_id_and_region_id_and_org_id", unique: true
     t.index ["user_id"], name: "index_people_on_user_id"
@@ -343,7 +345,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.string "state", null: false
     t.string "zip"
     t.string "closest_cross_street"
-    t.string "phone", null: false
+    t.string "phone_number", limit: 15, null: false
     t.decimal "coordinates", array: true
     t.string "accessability"
     t.string "availabilities", default: [], array: true
@@ -450,7 +452,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.bigint "org_id", null: false
     t.string "name", null: false
     t.string "email"
-    t.string "phone", null: false
+    t.string "phone_number", limit: 15, null: false
     t.string "procedure_types", default: [], array: true
     t.string "insurances", default: [], array: true
     t.boolean "active", default: true, null: false
@@ -475,7 +477,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_29_205219) do
     t.integer "role", default: 0, null: false
     t.boolean "disabled_by_org", default: false
     t.bigint "org_id"
-    t.string "primary_phone", default: "-5555", null: false
+    t.string "primary_phone", limit: 15, default: "-5555", null: false
     t.string "pronouns"
     t.bigint "region_id"
     t.datetime "created_at", null: false

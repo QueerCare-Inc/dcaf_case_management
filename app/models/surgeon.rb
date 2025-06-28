@@ -4,18 +4,21 @@ class Surgeon < ApplicationRecord
 
   # Concerns
   include PaperTrailable
+  include PhoneCleanable
 
   encrypts :name, deterministic: true
-  encrypts :phone
+  # encrypts :phone_number
 
   belongs_to :region
+  before_save :clean_surgeon_phone_number #, if: :phone_number_changed?
   # has_many :surgeons_clinics
   has_many :clinics, through: :surgeons_clinics
   has_many :procedures, as: :can_procedure
 
   # Validations
-  validates :name, :phone, presence: true
-  validates :name, :phone, :email,
+  validates :name, presence: true
+  validates :phone_number, presence: true, phone: { possible: true, allow_blank: false }
+  validates :name, :email,
             length: { maximum: 150 }
   validates_uniqueness_to_tenant :name
 
@@ -45,5 +48,9 @@ class Surgeon < ApplicationRecord
     insurances.each do |value|
       errors.add(:insurances, 'is invalid') if value && value.length > 50
     end
+  end
+
+  def clean_surgeon_phone_number
+    self.phone_number = clean_phone_number(phone_number)
   end
 end

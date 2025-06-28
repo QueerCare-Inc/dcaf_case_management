@@ -45,7 +45,7 @@ class MultiFactorAuthenticationController < ApplicationController
     session[:auth_factor_id] = auth_factor_id
 
     begin
-      @client.send_sms_verification_code(auth_factor.phone)
+      @client.send_sms_verification_code(auth_factor.phone_number)
 
       # Not really skipping a step. This just ensures we go to the next step when
       # we call render_wizard below instead of staying at the current step.
@@ -59,7 +59,7 @@ class MultiFactorAuthenticationController < ApplicationController
   def verify_code
     @auth_factor = AuthFactor.find(session[:auth_factor_id])
     begin
-      status = @client.check_sms_verification_code(@auth_factor.phone, mfa_params[:code])
+      status = @client.check_sms_verification_code(@auth_factor.phone_number, mfa_params[:code])
     rescue StandardError => e
       flash.now[:alert] = t('multi_factor.checking_sms_code_failed', error: e.message)
       return render_wizard

@@ -19,7 +19,7 @@ class DashboardsController < ApplicationController
 
     @patient = Patient.new
     @today = Time.zone.today.to_date
-    @phone = searched_for_phone?(params[:search]) ? params[:search] : ''
+    @phone_number = searched_for_phone?(params[:search]) ? params[:search] : ''
     @name = searched_for_name?(params[:search]) ? params[:search] : ''
 
     respond_to { |format| format.js }

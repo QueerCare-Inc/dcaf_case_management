@@ -23,7 +23,7 @@ class SurgeonsController < ApplicationController
   end
 
   def new
-    # i18n-tasks-use t('activerecord.attributes.surgeon.phone')
+    # i18n-tasks-use t('activerecord.attributes.surgeon.phone_number')
     # i18n-tasks-use t('activerecord.attributes.surgeon.active')
     @surgeon = Surgeon.new
   end
@@ -51,7 +51,7 @@ class SurgeonsController < ApplicationController
       :region,
       :region_id,
       :name,
-      :phone,
+      :phone_number,
       :email,
       :active,
       { procedures: [] },

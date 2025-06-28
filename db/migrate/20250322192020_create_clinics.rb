@@ -6,7 +6,7 @@ class CreateClinics < ActiveRecord::Migration[7.2]
       t.string :city
       t.string :state
       t.string :zip
-      t.string :phone
+      t.string :phone_number, limit: 15
       t.string :fax
       t.boolean :active, null: false, default: true
       t.boolean :accepts_medicaid

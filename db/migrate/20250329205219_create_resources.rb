@@ -5,7 +5,7 @@ class CreateResources < ActiveRecord::Migration[7.2]
 
       t.string :regions, array: true, default: []
       t.string :website_link
-      t.string :phone
+      t.string :phone_number, limit: 15
       t.string :email
       t.string :contact_person
       t.string :services_provided

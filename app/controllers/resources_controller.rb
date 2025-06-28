@@ -47,7 +47,7 @@ class ResourcesController < ApplicationController
   def resource_params
     resource_params = [
       :website_link,
-      :phone,
+      :phone_number,
       :email,
       :contact_person,
       :services_provided,

@@ -2,10 +2,10 @@
 module AttributeDisplayable
   extend ActiveSupport::Concern
 
-  def primary_phone_display
-    return nil unless primary_phone.present?
-    "#{primary_phone[0..2]}-#{primary_phone[3..5]}-#{primary_phone[6..9]}"
-  end
+  # def primary_phone_display
+  #   return nil unless primary_phone.present?
+  #   "#{primary_phone[0..2]}-#{primary_phone[3..5]}-#{primary_phone[6..9]}"
+  # end
 
   def emergency_contact_phone_display
     return nil unless emergency_contact_phone.present?

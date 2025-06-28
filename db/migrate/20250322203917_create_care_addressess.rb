@@ -18,7 +18,7 @@ class CreateCareAddressess < ActiveRecord::Migration[7.2]
       t.string :city, null: false
       t.string :state, null: false
       t.string :zip
-      t.string :phone, null: false
+      t.string :phone_number, limit: 15, null: false
       t.date :start_date, null: false
       t.date :end_date, null: false
       t.boolean :confirmed

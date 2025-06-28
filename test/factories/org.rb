@@ -13,6 +13,6 @@ FactoryBot.define do
     sequence :site_domain do |n|
       "www.org#{n}.pizza"
     end
-    phone { '(939)-555-0113' }
+    phone_number { '(939)-555-0113' }
   end
 end

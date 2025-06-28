@@ -32,7 +32,7 @@ class AuthFactorStepsController < ApplicationController
     return render_wizard unless @auth_factor.valid?
 
     begin
-      @client.send_sms_verification_code(auth_factor_params[:phone])
+      @client.send_sms_verification_code(auth_factor_params[:phone_number])
       return render_wizard @auth_factor
     rescue StandardError => e
       flash.now[:alert] = t('multi_factor.sending_sms_code_failed', error: e.message)
@@ -42,7 +42,7 @@ class AuthFactorStepsController < ApplicationController
 
   def verify
     begin
-      status = @client.check_sms_verification_code(@auth_factor.phone, auth_factor_params[:code])
+      status = @client.check_sms_verification_code(@auth_factor.phone_number, auth_factor_params[:code])
     rescue StandardError => e
       flash.now[:alert] = t('multi_factor.checking_sms_code_failed', error: e.message)
       return render_wizard
@@ -61,7 +61,7 @@ class AuthFactorStepsController < ApplicationController
   def auth_factor_params
     permitted_attributes = case step
                            when :registration
-                             [:phone, :name]
+                             [:phone_number, :name]
                            when :verification
                              [:code]
                            end

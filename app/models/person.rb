@@ -9,11 +9,14 @@ class Person < ApplicationRecord
   include AttributeDisplayable
   include EventLoggable
   # include UserTypeable
+  include PhoneCleanable
 
   # Callbacks
   before_validation :clean_fields
   before_save :save_identifier
   after_destroy :destroy_associated
+  before_save :clean_primary_phone_number
+  before_save :clean_emergency_contact_phone_number
 
   # Relationships
   belongs_to :region
@@ -29,9 +32,7 @@ class Person < ApplicationRecord
   # Worry about uniqueness to tenant after porting region info.
   # validates_uniqueness_to_tenant :primary_phone
   # validates :region, presence: true
-  validates :emergency_contact_phone, format: /\A\d{10}\z/,
-                                      length: { is: 10 },
-                                      allow_blank: true
+  validates :emergency_contact_phone, phone: { possible: true, allow_blank: true }
   validates :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
   validates :household_size_adults, :household_size_children,
@@ -115,8 +116,9 @@ class Person < ApplicationRecord
   def as_json
     super.merge(
       status: status,
-      primary_phone_display: primary_phone_display,
-      email_display: email_display
+      emergency_contact_phone_display: emergency_contact_phone_display
+      # primary_phone_display: primary_phone_display,
+      # email_display: email_display
     )
   end
 
@@ -178,4 +180,13 @@ class Person < ApplicationRecord
       errors.add(:special_circumstances, 'is invalid') if value && value.length > 50
     end
   end
+
+  def clean_primary_phone_number
+    self.primary_phone = clean_phone_number(self.primary_phone)
+  end
+
+  def clean_emergency_contact_phone_number
+    self.emergency_contact_phone = clean_phone_number(self.emergency_contact_phone)
+  end
+  
 end

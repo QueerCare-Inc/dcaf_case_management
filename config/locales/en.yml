@@ -22,7 +22,7 @@ en:
         fax: Fax
         location: Location
         name: Name
-        phone: Phone
+        phone_number: Phone
         state: State
         street_address: Street address
         zip: ZIP
@@ -158,7 +158,7 @@ en:
     notes: Notes
     on_: 'on'
     patient: Patient
-    phone: Phone
+    phone_number: Phone
     prefer_not_to_answer: Prefer not to answer
     procedure_type: Procedure
     purchased_on: Purchased on
@@ -371,7 +371,7 @@ en:
       delete: Delete duplicate patient record
       delete_label: 'Admin: Delete'
       email: Email
-      phone: Phone number
+      phone_number: Phone number
       weeks_along: Weeks along at intake
     data_entry:
       patient_entry: Patient Entry
@@ -450,7 +450,7 @@ en:
       legal_name: Legal Name (if different)
       emergency_contact:
         name: Emergency contact name
-        phone: Emergency contact phone
+        phone_number: Emergency contact phone
         relationship: Relationship to emergency contact
         emergency_contact_options: How do you want %{org} to refer to you (name, pronouns, sex, gender, medical history) to your emergency contact?
         title: Emergency Contact
