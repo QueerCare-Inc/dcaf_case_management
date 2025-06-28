@@ -13,6 +13,18 @@ class AuthFactor < ApplicationRecord
   before_validation :clean_fields
   before_save :clean_auth_factor_phone_number #, if: :phone_number_changed?
 
+  # acts_as_tenant :org
+
+  # Associations
+  # belongs_to :org
+  # belongs_to :region
+  # belongs_to :person
+  # belongs_to :patient
+  # belongs_to :procedure
+  # belongs_to :care_address
+  # belongs_to :qc_housing
+  # belongs_to :care_request
+  # belongs_to :care_request_step
 
   belongs_to :user
 
@@ -28,8 +40,7 @@ class AuthFactor < ApplicationRecord
 
   with_options if: -> { past_step?(:registration) } do
     validates :name, presence: true, uniqueness: { scope: :user_id }, length: { maximum: 30 }
-    # validates :phone, presence: true, format: /\A\d{10}\z/, length: { is: 10 }
-    validates :phone_number, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10}
+    validates :phone_number, presence: true, phone: { possible: true, allow_blank: false } 
   end
 
   private

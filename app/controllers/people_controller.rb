@@ -126,11 +126,6 @@ class PeopleController < ApplicationController
     end
   end
 
-  # PERSON_DASHBOARD_PARAMS = [
-  #   :name, :care_coordinator,
-  #   :procedure_date, :primary_phone, :pronouns, :status
-  # ].freeze
-
   PERSON_INFORMATION_PARAMS = [
     :region_id,
     :age, :race_ethnicity, :language, :textable,
@@ -141,50 +136,7 @@ class PeopleController < ApplicationController
     { special_circumstances: [] }
   ].freeze
 
-  # PROCEDURE_INFORMATION_PARAMS = [
-  #   :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
-  # ].freeze
-
-  # # Does this make sense for a one to many relationship?
-  # PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
-  #   :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
-  # ]
-
-  # FULFILLMENT_PARAMS = [
-  #   fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
-  # ].freeze
-
-  # OTHER_PARAMS = [:shared_flag, :intake_date, :practical_support_waiver].freeze
-
   def person_params
-    # permitted_params = [].concat(
-    #   # PERSON_DASHBOARD_PARAMS, 
-    #   PERSON_INFORMATION_PARAMS,
-    #   # PROCEDURE_INFORMATION_PARAMS, OTHER_PARAMS
-    # )
-    # permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:person).permit(PERSON_INFORMATION_PARAMS)
   end
-
-  # def render_csv
-  #   now = Time.zone.now.strftime('%Y%m%d')
-  #   csv_filename = "person_data_export_#{now}.csv"
-  #   set_headers
-
-  #   response.status = 200
-
-  #   send_stream(filename: "#{csv_filename}") do |y|
-  #     Person.csv_header.each { |e| y.write e }
-  #     Person.to_csv.each { |e| y.write e }
-  #     ArchivedPerson.to_csv.each { |e| y.write e }
-  #   end
-  # end
-
-  # def set_headers
-  #   headers['Content-Type'] = 'text/csv'
-  #   headers['X-Accel-Buffering'] = 'no'
-  #   headers['Cache-Control'] = 'no-cache'
-  #   headers[Rack::ETAG] = nil # Without this, data doesn't stream
-  #   headers.delete('Content-Length')
-  # end
 end

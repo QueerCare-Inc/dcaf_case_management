@@ -10,15 +10,6 @@ module PersonSearchable
     def search(name_or_phone_str, regions: nil, search_limit: DEFAULT_SEARCH_LIMIT, person_subtype: nil)
       wildcard_name = "%#{name_or_phone_str}%"
       clean_phone = name_or_phone_str.gsub(/\D/, '')
-      
-      # base_user = User
-      # base_user = base_user.where(region_id: regions.map { |x| x.id }) if regions
-      
-      # user_matches = base_user.where('name ilike ?', wildcard_name)
-      # if clean_phone.present?
-      #   clean_phone_str = "%#{clean_phone}%"
-      #   user_matches = user_matches.or(base_user.where('primary_phone like ?', clean_phone_str))
-      # end
 
       base_person = Person
       base_person = base_person.where(region_id: regions.map { |x| x.id }) if regions # is this right?

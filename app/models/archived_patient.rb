@@ -88,14 +88,7 @@ class ArchivedPatient < ApplicationRecord
     patient.versions.destroy_all
 
     patient.fulfillment.update! can_fulfill: archived_patient
-
-    # patient.calls.each do |call|
-    #   call.update! can_call: archived_patient
-    # end
-    # patient.practical_supports.each do |support|
-    #   support.update! can_support: archived_patient
-    # end
-
+    
     archived_patient.save!
     archived_patient
   end

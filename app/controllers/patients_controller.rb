@@ -130,9 +130,7 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    # :name, 
     :care_coordinator,
-    # :procedure_date, :primary_phone, :pronouns, 
     :status
   ].freeze
 
@@ -146,29 +144,15 @@ class PatientsController < ApplicationController
     { emergency_contact_options: [] }
   ].freeze
 
-  # PROCEDURE_INFORMATION_PARAMS = [
-  #   :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
-  # ].freeze
-
-  # # Does this make sense for a one to many relationship?
-  # PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
-  #   :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
-  # ]
-
-  # FULFILLMENT_PARAMS = [
-  #   fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
-  # ].freeze
-
   OTHER_PARAMS = [:shared_flag, :intake_date].freeze
 
   def patient_params
     permitted_params = [].concat(
       PATIENT_DASHBOARD_PARAMS, 
       PATIENT_INFORMATION_PARAMS,
-      # PROCEDURE_INFORMATION_PARAMS, 
       OTHER_PARAMS
     )
-    # permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
+    
     params.require(:patient).permit(permitted_params)
   end
 

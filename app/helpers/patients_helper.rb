@@ -9,33 +9,33 @@ module PatientsHelper
     (0..6).map { |i| [t('patient.helper.day', count: i), i] }.unshift [nil, nil]
   end
 
-  def referred_by_options(current_value = nil)
-    standard_options = [
-      nil,
-      [t('patient.helper.referred_by.clinic'),                       'Clinic'],
-      [t('patient.helper.referred_by.crime_victim_advocacy_center'), 'Crime victim advocacy center'],
-      [t('patient.helper.referred_by.org', org: ActsAsTenant.current_tenant.name),
-       "#{ActsAsTenant.current_tenant.name} website or social media"],
-      [t('patient.helper.referred_by.domestic_violence_org'),        'Domestic violence crisis/intervention org'],
-      [t('patient.helper.referred_by.family'),                       'Family member'],
-      [t('patient.helper.referred_by.friend'),                       'Friend'],
-      [t('patient.helper.referred_by.web_search'),                   'Google/Web search'],
-      [t('patient.helper.referred_by.homeless'),                     'Homeless shelter'],
-      [t('patient.helper.referred_by.legal_clinic'),                 'Legal clinic'],
-      [t('patient.helper.referred_by.naf'),                          'NAF'],
-      [t('patient.helper.referred_by.nnaf'),                         'NNAF'],
-      [t('patient.helper.referred_by.other_org'), 'Other abortion org'],
-      [t('patient.helper.referred_by.prev_patient'),                 'Previous patient'],
-      [t('patient.helper.referred_by.school'),                       'School'],
-      [t('patient.helper.referred_by.sexual_assault_crisis_org'),    'Sexual assault crisis org'],
-      [t('patient.helper.referred_by.youth'),                        'Youth outreach'],
-      [t('common.prefer_not_to_answer'),                             'Prefer not to answer']
-    ]
-    full_set = Config.find_or_create_by(config_key: 'referred_by').options
-    full_set.push(*standard_options) unless Config.hide_standard_dropdown?
+  # def referred_by_options(current_value = nil)
+  #   standard_options = [
+  #     nil,
+  #     [t('patient.helper.referred_by.clinic'),                       'Clinic'],
+  #     [t('patient.helper.referred_by.crime_victim_advocacy_center'), 'Crime victim advocacy center'],
+  #     [t('patient.helper.referred_by.org', org: ActsAsTenant.current_tenant.name),
+  #      "#{ActsAsTenant.current_tenant.name} website or social media"],
+  #     [t('patient.helper.referred_by.domestic_violence_org'),        'Domestic violence crisis/intervention org'],
+  #     [t('patient.helper.referred_by.family'),                       'Family member'],
+  #     [t('patient.helper.referred_by.friend'),                       'Friend'],
+  #     [t('patient.helper.referred_by.web_search'),                   'Google/Web search'],
+  #     [t('patient.helper.referred_by.homeless'),                     'Homeless shelter'],
+  #     [t('patient.helper.referred_by.legal_clinic'),                 'Legal clinic'],
+  #     [t('patient.helper.referred_by.naf'),                          'NAF'],
+  #     [t('patient.helper.referred_by.nnaf'),                         'NNAF'],
+  #     [t('patient.helper.referred_by.other_org'), 'Other abortion org'],
+  #     [t('patient.helper.referred_by.prev_patient'),                 'Previous patient'],
+  #     [t('patient.helper.referred_by.school'),                       'School'],
+  #     [t('patient.helper.referred_by.sexual_assault_crisis_org'),    'Sexual assault crisis org'],
+  #     [t('patient.helper.referred_by.youth'),                        'Youth outreach'],
+  #     [t('common.prefer_not_to_answer'),                             'Prefer not to answer']
+  #   ]
+  #   full_set = Config.find_or_create_by(config_key: 'referred_by').options
+  #   full_set.push(*standard_options) unless Config.hide_standard_dropdown?
 
-    options_plus_current(full_set, current_value)
-  end
+  #   options_plus_current(full_set, current_value)
+  # end
 
   def insurance_options(current_value = nil)
     standard_options = [
@@ -49,34 +49,6 @@ module PatientsHelper
 
     options_plus_current(full_set, current_value)
   end
-
-  # def procedure_type_options(current_value = nil)
-  #   procedure_type_options = Config.find_or_create_by(config_key: 'procedure_type').options
-
-  #   return [] if procedure_type_options.blank?
-
-  #   options_plus_current([nil] + procedure_type_options, current_value)
-
-  #   # THIS SECTION CURRENTLY BREAKS THE PATIENT VIEW AND CONFIG MANAGEMENT
-  #   # standard_options = [
-  #   #   [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
-  #   #   [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
-  #   #   [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
-  #   #   [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
-  #   #   [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
-  #   #   [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
-  #   #   [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
-  #   # ]
-  #   # full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
-  #   # full_set.push(*standard_options) unless Config.hide_standard_dropdown
-
-  #   # options_plus_current(full_set, current_value)
-  # end
-
-  # TODO: revisit this. Is it necessary?
-  # def disable_continue?(patient)
-  #   patient.pledge_info_present? ? 'disabled="disabled"' : ''
-  # end
 
   # helper function for use with `options_for_select`
   # adds `current_value` to `options` if it's not already there

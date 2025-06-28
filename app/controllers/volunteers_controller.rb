@@ -7,15 +7,6 @@ class VolunteersController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound,
               with: -> { redirect_to root_path }
 
-  # def index
-  #   # n+1 join here
-  #   respond_to do |format|
-  #     format.csv do
-  #       render_csv
-  #     end
-  #   end
-  # end
-  #
   def index
     @volunteers = Volunteer.all.sort_by { |c| [c.name] }
     respond_to do |format|
@@ -145,7 +136,6 @@ class VolunteersController < ApplicationController
     permitted_params = [].concat(
       VOLUNTEER_DASHBOARD_PARAMS, VOLUNTEER_INFORMATION_PARAMS
     )
-    # permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access? #TODO: what do we want to include in data access mode
     params.require(:volunteer).permit(permitted_params)
   end
 end

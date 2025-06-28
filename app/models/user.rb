@@ -42,7 +42,7 @@ class User < ApplicationRecord
 
   # Callbacks
   before_validation :clean_fields
-  before_save :clean_primary_phone_number #, if: primary_phone_changed?
+  before_save :clean_primary_phone_number 
   after_update :send_password_change_email, if: :needs_password_change_email?
   after_create :send_account_created_email, if: :persisted?
 
@@ -51,7 +51,6 @@ class User < ApplicationRecord
   has_many :care_request_list_entries
   has_many :auth_factors, dependent: :destroy
   belongs_to :region, optional: true
-  # has_one :person, as: :person, foreign_key: :id, inverse_of: :user, required: false
   has_one :person
   has_one :patient, required: false
   has_one :volunteer, required: false
@@ -64,8 +63,6 @@ class User < ApplicationRecord
             :role,
             :email,
             presence: true
-  # validates :primary_phone, format: /\A\d{10}\z/,
-  #                           length: { is: 10 }
   validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10 }
   validate :confirm_unique_phone_number
 

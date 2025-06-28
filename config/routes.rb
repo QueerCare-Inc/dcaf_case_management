@@ -7,22 +7,10 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'dashboards#index', as: 'dashboard'
     post 'search', to: 'dashboards#search', defaults: { format: :js }
 
-    # # For care coordination management
-    # patch 'care_coordinates/reorder_patient_list', to: 'care_coordinates#reorder_patient_list', as: 'reorder_patient_list', defaults: { format: :js }
-    # patch 'care_coordinates/add_patient/:id', to: 'care_coordinates#add_patient', as: 'add_patient', defaults: { format: :js }
-    # # ToDo: make sure that this also creates the appropriate Person
-    # patch 'care_coordinates/remove_patient/:id', to: 'care_coordinates#remove_patient', as: 'remove_patient', defaults: { format: :js }
-
     # TEST
     resources :new_patient_forms
 
     ########
-
-    # For call list management
-    # patch 'call_lists/reorder_call_list', to: 'call_lists#reorder_call_list', as: 'reorder_call_list', defaults: { format: :js }
-    # patch 'call_lists/clear_current_user_call_list', to: 'call_lists#clear_current_user_call_list', as: 'clear_current_user_call_list', defaults: { format: :js }
-    # patch 'call_lists/add_patient/:id', to: 'call_lists#add_patient', as: 'add_patient', defaults: { format: :js }
-    # patch 'call_lists/remove_patient/:id', to: 'call_lists#remove_patient', as: 'remove_patient', defaults: { format: :js }
 
     # # For procedure management
     # patch 'procedure_lists/reorder_procedure_list', to: 'procedure_lists#reorder_procedure_list', as: 'reorder_procedure_list', defaults: { format: :js }
@@ -61,9 +49,7 @@ Rails.application.routes.draw do
       resources :care_requests,
                 only: [ :create, :destroy, :new ]
       resources :notes,
-                only: [ :create, :update ]
-      # resources :practical_supports,
-      #           only: [ :create, :edit, :update, :destroy ]      
+                only: [ :create, :update ]  
     end
 
     # # For practical support notes

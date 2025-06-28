@@ -2,17 +2,11 @@
 module CareRequestListable
   extend ActiveSupport::Concern
 
-  # Someone is recently called if:
-  # someone has a call from the current_user
-  # that is less than 8 hours old,
-  # AND they would otherwise be in the care request list
-  # (e.g. assigned to current region and in user.patients)
   def find_care_request_by_status(region, care_status)
     care_requests = ordered_care_requests(region)
     care_requests_by_status = care_requests.select { |x| x.care_status == care_status }
     care_requests_validated = care_requests.select { |x| x.validate_care_progress_status? }
     care_requests_by_status.select { |x| x.validate_care_progress_status? }
-    # ordered_care_requests(region).select { |x| x.care_status == care_status && x.validate_care_progress_status? }
   end
 
   def care_coordinator_assigned_care_requests(region, current_user)
@@ -25,14 +19,6 @@ module CareRequestListable
   def care_request_list(region)
     ordered_care_requests(region) # .reject { |x| recently_called_by_user? x }
   end
-
-  # def recently_called_patients(region)
-  #   ordered_patients(region).select { |x| recently_called_by_user? x }
-  # end
-
-  # def recently_reached_patients(region)
-  #   ordered_patients(region).select { |x| recently_reached_by_user? x }
-  # end
 
   def add_care_request(care_request)
     present_care_requests = care_request_list_entries.where(region: care_request.region).to_a
@@ -79,24 +65,4 @@ module CareRequestListable
                   #  .map(&:procedure)
                   .reject(&:nil?)
   end
-
-  # def ordered_procedures(region)
-  #   # n+1 join here
-  #   # procedure_list_entries.includes(procedure: [:procedures, :fulfillment])
-  #   procedure_list_entries.where(region: region)
-  #                    .order(order_key: :asc)
-  #                   #  .order(procedure_date: :asc)
-  #                    .map(&:procedure)
-  #                    .reject(&:nil?)
-  # end
-
-  # def recently_reached_by_user?(procedure)
-  #   procedure.procedures.any? do |procedure|
-  #     procedure.created_by_id == id && procedure.recent? && procedure.reached_procedure?
-  #   end
-  # end
-
-  # def recently_called_by_user?(procedure)
-  #   procedure.procedures.any? { |procedure| procedure.created_by_id == id && procedure.recent? }
-  # end
 end

@@ -20,9 +20,8 @@ class Clinic < ApplicationRecord
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
-  before_save :clean_clinic_phone_number#, if: :phone_number_changed?
+  before_save :clean_clinic_phone_number
   belongs_to :region
-  # has_many :surgeons_clinics
   has_many :surgeons, through: :surgeons_clinics
 
   # Validations

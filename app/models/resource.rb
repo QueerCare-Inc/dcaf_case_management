@@ -1,7 +1,7 @@
 class Resource < ApplicationRecord
   include PhoneCleanable
 
-  before_save :clean_resource_phone_number #, if: :phone_number_changed?
+  before_save :clean_resource_phone_number 
   # Relations
   has_many :regions
 

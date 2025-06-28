@@ -6,10 +6,9 @@ class Procedure < ApplicationRecord
   include PaperTrailable
   include Shareable
   include Notetakeable
-  include Statusable
 
   # Callbacks
-  # before_validation :clean_fields
+
 
   # Relationships
   belongs_to :region
@@ -20,7 +19,6 @@ class Procedure < ApplicationRecord
   has_many :care_addresses, as: :can_care_address
   has_many :reimbursements, as: :can_reimburse
   # has_many :notes, as: :can_note
-  # belongs_to :last_edited_by, class_name: 'User', inverse_of: nil, optional: true
 
   # enum :procedure_type, {
   #   not_specified: :not_specified, #0,
@@ -39,8 +37,6 @@ class Procedure < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   validates :patient,
             :region,
-            # :surgeon,
-            # :clinic,
             :procedure_date,
             :procedure_type,
             :care_status,
@@ -48,7 +44,6 @@ class Procedure < ApplicationRecord
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/
   validate :confirm_appointment_after_intake
 
-  # validates :surgeon, :clinic, 
   validates :procedure_type, length: { maximum: 150 }
 
   validate :services_length

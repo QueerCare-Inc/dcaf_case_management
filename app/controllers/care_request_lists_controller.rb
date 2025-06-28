@@ -9,21 +9,21 @@ class CareRequestListsController < ApplicationController
   def add_care_request(care_status)
     current_user.add_care_request @care_request
     respond_to do |format|
-      format.js { render template: 'users/refresh_care_requests', layout: false }#, locals: {care_status: care_status} }
+      format.js { render template: 'users/refresh_care_requests', layout: false }
     end
   end
 
   def remove_care_request(care_status)
     current_user.remove_care_request @care_request
     respond_to do |format|
-      format.js { render template: 'users/refresh_care_requests', layout: false }#, locals: {care_status: care_status} }
+      format.js { render template: 'users/refresh_care_requests', layout: false }
     end
   end
 
   def clear_current_user_care_request_list(care_status)
     current_user.clear_care_request_list current_region
     respond_to do |format|
-      format.js { render template: 'users/refresh_care_requests', layout: false }#, locals: {care_status: care_status} }
+      format.js { render template: 'users/refresh_care_requests', layout: false }
     end
   end
 

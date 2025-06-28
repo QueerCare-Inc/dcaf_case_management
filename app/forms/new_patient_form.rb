@@ -5,13 +5,9 @@ class NewPatientForm
 
   include PhoneCleanable
 
-  # before_save :clean_new_patient_phone_number, if: :primary_phone_changed?
-  
   attr_accessor :region_id, :org_id, :primary_phone, :name, :email, :procedure_date, :procedure_type
 
   validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false }
-  # validates :region_id, :org_id, :primary_phone, :name, presence: true
-
 
   def save
     clean_new_patient_phone_number

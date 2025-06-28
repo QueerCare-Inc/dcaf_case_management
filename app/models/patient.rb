@@ -1,4 +1,5 @@
 # Object representing core patient information and demographic data.
+# TODO: fix create so that a Person object is also made
 class Patient < ApplicationRecord
   acts_as_tenant :org
 
@@ -8,8 +9,6 @@ class Patient < ApplicationRecord
   include CareRequestListable
   include Notetakeable
   include PersonSearchable
-  # include Statusable
-  # include Exportable
   include EventLoggable
 
   # Callbacks
@@ -25,9 +24,7 @@ class Patient < ApplicationRecord
   belongs_to :user, optional: true
   has_many :notes, as: :can_note
   has_many :care_coordinate_entries, dependent: :destroy
-  # belongs_to :clinic, optional: true
   has_one :fulfillment, as: :can_fulfill
-  # has_many :practical_supports, as: :can_support
   has_many :procedures
   accepts_nested_attributes_for :procedures
 
@@ -39,10 +36,7 @@ class Patient < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   # validates :intake_date, presence: true
 
-  # validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
-  #                            allow_blank: true
   validates :insurance, :referred_by, length: { maximum: 150 }
-  # validate :confirm_appointment_after_initial_call
   validates :voicemail_preference, :care_coordinator, length: { maximum: 150 }
   validates_associated :fulfillment
 
@@ -68,12 +62,12 @@ class Patient < ApplicationRecord
     false
   end
 
-  def destroy_associated
-    Event.where(patient_id: id).destroy_all
-    CallListEntry.where(patient_id: id).destroy_all
-    Procedure.where(patient_id: id).destroy_all # NOTE: these should be archived before they can be deleted here
-    Reimbursement.where(patient_id: id).destroy_all # NOTE: these should be archived before they can be deleted here
-  end
+  # def destroy_associated
+  #   Event.where(patient_id: id).destroy_all
+  #   CareCoordinateEntry.where(patient_id: id).destroy_all
+  #   Procedure.where(patient_id: id).destroy_all # NOTE: these should be archived before they can be deleted here
+  #   Reimbursement.where(patient_id: id).destroy_all # NOTE: these should be archived before they can be deleted here
+  # end
 
   def update_care_request_list_regions
     CareRequestListEntry.where(patient: self, procedure_id: self.current_procedure_id)
@@ -103,12 +97,13 @@ class Patient < ApplicationRecord
 
   def all_versions(include_fulfillment)
     all_versions = versions || []
-    # all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
     if include_fulfillment
       all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
     end
     all_versions.sort_by(&:created_at).reverse
   end
+
+
   def get_person
     base_person = Person
     base_person.where(id: person_id)
@@ -161,12 +156,6 @@ class Patient < ApplicationRecord
 
   private
 
-  # def confirm_appointment_after_initial_call
-  #   return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
-
-  #   errors.add(:procedure_date, 'must be after date of initial call')
-  # end
-
   def initialize_fulfillment
     build_fulfillment.save
   end
@@ -175,13 +164,6 @@ class Patient < ApplicationRecord
     Patient.where('fulfillment.fulfilled' => true,
                   updated_at: { '$lte' => datetime })
   end
-
-  # def self.unconfirmed_practical_support(region)
-  #   Patient.distinct
-  #          .where(region: region)
-  #          .joins(:practical_supports)
-  #          .where({ practical_supports: { confirmed: false }, created_at: 3.months.ago.. })
-  # end
 
   def in_case_of_emergency_length
     errors.add(:in_case_of_emergency, 'is invalid') unless in_case_of_emergency.length <= 7

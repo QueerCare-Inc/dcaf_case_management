@@ -17,7 +17,6 @@ class CareCoordinator < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :user, optional: true
   # has_many :notes, as: :can_note #TODO: update the structure of notes or add new note type
-  # has_many :shifts_volunteers
   has_many :shifts, through: :shifts_volunteers
   # accepts_nested_attributes_for :shifts
 
@@ -26,10 +25,7 @@ class CareCoordinator < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   # validate :shifts_length
   validate :volunteer_types_length
-  # validates :volunteer_types # , presence: true
-
-  # validate :patients_length
-
+  
   # Methods
   # def has_patients
   #   patients.map { |patient| patient.present? }.any?

@@ -12,8 +12,5 @@ module EventLoggable
   end
 
   private
-  # ToDo: fix through converting to care coordinate
-  # def call?
-  #   is_a?(Call) && can_call.is_a?(Patient)
-  # end
+
 end

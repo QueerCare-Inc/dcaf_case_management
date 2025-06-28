@@ -4,9 +4,6 @@ class Volunteer < ApplicationRecord
   
   # Concerns
   include PaperTrailable
-  # include Callable
-  # include Notetakeable
-  # include EventLoggable
   include PersonSearchable
 
   # Callbacks
@@ -28,8 +25,7 @@ class Volunteer < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   # validate :shifts_length
   validate :volunteer_types_length
-  # validates :volunteer_types # , presence: true
-
+  
   # Methods
   # def has_shifts
   #   shifts.map { |shift| shift.present? }.any?
@@ -51,11 +47,6 @@ class Volunteer < ApplicationRecord
     Shift.where(volunteer_id: id).destroy_all # NOTE: this should be archived
     QcHousing.where(volunteer_id: id).destroy_all
   end
-
-  # def update_call_list_regions
-  #   CallListEntry.where(patient: self)
-  #                .update(region_id: region_id, order_key: 999)
-  # end
 
   def search_volunteers(name_or_phone_str, regions: nil, search_limit: DEFAULT_SEARCH_LIMIT)
     people = search(name_or_phone_str, regions, search_limit)

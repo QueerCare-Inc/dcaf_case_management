@@ -10,8 +10,7 @@ class Surgeon < ApplicationRecord
   # encrypts :phone_number
 
   belongs_to :region
-  before_save :clean_surgeon_phone_number #, if: :phone_number_changed?
-  # has_many :surgeons_clinics
+  before_save :clean_surgeon_phone_number 
   has_many :clinics, through: :surgeons_clinics
   has_many :procedures, as: :can_procedure
 

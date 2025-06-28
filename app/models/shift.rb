@@ -15,9 +15,6 @@ class Shift < ApplicationRecord
   belongs_to :procedure
   belongs_to :care_address
   belongs_to :patient
-  # belongs_to :can_support, polymorphic: true
-  # has_many :notes, as: :can_note
-  # has_many :shifts_volunteers
   has_many :volunteers, through: :shifts_volunteers
 
   # Validations

@@ -55,10 +55,6 @@ module TooltipsHelper
     t('tooltips.assigned_care_requests_list').strip
   end
 
-  # def completed_calls_help_text
-  #   t('tooltips.completed_calls').strip
-  # end
-
   def shared_cases_help_text
     t('tooltips.shared_cases', shared_reset: Config.shared_reset_days).strip
   end

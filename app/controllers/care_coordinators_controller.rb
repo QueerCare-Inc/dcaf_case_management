@@ -7,15 +7,6 @@ class CareCoordinatorsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound,
               with: -> { redirect_to root_path }
 
-  # def index
-  #   # n+1 join here
-  #   respond_to do |format|
-  #     format.csv do
-  #       render_csv
-  #     end
-  #   end
-  # end
-  #
   def index
     @care_coordinators = CareCoordinator.all.sort_by { |c| [c.name] }
     respond_to do |format|

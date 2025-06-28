@@ -5,8 +5,8 @@
                         title: t('dashboard.partial_titles.coordinator_cr'),
                         calendar_type: 'coordinator_cr'
                         } %>
+    
     <%= render partial: 'dashboards/search_form' %>
-    <p>Replace with add CR Button</p>
 
     <% if current_user.role == "coord_admin" || current_user.role == "admin" %>
       <%= render partial: 'dashboards/table_content',

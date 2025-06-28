@@ -10,7 +10,7 @@ class Org < ApplicationRecord
   has_many :volunteers
   has_many :care_coordinators
 
-  before_save :clean_org_phone_number #, if: :phone_number_changed?
+  before_save :clean_org_phone_number 
 
   # Validations
   validates :name,

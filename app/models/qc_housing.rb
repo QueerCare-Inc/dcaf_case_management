@@ -14,11 +14,10 @@ class QcHousing < ApplicationRecord
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
-  before_save :clean_qc_housing_phone_number #, if: :phone_number_changed?
+  before_save :clean_qc_housing_phone_number 
   belongs_to :region
   belongs_to :volunteer
   has_many :care_addresses, as: :can_care_address
-  # accepts_nested_attributes_for :care_addresses
 
   # Validations
   validates :street_address, :city, :state, :zip, :closest_cross_street, :start_date, :end_date, presence: true

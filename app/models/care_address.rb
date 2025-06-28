@@ -16,7 +16,7 @@ class CareAddress < ApplicationRecord
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
-  before_save :clean_care_address_phone_number #, if: :phone_number_changed?
+  before_save :clean_care_address_phone_number 
   belongs_to :region
   belongs_to :procedure
   belongs_to :patient

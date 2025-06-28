@@ -8,7 +8,6 @@ class Person < ApplicationRecord
   include Notetakeable
   include AttributeDisplayable
   include EventLoggable
-  # include UserTypeable
   include PersonSearchable
   include PhoneCleanable
 
@@ -22,17 +21,13 @@ class Person < ApplicationRecord
   # Relationships
   belongs_to :region
   belongs_to :user
-  # belongs_to :user_typeable
   has_many :notes, as: :can_note
-  # belongs_to :last_edited_by, class_name: 'User', inverse_of: nil, optional: true
   has_one :patient, required: false
   has_one :volunteer, required: false
   has_one :care_coordinator, required: false
-
+  
   # Validations
   # Worry about uniqueness to tenant after porting region info.
-  # validates_uniqueness_to_tenant :primary_phone
-  # validates :region, presence: true
   validates :emergency_contact_phone, phone: { possible: true, allow_blank: true }
   validates :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
@@ -67,7 +62,6 @@ class Person < ApplicationRecord
 
   def destroy_associated
     # Event.where(person_id: id).destroy_all
-    # CallListEntry.where(person_id: id).destroy_all
     CareCoordinator.where(person_id: id).destroy_all
     Volunteer.where(person_id: id).destroy_all
     Patient.where(person_id: id).destroy_all
@@ -118,8 +112,6 @@ class Person < ApplicationRecord
     super.merge(
       status: status,
       emergency_contact_phone_display: emergency_contact_phone_display
-      # primary_phone_display: primary_phone_display,
-      # email_display: email_display
     )
   end
 
@@ -129,7 +121,6 @@ class Person < ApplicationRecord
     Patient.create(
       user_id: user_id,
       region_id: user.region_id,
-      # region: user.region,
       person_id: id,
       org_id: user.org_id
     )
@@ -152,7 +143,6 @@ class Person < ApplicationRecord
     CareCoordinator.create(
       user_id: user_id,
       region_id: user.region_id,
-      # region: user.region,
       person_id: id,
       org_id: user.org_id
     )
