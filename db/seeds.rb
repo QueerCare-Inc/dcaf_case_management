@@ -5,8 +5,7 @@ raise "No running seeds in prod" unless [nil, "Sandbox"].include? ENV["DARIA_FUN
 ActsAsTenant.without_tenant do
   Config.destroy_all
   Event.destroy_all
-  Call.destroy_all
-  CallListEntry.destroy_all
+  CareRequestEntry.destroy_all
   Fulfillment.destroy_all
   Note.destroy_all
   Patient.destroy_all
@@ -143,7 +142,7 @@ org2 = Org.create!(
             else
               ["Maru", "Guremike"].map { |region| Region.create! name: region }
             end
-
+    
     # Create test users
     admin_user = User.create!(
                   name: "testuser (admin)", 
@@ -237,6 +236,37 @@ org2 = Org.create!(
       # phone_number: generate_random_us_phone_number,
       region_id: regions.second.id
     )
+    
+    # Create a few surgeons
+    surgeon1 = Surgeon.create!(
+      region: regions.first,
+      name: "Dr. One", 
+      phone_number: generate_random_us_phone_number, #"968-574-3625",
+      procedure_types: ['breast augmentation', 'mastectomy'],
+      region_id: regions.first.id
+    )
+
+    surgeon2 = Surgeon.create!(
+      region: regions.first,
+      name: "Dr. Two", 
+      phone_number: generate_random_us_phone_number, #"142-536-9685",
+      procedure_types: ['facial feminization', 'facial masculinization'],
+      region_id: regions.first.id
+    )
+
+    surgeon3 = Surgeon.create!(
+      region: regions.second,
+      name: "Dr. Three", 
+      phone_number: generate_random_us_phone_number, #"635-241-7485",
+      procedure_types: ['vaginoplasty'],
+      region_id: regions.second.id
+    )
+
+    surgeon4 = Surgeon.create!(
+      region: regions.second,
+      name: "Dr. Four", 
+      phone_number: generate_random_us_phone_number, #"415-263-8574",
+      procedure_types: ['metoidioplasty', 'phalloplasty'],
       region_id: regions.second.id
     )
 
@@ -283,7 +313,6 @@ org2 = Org.create!(
                   role: :cr
       )
       cr_person = cr_user.create_new_person
-      
       patient = cr_person.create_new_patient
       patient.update!(
         intake_date: 3.days.ago,

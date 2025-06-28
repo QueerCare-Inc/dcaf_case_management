@@ -17,8 +17,8 @@ module AttributeDisplayable
     "#{fulfillment.procedure_date}"
   end
 
-  def email_display
-    return nil unless email.present?
-    "#{email}"
-  end
+  # def email_display
+  #   return nil unless email.present?
+  #   "#{email}"
+  # end
 end

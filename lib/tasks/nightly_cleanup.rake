@@ -18,8 +18,9 @@ task nightly_cleanup: :environment do
 
   Org.all.each do |org|
     ActsAsTenant.with_tenant(org) do
-      User.all.each { |user| user.clean_call_list_between_shifts }
-      puts "#{Time.now} -- cleared all recently reached patients from call lists for org #{org.name}"
+      # ToDo: add inactive patient clean up
+      # User.all.each { |user| user.clean_call_list_between_shifts }
+      # puts "#{Time.now} -- cleared all recently reached patients from call lists for org #{org.name}"
 
       User.disable_inactive_users
       puts "#{Time.now} -- locked accounts of users who have not logged in since #{User::TIME_BEFORE_DISABLED_BY_ORG.ago} for org #{org.name}"

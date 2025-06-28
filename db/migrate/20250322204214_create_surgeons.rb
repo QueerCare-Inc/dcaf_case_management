@@ -4,14 +4,14 @@ class CreateSurgeons < ActiveRecord::Migration[7.2]
       t.timestamps
 
       # belongs to
-      t.string :region, null: false
+      t.string :region
       t.references :region, foreign_key: true, null: false
       t.references :org, foreign_key: true, null: false
 
       # attributes
       t.string :name, null: false
       t.string :email
-      t.string :phone, null: false
+      t.string :phone_number, limit: 15, null: false
       t.string :procedure_types, array: true, default: []
       t.string :insurances, array: true, default: []
 

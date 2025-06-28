@@ -5,16 +5,17 @@ module EventsHelper
     "#{kit} fa-#{event.icon}"
   end
 
-  def entry_text(event)
-    time = event.created_at.display_time.to_s
-    care_coordinator = event.care_coordinator_name
-    pt_link = link_to event.patient_name,
-                      edit_patient_path(event.patient_id)
-    call_list_link = link_to "(#{t('events.add_to_call_list')})",
-                             add_patient_path(event.patient_id),
-                             method: :patch,
-                             remote: true
+  # ToDo: revisit this to conver from call to care coordinate
+  # def entry_text(event)
+  #   time = event.created_at.display_time.to_s
+  #   care_coordinator = event.care_coordinator_name
+  #   pt_link = link_to event.patient_name,
+  #                     edit_patient_path(event.patient_id)
+  #   call_list_link = link_to "(#{t('events.add_to_call_list')})",
+  #                            add_patient_path(event.patient_id),
+  #                            method: :patch,
+  #                            remote: true
 
-    safe_join [time, '--', care_coordinator, pt_link, call_list_link], ' '
-  end
+  #   safe_join [time, '--', care_coordinator, pt_link, call_list_link], ' '
+  # end
 end

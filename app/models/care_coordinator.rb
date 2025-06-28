@@ -1,10 +1,12 @@
 # Object representing core patient information and demographic data.
 class CareCoordinator < ApplicationRecord
+  acts_as_tenant :org
   has_many :patients, as: :can_patient
 
   # Concerns
   include PaperTrailable
   # include Notetakeable
+  include PersonSearchable
 
   # Callbacks
   after_destroy :destroy_associated
@@ -17,6 +19,7 @@ class CareCoordinator < ApplicationRecord
   # has_many :notes, as: :can_note #TODO: update the structure of notes or add new note type
   # has_many :shifts_volunteers
   has_many :shifts, through: :shifts_volunteers
+  # accepts_nested_attributes_for :shifts
 
   # Validations
   # Worry about uniqueness to tenant after porting region info.
@@ -51,6 +54,13 @@ class CareCoordinator < ApplicationRecord
     # NOTE: these relationships need to be defined first
     # Shift.where(care_coordinator_id: id).destroy_all # NOTE: this should be archived
     # QcHousing.where(care_coordinator_id: id).destroy_all
+  end
+
+  def search_care_coordinator(name_or_phone_str, regions: nil, search_limit: DEFAULT_SEARCH_LIMIT)
+    people = search(name_or_phone_str, regions, search_limit)
+    base = CareCoordinator
+    matches = base.where(person_id: people.id)
+    matches.order(updated_at: :desc)
   end
 
   def get_patients_list

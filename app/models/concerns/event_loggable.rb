@@ -2,17 +2,18 @@
 module EventLoggable
   extend ActiveSupport::Concern
 
-  included do
-    after_create -> { log_event(event_params) }, if: :call?
-  end
+  # ToDo: fix through converting to care coordinate
+  # included do
+  #   after_create -> { log_event(event_params) }, if: :call?
+  # end
 
   def log_event(params = {})
     Event.create!(params)
   end
 
   private
-
-  def call?
-    is_a?(Call) && can_call.is_a?(Patient)
-  end
+  # ToDo: fix through converting to care coordinate
+  # def call?
+  #   is_a?(Call) && can_call.is_a?(Patient)
+  # end
 end

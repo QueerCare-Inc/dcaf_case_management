@@ -9,6 +9,7 @@ class CreatePatients < ActiveRecord::Migration[7.2]
       # t.belongs_to :user #redundant??
       # t.belongs_to :person #redundant??
 
+      t.string :patient_status
       t.string :care_coordinator
 
       t.string :voicemail_preference, default: 'not_specified'
@@ -30,6 +31,8 @@ class CreatePatients < ActiveRecord::Migration[7.2]
 
       t.references :clinic, foreign_key: true
       t.references :last_edited_by, foreign_key: { to_table: :users }
+
+      t.integer :current_procedure_id
 
       t.timestamps
     end

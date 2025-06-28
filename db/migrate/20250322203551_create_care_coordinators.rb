@@ -34,6 +34,8 @@ class CreateCareCoordinators < ActiveRecord::Migration[7.2]
 
       # Same information as volunteers
       # t.string :region
+      t.string :care_coordinator_status
+      t.string :volunteer_status
       t.string :volunteer_types, array: true, default: []
       t.boolean :textable
       
