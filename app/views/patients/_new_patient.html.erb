@@ -3,11 +3,11 @@
 <%= bootstrap_form_with model: patient, local: true do |f| %>
   <div class="row">
     <div class="col">
-      <%= f.text_field :primary_phone,
-                       label: t('common.phone'),
-                       value: phone,
-                       required: true,
-                       pattern: "[0-9]{10}|[0-9]{3}\.[0-9]{3}\.[0-9]{4}|[0-9]{3}[-][0-9]{3}[-][0-9]{4}" %>
+      <%= f.telephone_field :primary_phone,
+                      label: t('common.phone_number'),
+                      value: phone_number,
+                      required: true
+                      %>
     </div>
     <div class="col-4">
       <%= f.text_field :name,

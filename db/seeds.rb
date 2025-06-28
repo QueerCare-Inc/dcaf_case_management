@@ -27,6 +27,15 @@ ActsAsTenant.without_tenant do
   Surgeon.destroy_all
   Reimbursement.destroy_all
 end
+
+def generate_central_office_code(area_code)
+  first_digit = rand(2..9).to_s
+  second_digit = rand(0..9).to_s
+  third_digit = rand(0..9).to_s
+  
+  return first_digit + second_digit + third_digit
+end
+
 def generate_random_us_phone_number
   us_area_codes = [
     '907',
