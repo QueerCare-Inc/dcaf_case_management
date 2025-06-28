@@ -1,10 +1,13 @@
 # Object representing core volunteer information and demographic data.
 class Volunteer < ApplicationRecord
+  acts_as_tenant :org
+  
   # Concerns
   include PaperTrailable
   # include Callable
   # include Notetakeable
   # include EventLoggable
+  include PersonSearchable
 
   # Callbacks
   after_destroy :destroy_associated
@@ -53,6 +56,13 @@ class Volunteer < ApplicationRecord
   #   CallListEntry.where(patient: self)
   #                .update(region_id: region_id, order_key: 999)
   # end
+
+  def search_volunteers(name_or_phone_str, regions: nil, search_limit: DEFAULT_SEARCH_LIMIT)
+    people = search(name_or_phone_str, regions, search_limit)
+    base = Volunteer
+    matches = base.where(person_id: people.id)
+    matches.order(updated_at: :desc)
+  end
 
   private
 

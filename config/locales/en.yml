@@ -262,11 +262,20 @@ en:
     locked: Locked
     new_patient_error: Errors prevented this patient from being saved - %{error}
     new_patient_save: A new patient has been successfully saved
+    new_person_error: Errors prevented this person from being saved - %{error}
+    new_person_save: A new person has been successfully saved
     patient_info_saved: Patient info successfully saved at %{timestamp}
     patient_removed_database: Patient successfully removed from database.
     patient_removed_database_error: Can't delete patients with pledges; please correct the patient record and try again.
     patient_save_error: Errors prevented this patient from being saved - %{error}
     patient_save_success: "%{patient} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set."
+    
+    person_info_saved: Person info successfully saved at %{timestamp}
+    person_removed_database: Person successfully removed from database.
+    person_removed_database_error: Can't delete people with pledges; please correct the person record and try again.
+    person_save_error: Errors prevented this person from being saved - %{error}
+    person_save_success: "%{person} has been successfully saved! Add notes and external pledges, confirm the hard pledge and the %{org} pledge amounts are the same, and you're set."
+    
     pledge_download_alert: You need to enter your name in the box to sign and download the pledge
     unlocked: Unlocked
     user_created: User created!

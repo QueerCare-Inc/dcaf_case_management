@@ -4,11 +4,26 @@ class DashboardsControllerTest < ActionDispatch::IntegrationTest
   before do
     @user = create :user
     @region = create :region
+
+    @user_patient = create :user,
+                           role: :cr,
+                           name: 'Susie Everyteen',
+                           primary_phone: '123-456-7890',
+                           email: 'susie@example.com',
+                           region: @region
+    @person = create :person,
+                     user_id: @user_patient.id,
+                     emergency_contact_phone: '333-444-5555',
+                     region_id: @region.id
     @patient = create :patient,
-                      name: 'Susie Everyteen',
-                      primary_phone: '123-456-7890',
-                      emergency_contact_phone: '333-444-5555',
-                      region: @region
+                      person_id: @person.id,
+                      region_id: @region.id
+
+    # @patient = create :patient,
+    #                   name: 'Susie Everyteen',
+    #                   primary_phone: '123-456-7890',
+    #                   emergency_contact_phone: '333-444-5555',
+    #                   region: @region
     sign_in @user
     choose_region @region
   end

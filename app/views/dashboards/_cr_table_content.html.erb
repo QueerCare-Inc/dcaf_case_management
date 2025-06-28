@@ -30,8 +30,8 @@
     </thead>
 
     <tbody id="<%= table_type %>_content">
-      <% patients.each do |patient| %>
-        <tr class="patient-data" id="<%= patient.id %>">
+      <% people.each do |person| %>
+        <tr class="person-data" id="<%= person.id %>">
           <% if local_assigns[:sortable] %>
             <td class="handle" scope="row">
               <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
@@ -40,31 +40,34 @@
             <td scope="row"><!-- spacer --></td>
           <% end %>
 
+          <%= base_user = User.where(id: person.user_id).first %>
+          <%= base_patient = Patient.where(person_id: person.id).first %>
           <td><%= base_user.primary_phone_display %></td> 
+          <td><%= link_to base_user.name, edit_patient_path(base_patient) %></td>
+          <td><%= base_user.email_display %></td>
 
 
           <% if table_type == 'assigned_cr' %>
-            <td><%= patient%>
+            <td><%= person%>
           <% end %>
 
-          <td><%= patient.intake_date.display_date %></td>
+          <td><%= base_patient.intake_date.display_date %></td>
 
 
-          <td><%= patient.status %></td>
-          <td><%= procedure_date_display patient %></td>
-          <td><%= patient.most_recent_note_display_text %> </td>
+          <td><%= procedure_date_display base_patient %></td>
+          <td><%= base_patient.most_recent_note_display_text %> </td>
 
           <% if table_type == 'completed_calls' || table_type == 'shared_cases' %>
             <td class="blank-td"></td>
           <% else %>
             <% if current_user.call_list_entries.map(&:patient_id).include?(patient.id) %>
               <td>
-                <%= link_to remove_patient_path(patient),
+                <%= link_to remove_patient_path(base_patient),
                             method: :patch,
                             data: { confirm: t('dashboard.table_content.remove_from_call_list_confirm',
-                                    name: patient.name) },
+                                    name: base_patient.name) },
                             aria: { label: t('dashboard.table_content.remove_from_call_list_confirm',
-                                    name: patient.name)},
+                                    name: base_patient.name)},
                             remote: true do %>
                   <i class="fas fa-xmark fa-fw text-danger" aria-hidden="true"></i>
                   <span class="sr-only">Remove call</span>
@@ -73,7 +76,7 @@
             <% else %>
               <td>
                 <%= link_to t('common.add'),
-                            add_patient_path(patient),
+                            add_patient_path(base_patient),
                             method: :patch,
                             remote: true %>
               </td>

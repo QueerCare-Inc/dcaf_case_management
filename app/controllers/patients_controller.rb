@@ -17,11 +17,12 @@ class PatientsController < ApplicationController
   end
 
   def create
-    patient = Patient.new patient_params
+    person = Person.new 
+    patient = Patient.new patient_params, person_id: person.id
 
     if patient.save
       flash[:notice] = t('flash.new_patient_save')
-      current_user.add_patient patient
+      current_user.add_new_patient patient
     else
       flash[:alert] = t('flash.new_patient_error', error: patient.errors.full_messages.to_sentence)
     end
@@ -57,11 +58,13 @@ class PatientsController < ApplicationController
   end
 
   def data_entry
-    @patient = Patient.new
+    @person = Person.new
+    @patient = Patient.new person_id: @person.id
   end
 
   def data_entry_create
-    @patient = Patient.new patient_params
+    @person = Person.new
+    @patient = Patient.new patient_params, person_id: @person.id
 
     if @patient.save
       flash[:notice] = t('flash.patient_save_success',
@@ -127,46 +130,45 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :name, :care_coordinator,
-    :procedure_date, :primary_phone, :pronouns, :status
+    # :name, 
+    :care_coordinator,
+    # :procedure_date, :primary_phone, :pronouns, 
+    :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
     :region_id,
-    :legal_name, :email,
-    :age, :race_ethnicity, :language, :voicemail_preference, :textable,
-    :city, :state, :county, :zipcode, :emergency_contact, :emergency_contact_phone,
-    :emergency_contact_relationship,
-    :employment_status, :income,
-    :household_size_adults, :household_size_children, :insurance, :referred_by,
-    :procedure_type,
+    :person_id,
+    :legal_name, 
+    :insurance, :referred_by,
     :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
-    { special_circumstances: [] },
     { in_case_of_emergency: [] },
     { emergency_contact_options: [] }
   ].freeze
 
-  PROCEDURE_INFORMATION_PARAMS = [
-    :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
-  ].freeze
+  # PROCEDURE_INFORMATION_PARAMS = [
+  #   :clinic_id, :surgeon_id, :procedure_type, :appointment_time, :multiday_appointment
+  # ].freeze
 
-  # Does this make sense for a one to many relationship?
-  PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
-    :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
-  ]
+  # # Does this make sense for a one to many relationship?
+  # PRACTICAL_SUPPORT_INFORMATION_PARAMS = [
+  #   :practical_support_id, :street_address, :city, :state, :zipcode, :phone, :required_services
+  # ]
 
-  FULFILLMENT_PARAMS = [
-    fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
-  ].freeze
+  # FULFILLMENT_PARAMS = [
+  #   fulfillment_attributes: [:id, :fulfilled, :procedure_date, :audited]
+  # ].freeze
 
-  OTHER_PARAMS = [:shared_flag, :intake_date, :practical_support_waiver].freeze
+  OTHER_PARAMS = [:shared_flag, :intake_date].freeze
 
   def patient_params
     permitted_params = [].concat(
-      PATIENT_DASHBOARD_PARAMS, PATIENT_INFORMATION_PARAMS,
-      PROCEDURE_INFORMATION_PARAMS, OTHER_PARAMS
+      PATIENT_DASHBOARD_PARAMS, 
+      PATIENT_INFORMATION_PARAMS,
+      # PROCEDURE_INFORMATION_PARAMS, 
+      OTHER_PARAMS
     )
-    permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
+    # permitted_params.concat(FULFILLMENT_PARAMS) if current_user.allowed_data_access?
     params.require(:patient).permit(permitted_params)
   end
 

@@ -6,8 +6,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   before do
     @user = create :user, role: 'admin'
     @user_2 = create :user, role: 'care_coordinator', name: 'Billy Everyteen'
-    @patient_1 = create :patient, name: 'Susan Everyteen'
-    @patient_2 = create :patient, name: 'Yolo Goat'
+    # @patient_1 = create :patient, name: 'Susan Everyteen'
+    # @patient_2 = create :patient, name: 'Yolo Goat'
+
+    @user_patient1 = create :user,
+                            role: :cr,
+                            name: 'Susie Everyteen',
+                            primary_phone: '123-456-7890',
+                            email: 'susie@example.com'
+    @person1 = create :person, user_id: @user_patient1.id
+    @patient_1 = create :patient, person_id: @person1.id
+
+    @user_patient2 = create :user,
+                            role: :cr,
+                            name: 'Yolo Goat',
+                            primary_phone: '123-456-7891',
+                            email: 'yolo@example.com'
+    @person2 = create :person, user_id: @user_patient2.id
+    @patient_2 = create :patient, person_id: @person2.id
 
     sign_in @user
   end

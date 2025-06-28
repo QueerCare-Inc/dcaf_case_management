@@ -10,14 +10,19 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     choose_region @region
     @clinic = create :clinic
-    @patient = create :patient,
-                      name: 'Susie Everyteen',
-                      primary_phone: '123-456-7890',
-                      emergency_contact_phone: '333-444-5555',
-                      region: @region,
-                      city: '=injected_formula'
+    @user_patient = create :user,
+                           role: :cr,
+                           name: 'Susie Everyteen',
+                           primary_phone: '123-456-7890',
+                           email: 'susie@example.com'
+    @person = create :person,
+                     user_id: @user_patient.id,
+                     emergency_contact_phone: '333-444-5555',
+                     city: '=injected_formula'
+    @patient = create :patient, person_id: @person.id
+
     @archived_patient = create :archived_patient,
-                               region: @region,
+                               region_id: @region.id,
                                intake_date: 400.days.ago
   end
 
@@ -188,7 +193,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       before do
         @date = 5.days.from_now.to_date
         @payload = {
-          procedure_date: @date.strftime('%Y-%m-%d'),
+          # procedure_date: @date.strftime('%Y-%m-%d'),
           name: 'Susie Everyteen 2',
           clinic_id: @clinic.id
         }
@@ -270,7 +275,7 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
     it 'should fail to save if initial call date is nil' do
       @test_patient[:intake_date] = nil
-      @test_patient[:procedure_date] = Date.tomorrow
+      # @test_patient[:procedure_date] = Date.tomorrow
       assert_no_difference 'Patient.count' do
         post data_entry_create_path, params: { patient: @test_patient }
         assert_response :success

@@ -53,6 +53,11 @@ class CareCoordinator < ApplicationRecord
     # QcHousing.where(care_coordinator_id: id).destroy_all
   end
 
+  def get_patients_list
+    base_patient = Patient
+    base_patient.where(care_coordinator_id: id)
+  end
+
   private
 
   # def shifts_length

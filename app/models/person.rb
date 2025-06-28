@@ -9,6 +9,7 @@ class Person < ApplicationRecord
   include AttributeDisplayable
   include EventLoggable
   # include UserTypeable
+  include PersonSearchable
   include PhoneCleanable
 
   # Callbacks

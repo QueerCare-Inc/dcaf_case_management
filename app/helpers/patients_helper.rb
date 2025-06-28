@@ -9,43 +9,6 @@ module PatientsHelper
     (0..6).map { |i| [t('patient.helper.day', count: i), i] }.unshift [nil, nil]
   end
 
-  def race_ethnicity_options
-    [nil,
-     [t('patient.helper.race.white_caucasian'),                  'White/Caucasian'],
-     [t('patient.helper.race.black_african_american'),           'Black/African-American'],
-     [t('patient.helper.race.hispanic_latino'),                  'Hispanic/Latino'],
-     [t('patient.helper.race.asian_south_asian'),                'Asian or South Asian'],
-     [t('patient.helper.race.native_hawaiian_pacific_islander'), 'Native Hawaiian or Pacific Islander'],
-     [t('patient.helper.race.native_american'),                  'Native American'],
-     [t('patient.helper.race.mixed_race_ethnicity'),             'Mixed Race/Ethnicity'],
-     [t('patient.helper.race.other'),                            'Other'],
-     [t('common.prefer_not_to_answer'),                          'Prefer not to answer']]
-  end
-
-  # TODO: how to i18n the Config?
-  def language_options(current_value = nil)
-    standard_options = [[t('patient.helper.language.English'), nil]]
-    # NOTE: don't check hide_standard_dropdown? here because we always want
-    # English to be available.
-    full_set = standard_options + Config.find_or_create_by(config_key: 'language').options
-
-    options_plus_current(full_set, current_value)
-  end
-
-  def voicemail_options(current_value = nil)
-    standard_options = [
-      [t('dashboard.helpers.voicemail_options.not_specified'), 'not_specified'],
-      [t('dashboard.helpers.voicemail_options.no'), 'no'],
-      [t('dashboard.helpers.voicemail_options.yes'), 'yes']
-    ]
-    full_set = Config.find_or_create_by(config_key: 'voicemail').options
-
-    # voicemail also exempt from hide_standard_dropdown? config
-    full_set.push(*standard_options)
-
-    options_plus_current(full_set, current_value)
-  end
-
   def referred_by_options(current_value = nil)
     standard_options = [
       nil,
@@ -74,18 +37,6 @@ module PatientsHelper
     options_plus_current(full_set, current_value)
   end
 
-  def employment_status_options
-    [
-      nil,
-      [t('patient.helper.employment.full_time'), 'Full-time'],
-      [t('patient.helper.employment.part_time'), 'Part-time'],
-      [t('patient.helper.employment.unemployed'), 'Unemployed'],
-      [t('patient.helper.employment.odd_jobs'), 'Odd jobs'],
-      [t('patient.helper.employment.student'), 'Student'],
-      [t('common.prefer_not_to_answer'), 'Prefer not to answer']
-    ]
-  end
-
   def insurance_options(current_value = nil)
     standard_options = [
       [t('patient.helper.insurance.none'), 'No insurance'],
@@ -99,131 +50,33 @@ module PatientsHelper
     options_plus_current(full_set, current_value)
   end
 
-  def procedure_type_options(current_value = nil)
-    procedure_type_options = Config.find_or_create_by(config_key: 'procedure_type').options
+  # def procedure_type_options(current_value = nil)
+  #   procedure_type_options = Config.find_or_create_by(config_key: 'procedure_type').options
 
-    return [] if procedure_type_options.blank?
+  #   return [] if procedure_type_options.blank?
 
-    options_plus_current([nil] + procedure_type_options, current_value)
+  #   options_plus_current([nil] + procedure_type_options, current_value)
 
-    # THIS SECTION CURRENTLY BREAKS THE PATIENT VIEW AND CONFIG MANAGEMENT
-    # standard_options = [
-    #   [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
-    #   [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
-    #   [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
-    #   [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
-    #   [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
-    #   [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
-    #   [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
-    # ]
-    # full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
-    # full_set.push(*standard_options) unless Config.hide_standard_dropdown
+  #   # THIS SECTION CURRENTLY BREAKS THE PATIENT VIEW AND CONFIG MANAGEMENT
+  #   # standard_options = [
+  #   #   [t('patient.procedure_information.procedure_type.ffs'), 'Facial Feminization'],
+  #   #   [t('patient.procedure_information.procedure_type.metoidioplasty'), 'Metoidioplasty'],
+  #   #   [t('patient.procedure_information.procedure_type.phalloplasty'), 'Phallloplasty'],
+  #   #   [t('patient.procedure_information.procedure_type.breast_augmentation'), 'Top Surgery, Breast Augmentation'],
+  #   #   [t('patient.procedure_information.procedure_type.breast_reduction'), 'Top Surgery, Breast Reduction'],
+  #   #   [t('patient.procedure_information.procedure_type.vaginoplasty'), 'Vaginoplasty'],
+  #   #   [t('patient.procedure_information.procedure_type.other'), 'Other (add to notes)']
+  #   # ]
+  #   # full_set = [nil] + Config.find_or_create_by(config_key: 'procedure_type').options
+  #   # full_set.push(*standard_options) unless Config.hide_standard_dropdown
 
-    # options_plus_current(full_set, current_value)
-  end
+  #   # options_plus_current(full_set, current_value)
+  # end
 
-  def income_options
-    [nil,
-     [t('patient.helper.income.under_10'), 'Under $9,999'],
-     [t('patient.helper.income.10_to_15'), '$10,000-14,999'],
-     [t('patient.helper.income.15_to_20'), '$15,000-19,999'],
-     [t('patient.helper.income.20_to_25'), '$20,000-24,999'],
-     [t('patient.helper.income.25_to_30'), '$25,000-29,999'],
-     [t('patient.helper.income.30_to_35'), '$30,000-34,999'],
-     [t('patient.helper.income.35_to_40'), '$35,000-39,999'],
-     [t('patient.helper.income.40_to_45'), '$40,000-44,999'],
-     [t('patient.helper.income.45_to_50'), '$45,000-49,999'],
-     [t('patient.helper.income.50_to_60'), '$50,000-59,999'],
-     [t('patient.helper.income.60_to_75'), '$60,000-74,999'],
-     [t('patient.helper.income.75_plus'), '$75,000 or more'],
-     [t('common.prefer_not_to_answer'), 'Prefer not to answer']]
-  end
-
-  def county_options(current_value = nil)
-    county_options = Config.find_or_create_by(config_key: 'county').options
-
-    return [] if county_options.blank?
-
-    options_plus_current([nil] + county_options, current_value)
-  end
-
-  def household_size_options
-    (0..10).map { |i| i }
-           .unshift([t('common.prefer_not_to_answer'), -1])
-           .unshift([nil, nil])
-  end
-
-  def clinic_options
-    clinics = Clinic.all.sort_by(&:name)
-    active_clinics = clinics.select(&:active)
-                            .map do |clinic|
-      [
-        t('patient.procedure_information.clinic_section.clinic_display', clinic_name: clinic.name,
-                                                                         city: clinic.city, state: clinic.state),
-        clinic.id,
-        { data: { medicaid: !!clinic.accepts_medicaid } }
-      ]
-    end
-                            .unshift nil
-
-    # Map inactives; if there are any, put in a breaker
-    inactive_clinics = clinics.reject(&:active)
-                              .map do |clinic|
-      [
-        t('patient.procedure_information.clinic_section.not_currently_working_with_org',
-          org: ActsAsTenant.current_tenant.name, clinic_name: clinic.name),
-        clinic.id,
-        { data: { naf: !!clinic.accepts_naf, medicaid: !!clinic.accepts_medicaid } }
-      ]
-    end
-    if inactive_clinics.count > 0
-      inactive_clinics.unshift ["--- #{t('patient.procedure_information.clinic_section.inactive_clinics').upcase} ---",
-                                nil, { disabled: true }]
-    end
-
-    active_clinics | inactive_clinics
-  end
-
-  def surgeon_options
-    surgeons = Surgeon.all.sort_by(&:name)
-    active_surgeons = surgeons.select(&:active)
-                              .map do |surgeon|
-      [
-        t('patient.procedure_information.surgeon_section.surgeon_display', surgeon_name: surgeon.name),
-        surgeon.id
-      ]
-    end
-                            .unshift nil
-
-    # Map inactives; if there are any, put in a breaker
-    inactive_surgeons = surgeons.reject(&:active)
-                                .map do |surgeon|
-      [
-        t('patient.procedure_information.surgeon_section.not_currently_working_with_org',
-          org: ActsAsTenant.current_tenant.name, surgeon_name: surgeon.name),
-        surgeon.id
-      ]
-    end
-    if inactive_surgeons.count > 0
-      inactive_surgeons.unshift ["--- #{t('patient.procedure_information.surgeon_section.inactive_surgeons').upcase} ---",
-                                 nil, { disabled: true }]
-    end
-
-    active_surgeons | inactive_surgeons
-  end
-
-  def disable_continue?(patient)
-    patient.pledge_info_present? ? 'disabled="disabled"' : ''
-  end
-
-  def pledge_limit_help_text_options
-    Config.find_or_create_by(config_key: 'pledge_limit_help_text').options
-  end
-
-  def state_options(current_state)
-    StateGeoTools.state_codes.map { |code| [code, code] }.unshift([nil, nil])
-                 .push([current_state, current_state]).uniq
-  end
+  # TODO: revisit this. Is it necessary?
+  # def disable_continue?(patient)
+  #   patient.pledge_info_present? ? 'disabled="disabled"' : ''
+  # end
 
   # helper function for use with `options_for_select`
   # adds `current_value` to `options` if it's not already there
@@ -245,15 +98,16 @@ module PatientsHelper
     Region.all.sort_by(&:name).map { |x| [x.name, x.id] }
   end
 
-  def procedure_date_display(patient)
-    return nil unless patient.procedure_date.present?
+  # TODO: revisit
+  # def procedure_date_display(patient)
+  #   return nil unless patient.procedure_date.present?
 
-    day = patient.procedure_date.strftime('%m/%d/%Y')
-    if patient.appointment_time
-      time = patient.appointment_time.strftime('%l:%M %p').strip
-      day = "#{day} @ #{time}"
-    end
-    day = "#{day} (#{t('patient.procedure_information.clinic_section.multi_day')})" if patient.multiday_appointment?
-    day
-  end
+  #   day = patient.procedure_date.strftime('%m/%d/%Y')
+  #   if patient.appointment_time
+  #     time = patient.appointment_time.strftime('%l:%M %p').strip
+  #     day = "#{day} @ #{time}"
+  #   end
+  #   day = "#{day} (#{t('patient.procedure_information.clinic_section.multi_day')})" if patient.multiday_appointment?
+  #   day
+  # end
 end

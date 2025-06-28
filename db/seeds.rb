@@ -176,6 +176,11 @@ org2 = Org.create!(
                   password_confirmation: password,
                   role: :care_coordinator
     )
+    cc_person2 = cc_user2.create_new_person
+    care_coordinator2 = cc_person2.create_new_care_coordinator
+    care_coordinator2.update!(
+      volunteer_types: ["transportation", "in-person"]
+    )
 
     # finance_user = User.create! name: "testuser five",
     #                       email: "test5@example.com",
@@ -193,47 +198,39 @@ org2 = Org.create!(
                           password_confirmation: password,
                           role: :coord_admin
 
-    # create people for different users
-    cc_person1 = cc_user1.create_new_person
-
-    cc_person2 = cc_user2.create_new_person
-
-    care_coordinator2 = cc_person1.create_new_care_coordinator
-    care_coordinator2.update!(
-      volunteer_types: ["remote", "transportation"]
-    )
-                  
-    care_coordinator3 = cc_person2.create_new_care_coordinator
-    care_coordinator3.update!(
-      volunteer_types: ["transportation", "in-person"]
-    )
-                  
+     
     # Default to cc_user1 as the actor
     PaperTrail.request.whodunnit = cc_user1.id
 
     # Create a few clinics
-    Clinic.create!(
+    clinic1 = Clinic.create!(
       name: "Sample Clinic 1 - DC", 
       street_address: "1600 Pennsylvania Ave",
       city: "Washington", state: "DC", zip: "20500",
+      # phone_number: generate_random_us_phone_number,
       region_id: regions.first.id
     )
-    Clinic.create!(
+    clinic2 = Clinic.create!(
       name: "Sample Clinic 2 - VA", 
       street_address: "1400 Defense",
       city: "Arlington", state: "VA", zip: "20301",
+      # phone_number: generate_random_us_phone_number,
       region_id: regions.second.id
     )
-    Clinic.create!(
+    clinic3 = Clinic.create!(
       name: "Sample Clinic with NAF", 
       street_address: "815 V Street NW",
       city: "Washington", state: "DC", zip: "20001",
+      # phone_number: generate_random_us_phone_number,
       region_id: regions.first.id
     )
-    Clinic.create!(
+    clinic4 = Clinic.create!(
       name: "Sample Clinic without NAF", 
       street_address: "1811 14th Street NW",
       city: "Washington", state: "DC", zip: "20009", accepts_medicaid: true,
+      # phone_number: generate_random_us_phone_number,
+      region_id: regions.second.id
+    )
       region_id: regions.second.id
     )
 

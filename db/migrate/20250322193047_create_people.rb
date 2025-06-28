@@ -4,20 +4,17 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       t.timestamps
 
       # belongs to
-      t.references :user, foreign_key: true, null: false
+      t.references :user, foreign_key: true #, null: false 
+      #allow for new patients to be created without a user id (to be linked later)
       t.references :region, foreign_key: true
       t.references :org, foreign_key: true
-
-      # t.belongs_to :user #redundant??
-
-      # # from user
-      # [
-      #   :name, :email, :primary_phone, :pronouns, :id
-      # ].each do |clm|
-      #   t.references :user, foreign_key: { to_table: :user, column: clm} 
-      # end
-
+      
       # new
+      t.string :name, null: false
+      t.string :primary_phone, default: 555-555-5555, limit: 15, null: false # E.164 format max length is 15
+      t.string :pronouns
+      t.string :email,              null: false, default: ""
+      
       t.string :identifier
       t.string :emergency_contact
       t.string :emergency_contact_phone, limit: 15
@@ -33,11 +30,13 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       t.integer :household_size_children
       t.integer :household_size_adults
       t.string :income
-      t.string :status
+      t.string :person_status
       t.string :special_circumstances, array: true, default: []
       t.boolean :textable
     end
-    add_index :people, [:user_id, :region_id, :org_id], unique: true
+    add_index :people, [:user_id, :region_id, :org_id] #, unique: true
+    add_index :people, [:email, :org_id, :region_id], unique: true
+    add_index :people, [:primary_phone, :org_id, :region_id], unique: true
     # add_index :people, :name
     # add_index :people, :emergency_contact_phone
     # add_index :people, :emergency_contact

@@ -109,6 +109,10 @@ class Patient < ApplicationRecord
     end
     all_versions.sort_by(&:created_at).reverse
   end
+  def get_person
+    base_person = Person
+    base_person.where(id: person_id)
+  end
 
   private
 

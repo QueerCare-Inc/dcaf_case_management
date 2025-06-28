@@ -182,10 +182,39 @@ class User < ApplicationRecord
   end
 
   def create_new_person
+    Person.create!(
+      name: name,
       primary_phone: primary_phone,
+      email: email,
       user_id: id,
       region_id: region_id,
       org_id: org_id
+    )
+  end
+
+  def add_new_patient(new_patient_form)
+    temporary_password = 'TransRightsAreHumanRights1234'
+    @user = User.create!(
+                  name: new_patient_form.name, 
+                  email: new_patient_form.email,
+                  primary_phone: new_patient_form.primary_phone, 
+                  region: new_patient_form.instance_variable_get(:@region),
+                  region_id: new_patient_form.region_id,
+                  password: temporary_password, 
+                  password_confirmation: temporary_password,
+                  role: :cr
+    )
+    @person = new_patient_form.instance_variable_get(:@person)
+    @person.update(user_id: @user.id)
+    @person.save
+    @patient = new_patient_form.instance_variable_get(:@patient)
+    @patient.update(user_id: @user.id, person_id: @person.id)
+    @patient.save
+    @procedure = new_patient_form.instance_variable_get(:@procedure)
+    @procedure.update(person_id: @person.id, patient_id: @patient.id)
+    @procedure.save
+  end
+
   def primary_phone_display
     return nil unless primary_phone.present?
     "#{primary_phone[1..3]}-#{primary_phone[4..6]}-#{primary_phone[7..10]}"
