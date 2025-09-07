@@ -4,7 +4,7 @@ $('#new_care_requests_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.new_care_requests"),
                                           table_type: "new_care_requests_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'new_care_request'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:new_care_request]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
@@ -13,7 +13,7 @@ $('#assigned_care_requests_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.assigned_care_requests"),
                                           table_type: "assigned_care_requests_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'coordinator_assigned'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:coordinator_assigned]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
@@ -22,7 +22,7 @@ $('#intake_complete_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.intake_complete"),
                                           table_type: "intake_complete_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'intake_complete'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:intake_complete]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
@@ -31,7 +31,7 @@ $('#active_care_requests_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.active_care_requests"),
                                           table_type: "active_care_requests_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'accepted_care_request'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:accepted_care_request]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
@@ -40,7 +40,7 @@ $('#procedure_confirmed_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.procedure_confirmed"),
                                           table_type: "procedure_confirmed_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'procedure_confirmed'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:procedure_confirmed]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
@@ -49,9 +49,13 @@ $('#under_care_list').append(
   '<%= escape_javascript(render partial: "dashboards/table_content",
                                 locals: { title: t("dashboard.partial_titles.under_care"),
                                           table_type: "under_care_list",
-                                          care_requests: current_user.find_care_request_by_status(current_region, 'under_care'),
+                                          care_requests: current_user.find_care_request_by_status(current_region, Procedure.care_statuses[:under_care]),
                                           sortable: true,
                                           autosortable: true }) %>'
 );
 
 $('#search_results_shell').hide();
+
+$(".new-care_request").modal('hide')
+$('body').removeClass('modal-open')
+$('.modal-backdrop').remove()

@@ -6,9 +6,12 @@ class Procedure < ApplicationRecord
   include PaperTrailable
   include Shareable
   include Notetakeable
+  include AttributeDisplayable
+  include Statusable
+  include ProcedureTypeable
+  include CareAddressListable
 
   # Callbacks
-
 
   # Relationships
   belongs_to :region
@@ -20,17 +23,36 @@ class Procedure < ApplicationRecord
   has_many :reimbursements, as: :can_reimburse
   # has_many :notes, as: :can_note
 
-  # enum :procedure_type, {
-  #   not_specified: :not_specified, #0,
-  #   mastectomy: :mastectomy, #1,
-  #   breast_augmentation: :breast_augmentation, #2,
-  #   metoidioplasty: :metoidioplasty, #3,
-  #   vaginoplasty: :vaginoplasty, #4,
-  #   phalloplasty: :phalloplasty, #5,
-  #   facial_feminization: :facial_feminization, #6,
-  #   facial_masculinization: :facial_masculinization, #7,
-  #   other: :other, #99
-  # }
+  enum :procedure_type, {
+    not_specified: 0,
+    mastectomy: 1,
+    breast_augmentation: 2,
+    breast_reduction: 3,
+    hysterectomy: 4,
+    orchiectomy: 5,
+    vaginectomy: 6,
+    metoidioplasty: 7,
+    vaginoplasty: 8,
+    phalloplasty: 9,
+    facial_feminization: 10,
+    facial_masculinization: 11,
+    other: 99
+  }
+
+  enum :care_status, {
+    new_care_request: 0,
+    coordinator_assigned: 1,
+    intake_complete: 2,
+    accepted_care_request: 3,
+    procedure_confirmed: 4,
+    under_care: 5,
+    care_complete: 6,
+    rejected_care_request: 7,
+    archived: 8
+  }
+
+  validates :procedure_type, presence: true, inclusion: { in: Procedure.procedure_types }
+  validates :care_status, presence: true, inclusion: { in: Procedure.care_statuses }
 
   # Validations
   # Worry about uniqueness to tenant after porting region info.
@@ -38,20 +60,14 @@ class Procedure < ApplicationRecord
   validates :patient,
             :region,
             :procedure_date,
-            :procedure_type,
-            :care_status,
             presence: true
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/
   validate :confirm_appointment_after_intake
 
-  validates :procedure_type, length: { maximum: 150 }
-
   validate :services_length
   validate :reimbursements_length
-  validate :care_progress_length
 
   # Methods
-
   def okay_to_destroy?
     false
   end
@@ -86,14 +102,14 @@ class Procedure < ApplicationRecord
   #   versions.where(updated_at: 6.days.ago..)
   # end
 
-  # def all_versions(include_fulfillment)
-  #   all_versions = versions || []
-  #   all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
-  #   if include_fulfillment
-  #     all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
-  #   end
-  #   all_versions.sort_by(&:created_at).reverse
-  # end
+  def all_versions(include_fulfillment)
+    all_versions = versions || []
+    all_versions += practical_supports.includes(versions: [:item, :user]).map(&:versions).reduce(&:+) || []
+    if include_fulfillment
+      all_versions += fulfillment.versions.includes(fulfillment.versions.count > 1 ? [:item, :user] : []) || []
+    end
+    all_versions.sort_by(&:created_at).reverse
+  end
 
   # Procedure Status Validation
   # care_progress
@@ -108,37 +124,6 @@ class Procedure < ApplicationRecord
   #   archived
   # TODO: add others?
 
-  def validate_care_progress_status?
-    # debugger
-    if care_progress[7]
-      care_status == 'rejected_care_request'
-    elsif care_progress[8]
-      care_status == 'archived'
-    elsif care_progress[0] && care_progress.values_at(1..-1).none?
-      care_status == 'new_care_request'
-    elsif care_progress.values_at(0..1).all? && care_progress.values_at(2..-1).none?
-      care_status == 'coordinator_assigned'
-    elsif care_progress.values_at(0..2).all? && care_progress.values_at(3..-1).none?
-      care_status == 'intake_complete'
-    elsif care_progress.values_at(0..3).all? && care_progress.values_at(4..-1).none?
-      care_status == 'accepted_care_request'
-    elsif care_progress.values_at(0..4).all? && care_progress.values_at(5..-1).none?
-      care_status == 'procedure_confirmed'
-    elsif care_progress.values_at(0..5).all? && care_progress.values_at(6..-1).none?
-      care_status == 'under_care'
-    elsif care_progress.values_at(0..6).all?
-      care_status == 'care_complete'
-    end
-  end
-
-  private
-
-  def confirm_appointment_after_intake
-    return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
-
-    errors.add(:procedure_date, 'must be after date of intake')
-  end
-
   def get_patient
     Patient.where(id: patient_id)
   end
@@ -148,21 +133,89 @@ class Procedure < ApplicationRecord
     Care_Coordinator.where(id: patient.care_coordinator_id).id
   end
 
-  # def clean_fields
-  #   emergency_contact_phone.gsub!(/\D/, '') if emergency_contact_phone
-  #   emergency_contact.strip! if emergency_contact
-  #   emergency_contact_relationship.strip! if emergency_contact_relationship
+  def get_clinic
+    Clinic.where(id: clinic_id).first
+  end
 
-  #   # add dash if needed
-  #   zipcode.gsub!(/(\d{5})(\d{4})/, '\1-\2') if zipcode
-  # end
+  def create_new_care_address
+    CareAddress.new(
+      org_id: org_id,
+      region_id: region_id,
+      patient_id: patient_id,
+      procedure_id: id,
+      street_address: '',
+      city: '',
+      state: '',
+      zip: '00000',
+      phone_number: '+15555555555',
+      start_date: procedure_date + 1.day,
+      end_date: procedure_date + 1.month
+    )
+  end
 
-  # def self.unconfirmed_practical_support(region)
-  #   Procedure.distinct
-  #            .where(region: region)
-  #            .joins(:practical_supports)
-  #            .where({ practical_supports: { confirmed: false }, created_at: 3.months.ago.. })
-  # end
+  def create_new_shift(care_address_id)
+    Shift.new(
+      org_id: org_id,
+      region_id: region_id,
+      patient_id: patient_id,
+      care_address_id: care_address_id,
+      procedure_id: id,
+      type: 'other',
+      services: [],
+      start_time: DateTime.now,
+      end_time: DateTime.now + 1.hour
+    )
+  end
+
+  # General shift times
+  # # 1. Morning: 8:00 AM - 12:00 PM
+  # services: personal_care, meals, chores, grocery_shopping, prescriptions, transportation, companionship, other
+  # # 2. Afternoon: 12:00 PM - 4:00 PM
+  # services: personal_care, meals, chores, grocery_shopping, prescriptions, transportation, companionship, other
+  # # 3. Evening: 4:00 PM - 8:00 PM
+  # services: personal_care, meals, chores, grocery_shopping, prescriptions, transportation, companionship, other
+  # # 4. Overnight: 8:00 PM - 8:00 AM
+  # services: personal_care, companionship, other
+
+  def generate_shifts
+    for care_address in care_addresses
+      next unless care_address.start_date.present? && care_address.end_date.present?
+
+      # Create a shift for each care address
+      for date_now in care_address.start_date..care_address.end_date
+        for start_time, end_time in [[Time.zone.parse('08:00'), Time.zone.parse('12:00')],
+                                     [Time.zone.parse('12:00'), Time.zone.parse('16:00')],
+                                     [Time.zone.parse('16:00'), Time.zone.parse('20:00')]]
+
+          shift = create_new_shift(care_address.id)
+          shift.services = services && %w[personal_care meals chores grocery_shopping prescriptions
+                                          transportation companionship other]
+          shift.start_time = date_now.change(hour: start_time.hour, min: start_time.min)
+          shift.end_time = date_now.change(hour: end_time.hour, min: end_time.min)
+          shift.save
+        end
+        next unless date_now != care_address.end_date
+
+        # Create an overnight shift if the end date is not the same as the start date
+        shift = create_new_shift(care_address.id)
+        shift.services = services && %w[personal_care companionship other]
+        shift.start_time = date_now.change(hour: 20, min: 0) # 8:00 PM
+        shift.end_time = (date_now + 1.day).change(hour: 8, min: 0) # 8:00 AM next day
+        shift.save
+      end
+      # true if shifts.present?
+      # false if shifts.empty?
+    end
+    false
+  end
+
+  private
+
+  def confirm_appointment_after_intake
+    return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
+
+    errors.add(:procedure_date, 'must be after date of intake')
+  end
 
   # This is intended to protect against saving maliscious data sent via an edited request. It should
   # not be possible to trigger errors here via the UI.
@@ -184,10 +237,4 @@ class Procedure < ApplicationRecord
       errors.add(:reimbursements, 'is invalid') if value && value.length > 50
     end
   end
-
-  def care_progress_length
-    errors.add(:care_progress, 'is invalid') unless care_progress.length <= 10
-  end
-
-  
 end

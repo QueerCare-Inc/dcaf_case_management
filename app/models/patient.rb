@@ -23,10 +23,12 @@ class Patient < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :user, optional: true
   has_many :notes, as: :can_note
-  has_many :care_coordinate_entries, dependent: :destroy
+  # has_many :care_coordinate_entries, dependent: :destroy
   has_one :fulfillment, as: :can_fulfill
-  has_many :procedures
+  has_many :procedures, dependent: :destroy
+  # has_many :care_request_list_entries, dependent: :destroy
   accepts_nested_attributes_for :procedures
+  belongs_to :last_edited_by, class_name: 'User', inverse_of: nil, optional: true
 
   # Enable mass posting in forms
   accepts_nested_attributes_for :fulfillment
@@ -70,8 +72,8 @@ class Patient < ApplicationRecord
   # end
 
   def update_care_request_list_regions
-    CareRequestListEntry.where(patient: self, procedure_id: self.current_procedure_id)
-                 .update(region_id: region_id, order_key: 999)
+    CareRequestListEntry.where(patient: self, procedure_id: current_procedure_id)
+                        .update(region_id: region_id, order_key: 999)
   end
 
   def has_in_case_of_emergency
@@ -103,7 +105,6 @@ class Patient < ApplicationRecord
     all_versions.sort_by(&:created_at).reverse
   end
 
-
   def get_person
     base_person = Person
     base_person.where(id: person_id)
@@ -115,17 +116,16 @@ class Patient < ApplicationRecord
       region_id: region_id,
       person_id: person_id,
       patient_id: id,
-      procedure_date: Date.today,
-      procedure_type: :other,
-      care_status: :new_care_request
+      procedure_date: Date.today + 1.month,
+      procedure_type: Procedure.procedure_types[:other],
+      care_status: Procedure.care_statuses[:new_care_request]
     )
   end
 
   def procedure_search(search_limit: 5)
-      
     base_procedure = Procedure
     procedure_matches = base_procedure.where(patient_id: id)
-    
+
     procedure_matches.limit(search_limit) if search_limit.present?
   end
 
@@ -135,21 +135,34 @@ class Patient < ApplicationRecord
 
   def update_current_procedure_id
     base_procedure = procedure_search
-    future_procedures = base_procedure.where('procedure_date > ?', DateTime.now)
-    # ToDo: add a way to remove procedures that were an error
+    future_procedures = base_procedure.where('procedure_date >= ?', DateTime.now)
+    # TODO: add a way to remove procedures that were an error
     current_procedure = future_procedures.first
-    if current_procedure != nil
-      self.current_procedure_id = current_procedure.id
-    end
+    return if current_procedure.nil?
+
+    self.current_procedure_id = current_procedure.id
   end
 
   def get_current_procedure_id
     update_current_procedure_id
-    return current_procedure_id
+    current_procedure_id
+  end
+
+  def get_current_procedure
+    update_current_procedure_id
+    return Procedure.find_by(id: current_procedure_id) if current_procedure_id.present?
+
+    nil
+  end
+
+  def get_all_procedures
+    base_procedure = Procedure
+    base_procedure.where(patient_id: id).order(procedure_date: :asc)
   end
 
   def intake_date_display
     return nil unless intake_date.present?
+
     # "#{intake_date.display_date}"
     intake_date.display_date
   end

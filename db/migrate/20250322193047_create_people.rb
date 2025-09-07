@@ -10,16 +10,10 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       t.references :org, foreign_key: true
       
       # new
-      t.string :name, null: false
-      t.string :primary_phone, default: 555-555-5555, limit: 15, null: false # E.164 format max length is 15
-      t.string :pronouns
-      t.string :email,              null: false, default: ""
-      
       t.string :identifier
       t.string :emergency_contact
       t.string :emergency_contact_phone, limit: 15
       t.string :emergency_contact_relationship
-      # t.string :region #, null: false
       t.string :language
       t.integer :age
       t.string :city
@@ -34,12 +28,7 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       t.string :special_circumstances, array: true, default: []
       t.boolean :textable
     end
-    add_index :people, [:user_id, :region_id, :org_id] #, unique: true
-    add_index :people, [:email, :org_id, :region_id], unique: true
-    add_index :people, [:primary_phone, :org_id, :region_id], unique: true
-    # add_index :people, :name
-    # add_index :people, :emergency_contact_phone
-    # add_index :people, :emergency_contact
+    add_index :people, [:user_id, :region_id, :org_id]
     add_index :people, :identifier
   end
 end

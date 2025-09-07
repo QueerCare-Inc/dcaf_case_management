@@ -1,5 +1,4 @@
-<!-- locals: title, table_type (for div id and tbody div id), pregnancies, sortable, autosortable -->
-
+<!-- locals: title, table_type (for div id and tbody div id), procedures, sortable, autosortable -->
 <div id="<%= table_type %>" class="margin-bottom mt-4">
   <h1 class="border-bottom title">
     <%= title %>
@@ -47,7 +46,6 @@
           <% else %>
             <td>
               <%= link_to t('common.add'),
-                          # add_patient_path(base_patient),
                           add_care_request_path(base_patient),
                           method: :patch,
                           remote: true %>

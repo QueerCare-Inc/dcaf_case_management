@@ -12,8 +12,8 @@ class DashboardsController < ApplicationController
   def search
     @results = if params[:search].present?
                  eager_loaded_patients.search params[:search],
-                                                       regions: [current_region || Region.all],
-                                                       person_subtype: Patient
+                                              regions: [current_region || Region.all],
+                                              person_subtype: Patient
                else
                  []
                end
@@ -23,11 +23,11 @@ class DashboardsController < ApplicationController
     @today = Time.zone.today.to_date
     @phone_number = searched_for_phone?(params[:search]) ? params[:search] : ''
     @name = searched_for_name?(params[:search]) ? params[:search] : ''
-    
+
     @new_patient_form = NewPatientForm.new
     @email = ''
     @procecure_date = Time.zone.tomorrow.to_date
-    @procedure_type = nil
+    @procedure_type = Procedure.procedure_types[:not_specified]
 
     respond_to { |format| format.js }
   end

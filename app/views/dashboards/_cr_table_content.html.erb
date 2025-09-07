@@ -54,8 +54,9 @@
           <td><%= base_patient.intake_date.display_date %></td>
 
 
-          <% current_procedure = Procedure.where(id: base_patient.current_procedure_id) %>
-          <td><%= current_procedure.care_status %></td>
+          <%= current_procedure = Procedure.where(id: base_patient.current_procedure_id) %>
+          <td><%= current_procedure.status_key_text %></td>
+          
           <td><%= procedure_date_display base_patient %></td>
           <td><%= base_patient.most_recent_note_display_text %> </td>
 

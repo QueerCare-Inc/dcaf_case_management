@@ -5,7 +5,7 @@
 </div>
 
 <div id="patient_detail" class="row">
-  <div id="menu" class="col-3 mt-3">
+  <div id="menu" class="col-2 mt-3">
     <%= render 'patients/menu', patient: @patient %>
   </div>
 
@@ -13,9 +13,9 @@
     <div id="patient_information" class="patient-info tab-pane active">
       <%= render 'patients/patient_information', patient: @patient %>
     </div>
-
+    
     <div id="procedure_information" class="procedure-info tab-pane">
-      <%= render 'patients/procedure_information', patient: @patient %>
+      <%= render 'procedures/procedure_information', patient: @patient %>
     </div>
 
     <div id="change_log" class="change-log tab-pane">
@@ -26,10 +26,9 @@
       <%= render 'patients/notes', patient: @patient, note: @note %>
     </div>
 
-    <% unless Config.hide_practical_support? %>
     <div id="practical_support" class="practical_support tab-pane">
-      <%= render 'patients/practical_support', patient: @patient, note: @note %>
+      <%= render 'practical_supports/practical_support', patient: @patient, procedure: @procedure, note: @note %>
     </div>
-    <% end %>
+    
   </div>
 </div>

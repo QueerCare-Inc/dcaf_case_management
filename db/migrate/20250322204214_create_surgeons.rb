@@ -12,7 +12,7 @@ class CreateSurgeons < ActiveRecord::Migration[7.2]
       t.string :name, null: false
       t.string :email
       t.string :phone_number, limit: 15, null: false
-      t.string :procedure_types, array: true, default: []
+      t.integer :procedure_type_list, array: true, default: []
       t.string :insurances, array: true, default: []
 
       t.boolean :active, null: false, default: true
@@ -21,7 +21,7 @@ class CreateSurgeons < ActiveRecord::Migration[7.2]
       # procedures, clinics
     end
     add_index :surgeons, [:name, :org_id], unique: true
-    add_index :surgeons, :procedure_types
+    add_index :surgeons, :procedure_type_list, using: :gin
     add_index :surgeons, :insurances
     add_index :surgeons, :active
   end

@@ -1,0 +1,25 @@
+<div id="procedure_information_content">
+  <%= bootstrap_form_with model: patient,
+                          html: { id: 'procedure-information-form-1' },
+                          local: false,
+                          method: 'patch',
+                          class: 'edit_patient' do |f| %>    
+    <div class="col-sm-12">
+      <%= render partial: 'procedures/procedure',
+                  locals: {
+                        procedure: patient.get_current_procedure,
+                        } %>
+    </div>
+
+    <div class="col-sm-12">
+      <%= render partial: 'procedures/table_content',
+                  locals: {
+                        title: t('procedure.dashboard.partial_titles.procedure_list'),
+                        table_type: 'procedure_list',
+                        procedures: patient.get_all_procedures,
+                        sortable: true,
+                        autosortable: true
+                        } %>
+    </div>
+  <% end %>
+</div>

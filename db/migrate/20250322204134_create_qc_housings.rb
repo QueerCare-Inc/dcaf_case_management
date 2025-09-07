@@ -20,7 +20,7 @@ class CreateQcHousings < ActiveRecord::Migration[7.2]
       t.string :phone_number, limit: 15, null: false
       t.numeric :coordinates, array: true
 
-      t.string :accessability
+      t.string :accessibility
       t.string :availabilities, array: true, default: []
 
       # has many

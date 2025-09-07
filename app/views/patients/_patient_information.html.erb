@@ -1,12 +1,13 @@
 <div id="patient_information_content">
-  <h2><%= t 'patient.information.title' %></h2>
+  <h2><%= t 'person.information.title' %></h2>
 
   <%= bootstrap_form_with model: patient,
                           html: { id: 'patient_information_form' },
                           local: false,
                           method: 'patch',
                           class: 'edit_patient' do |f| %>
-
+    <% base_person = Person.where(id: patient.person_id).first %>
+    <% base_user = User.where(id: patient.user_id).first %>
     <div class="row">
       <div class="col info-form-left">
         <% if current_user.admin? %>
@@ -14,13 +15,13 @@
         <% end %>
 
         <%= f.text_field :legal_name,
-            label: t('patient.information.legal_name')
+            label: t('person.information.legal_name')
         %>
 
         <% if Config.show_patient_identifier? %>
           <%= f.text_field :identifier,
             readonly: true,
-            label: t('patient.information.identifier'),
+            label: t('person.information.identifier'),
             label_class: 'tooltip-header-input',
             data: { 'tooltip-text': patient_identifier_help_text } %>
         <% end %>
@@ -29,23 +30,23 @@
 
         <%= f.select :race_ethnicity,
                      options_for_select(race_ethnicity_options,
-                                        patient.race_ethnicity),
+                                        base_person.race_ethnicity),
                      autocomplete: 'off' %>
 
         <%= f.select :language,
-                     options_for_select(language_options(patient.language),
-                                       patient.language),
-                     label: t('patient.information.language'),
+                     options_for_select(language_options(base_person.language),
+                                       base_person.language),
+                     label: t('person.information.language'),
                      autocomplete: 'off' %>
 
         <%= f.select :voicemail_preference,
                      options_for_select(voicemail_options(patient.voicemail_preference),
                                         patient.voicemail_preference),
-                     label: t('patient.information.voicemail_preference') %>
+                     label: t('person.information.voicemail_preference') %>
 
         <%= f.check_box :textable,
-                        label: t('patient.information.textable'),
-                        checked: patient.textable? %>
+                        label: t('person.information.textable'),
+                        checked: base_person.textable? %>
 
         <div class="row mt-4">
           <div class="col-8">
@@ -53,57 +54,57 @@
           </div>
 
           <div class="col-4">
-            <%= f.select :state, options_for_select(state_options(patient.state),
-                                        patient.state), autocomplete: 'off' %>
+            <%= f.select :state, options_for_select(state_options(base_person.state),
+                                        base_person.state), autocomplete: 'off' %>
           </div>
         </div>
 
         <%= f.text_field :zipcode, autocomplete: 'off',
                           pattern: '\d{5}(-?\d{4})?'%>
 
-        <h3><%= t 'patient.information.emergency_contact.title' %></h3>
+        <h3><%= t 'person.information.emergency_contact.title' %></h3>
         <%= f.text_field :emergency_contact,
                          autocomplete: 'off',
-                         label: t('patient.information.emergency_contact.name') %>
+                         label: t('person.information.emergency_contact.name') %>
         <%= f.text_field :emergency_contact_phone,
-                         value: patient.emergency_contact_phone_display,
+                         value: base_person.emergency_contact_phone_display,
                          autocomplete: 'off',
-                         label: t('patient.information.emergency_contact.phone_number') %>
+                         label: t('person.information.emergency_contact.phone_number') %>
         <%= f.text_field :emergency_contact_relationship,
                          autocomplete: 'off',
-                         label: t('patient.information.emergency_contact.relationship')%>
+                         label: t('person.information.emergency_contact.relationship')%>
         <%= f.text_field :emergency_contact_options,
                          autocomplete: 'off',
-                         label: t('patient.information.emergency_contact.emergency_contact_options', org: current_tenant.name)%>
+                         label: t('person.information.emergency_contact.emergency_contact_options', org: current_tenant.name)%>
 
         <fieldset>
           <legend class="font-weight-bold" id="emergency_contact_options_label">
-            <%= t 'patient.information.emergency_contact_options.title' %>
+            <%= t 'person.information.emergency_contact_options.title' %>
           </legend>
 
           <%= f.form_group :emergency_contact_options do %>
             <div class="row">
               <div class="col">
                 <%= f.check_box :emergency_contact_options, {
-                                label: t('patient.information.emergency_contact_options.use_pronouns'),
+                                label: t('person.information.emergency_contact_options.use_pronouns'),
                                 name: 'patient[emergency_contact_options][]',
                                 checked: patient.emergency_contact_options.include?('Use pronouns'),
                                 id: 'pronouns_patient_emergency_contact_options' },
                                 'Use pronouns', '' %>
                 <%= f.check_box :emergency_contact_options, {
-                                label: t('patient.information.emergency_contact_options.use_name'),
+                                label: t('person.information.emergency_contact_options.use_name'),
                                 name: 'patient[emergency_contact_options][]',
                                 checked: patient.emergency_contact_options.include?('Use name'),
                                 id: 'name_patient_emergency_contact_options' },
                                 'Use name', '' %>
                 <%= f.check_box :emergency_contact_options, {
-                                label: t('patient.information.emergency_contact_options.use_legal_name'),
+                                label: t('person.information.emergency_contact_options.use_legal_name'),
                                 name: 'patient[emergency_contact_options][]',
                                 checked: patient.emergency_contact_options.include?('Use legal name'),
                                 id: 'legal_name_emergency_contact_options' },
                                 'Use legal name', '' %>
                 <%= f.check_box :emergency_contact_options, {
-                                label: t('patient.information.emergency_contact_options.other'),
+                                label: t('person.information.emergency_contact_options.other'),
                                 name: 'patient[emergency_contact_options][]',
                                 checked: patient.emergency_contact_options.include?('Other'),
                                 id: 'other_emergency_contact_options' },
@@ -117,68 +118,68 @@
       <div class="col info-form-right">
         <%= f.select :employment_status,
                      options_for_select(employment_status_options,
-                                        patient.employment_status),
+                                        base_person.employment_status),
                      autocomplete: 'off' %>
         <%= f.select :income,
                      options_for_select(income_options,
-                                        patient.income),
-                     help: t('patient.information.income_help'),
+                                        base_person.income),
+                     help: t('person.information.income_help'),
                      autocomplete: 'off' %>
 
         <div class="row">
           <div class="col">
             <%= f.select :household_size_adults,
                           options_for_select(household_size_options,
-                                             patient.household_size_adults),
-                                             help: t('patient.information.household_help') %>
+                                             base_person.household_size_adults),
+                                             help: t('person.information.household_help') %>
           </div>
           <div class="col">
             <%= f.select :household_size_children,
                           options_for_select(household_size_options,
-                                             patient.household_size_children) %>
+                                             base_person.household_size_children) %>
           </div>
         </div>
 
         <%= f.select :insurance,
                      options_for_select(insurance_options(patient.insurance),
                                         patient.insurance),
-                     label: t('patient.information.insurance') %>
+                     label: t('person.information.insurance') %>
         <%= f.select :referred_by,
                      options_for_select(referred_by_options(patient.referred_by),
                                         patient.referred_by),
-                     label: t('patient.information.referred_by', org: current_tenant.name),
+                     label: t('person.information.referred_by', org: current_tenant.name),
                      autocomplete: 'off' %>
 
         <fieldset>
           <legend class="font-weight-bold" id="special_circumstances_label">
-            <%= t 'patient.information.special_circumstances.title' %>
+            <%= t 'person.information.special_circumstances.title' %>
           </legend>
 
           <%= f.form_group :special_circumstances do %>
             <div class="row">
               <div class="col">
                 <%= f.check_box :special_circumstances, {
-                                label: t('patient.information.special_circumstances.housing_insecure'),
+                                label: t('person.information.special_circumstances.housing_insecure'),
                                 name: 'patient[special_circumstances][]',
-                                checked: patient.special_circumstances.include?('Housing insecure'),
+                                checked: base_person.special_circumstances.include?('Housing insecure'),
                                 id: 'housing_insecure_patient_special_circumstances' },
                                 'Housing insecure', '' %>
                 <%= f.check_box :special_circumstances, {
-                                label: t('patient.information.special_circumstances.homelessness'),
+                                label: t('person.information.special_circumstances.homelessness'),
                                 name: 'patient[special_circumstances][]',
-                                checked: patient.special_circumstances.include?('Homelessness'),
+                                checked: base_person.special_circumstances.include?('Homelessness'),
                                 id: 'home_patient_special_circumstances' },
                                 'Homelessness', '' %>
                 <%= f.check_box :special_circumstances, {
-                                label: t('patient.information.special_circumstances.domestic_violence'),
+                                label: t('person.information.special_circumstances.domestic_violence'),
                                 name: 'patient[special_circumstances][]',
-                                checked: patient.special_circumstances.include?('Domestic violence'),
+                                checked: base_person.special_circumstances.include?('Domestic violence'),
                                 id: 'domestic_patient_special_circumstances' },
                                 'Domestic violence', '' %>
                 <%= f.check_box :special_circumstances, {
-                                label: t('patient.information.special_circumstances.other_medical_issue'),
+                                label: t('person.information.special_circumstances.other_medical_issue'),
                                 name: 'patient[special_circumstances][]',
-                                checked: patient.special_circumstances.include?('Other medical issue'),
+                                checked: base_person.special_circumstances.include?('Other medical issue'),
                                 id: 'other_patient_special_circumstances' },
                                 'Other medical issue', '' %>
               </div>
@@ -188,19 +189,19 @@
 
         <fieldset>
           <legend class="font-weight-bold" id="in_case_of_emergency_label">
-            <%= t 'patient.information.in_case_of_emergency.title' %>
+            <%= t 'person.information.in_case_of_emergency.title' %>
           </legend>
 
           <%= f.form_group :in_case_of_emergency do %>
             <div class="col">
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.ident_disclosure_permission', org: current_tenant.name),
+                              label: t('person.information.in_case_of_emergency.ident_disclosure_permission', org: current_tenant.name),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Identity disclosure permission'),
                               id: 'ident_disclosure_permission_ice' },
                               'Identity disclorsure permission', '' %>
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.advanced_care_directive'),
+                              label: t('person.information.in_case_of_emergency.advanced_care_directive'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Advanced care directivev'),
                               id: 'advanced_care_directive_ice' },
@@ -209,35 +210,35 @@
           <% end %>
 
           <%= f.form_group :in_case_of_emergency do %>
-            <h5><%= t 'patient.information.in_case_of_emergency.emergency_call.title', org: current_tenant.name %></h5>
+            <h5><%= t 'person.information.in_case_of_emergency.emergency_call.title', org: current_tenant.name %></h5>
 
             <div class="col">
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.emergency_call.medical_emergency'),
+                              label: t('person.information.in_case_of_emergency.emergency_call.medical_emergency'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Medical emergency'),
                               id: 'medical_emergency_ice' },
                               'Medical emergency', '' %>
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.emergency_call.mental_health_emergency'),
+                              label: t('person.information.in_case_of_emergency.emergency_call.mental_health_emergency'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Mental health emergency'),
                               id: 'mental_health_emergency_ice' },
                               'Mental health emergency', '' %>
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.emergency_call.fire_or_smoke'),
+                              label: t('person.information.in_case_of_emergency.emergency_call.fire_or_smoke'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Fire or smoke'),
                               id: 'fire_or_smoke_ice' },
                               'Fire or smoke', '' %>
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.emergency_call.criminal_activity'),
+                              label: t('person.information.in_case_of_emergency.emergency_call.criminal_activity'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Criminal activity or danger to life'),
                               id: 'criminal_activity_ice' },
                               'Criminal activity or danger to life', '' %>
               <%= f.check_box :in_case_of_emergency, {
-                              label: t('patient.information.in_case_of_emergency.emergency_call.missing_person'),
+                              label: t('person.information.in_case_of_emergency.emergency_call.missing_person'),
                               name: 'patient[in_case_of_emergency][]',
                               checked: patient.in_case_of_emergency.include?('Missing or lost persons'),
                               id: 'missing_person_ice' },

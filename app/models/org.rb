@@ -28,7 +28,7 @@ class Org < ApplicationRecord
      ArchivedPatient,
      Note,
      Fulfillment,
-     PracticalSupport
+     Procedure
     #  Call #ToDo: replace with care coordinate information
     ].each do |model|
       model.destroy_all

@@ -57,7 +57,7 @@ class QcHousingsController < ApplicationController
       :closest_cross_street,
       :zip,
       :phone_number,
-      :accessability,
+      :accessibility,
       { availabilities: [] },
       { care_addresses: [] }
     ]

@@ -6,9 +6,8 @@ class User < ApplicationRecord
   # Concerns
   include PaperTrailable
   include CareRequestListable
-  include AttributeDisplayable
+  # include AttributeDisplayable
   include PhoneCleanable
-
 
   # Devise modules
   devise  :database_authenticatable,
@@ -42,7 +41,7 @@ class User < ApplicationRecord
 
   # Callbacks
   before_validation :clean_fields
-  before_save :clean_primary_phone_number 
+  before_save :clean_primary_phone_number
   after_update :send_password_change_email, if: :needs_password_change_email?
   after_create :send_account_created_email, if: :persisted?
 
@@ -63,8 +62,7 @@ class User < ApplicationRecord
             :role,
             :email,
             presence: true
-  validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false } #, length: { is: 10 }
-  validate :confirm_unique_phone_number
+  validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false }
 
   # email presence validated through Devise
   validates_uniqueness_to_tenant :email, allow_blank: true, if: :email_changed?
@@ -142,30 +140,6 @@ class User < ApplicationRecord
     name.split(' ').map { |part| part[0] }.join('')
   end
 
-  def confirm_unique_phone_number
-    ##
-    # This method is preferred over Rail's built-in uniqueness validator
-    # so that case managers get a meaningful error message when a patient
-    # exists on a different region than the one the volunteer is serving.
-    #
-    # See https://github.com/DCAFEngineering/dcaf_case_management/issues/825
-    ##
-    phone_match = User.where(primary_phone: primary_phone).first
-
-    return unless phone_match
-    # skip when an existing patient updates and matches itself
-    return if phone_match.id == id
-
-    users_region = phone_match.region
-    volunteers_region = region
-    if volunteers_region == users_region
-      errors.add(:this_phone_number_is_already_taken, 'on this region.')
-    else
-      errors.add(:this_phone_number_is_already_taken,
-                 "on the #{users_region.name} region. If you need the user's region changed, please contact the care coordinator directors.")
-    end
-  end
-
   def allowed_data_access? # TODO: should this include care coordinators? finance admin?, care_coordinator admin?
     admin? || data_volunteer? || finance_admin? || coord_admin?
   end
@@ -186,45 +160,21 @@ class User < ApplicationRecord
 
   def create_new_person
     Person.create!(
-      name: name,
-      primary_phone: primary_phone,
-      email: email,
       user_id: id,
       region_id: region_id,
       org_id: org_id
     )
   end
 
-  def add_new_patient(new_patient_form)
-    temporary_password = 'TransRightsAreHumanRights1234'
-    @user = User.create!(
-                  name: new_patient_form.name, 
-                  email: new_patient_form.email,
-                  primary_phone: new_patient_form.primary_phone, 
-                  region: new_patient_form.instance_variable_get(:@region),
-                  region_id: new_patient_form.region_id,
-                  password: temporary_password, 
-                  password_confirmation: temporary_password,
-                  role: :cr
-    )
-    @person = new_patient_form.instance_variable_get(:@person)
-    @person.update(user_id: @user.id)
-    @person.save
-    @patient = new_patient_form.instance_variable_get(:@patient)
-    @patient.update(user_id: @user.id, person_id: @person.id)
-    @patient.save
-    @procedure = new_patient_form.instance_variable_get(:@procedure)
-    @procedure.update(person_id: @person.id, patient_id: @patient.id)
-    @procedure.save
-  end
-
   def primary_phone_display
     return nil unless primary_phone.present?
+
     "#{primary_phone[1..3]}-#{primary_phone[4..6]}-#{primary_phone[7..10]}"
   end
 
   def email_display
     return nil unless email.present?
+
     "#{email}"
   end
 
@@ -274,7 +224,10 @@ class User < ApplicationRecord
   end
 
   def clean_primary_phone_number
-    self.primary_phone = clean_phone_number(self.primary_phone)
-  end
+    self.primary_phone = clean_phone_number(primary_phone)
+    confirm_unique_phone_number(primary_phone)
+    return if errors[:this_phone_number_is_already_taken].blank?
 
+    errors.add(:primary_phone, 'is already taken in this region.')
+  end
 end

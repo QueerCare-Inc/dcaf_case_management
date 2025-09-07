@@ -1,11 +1,13 @@
 // rerack status
 $('#patient_status_display')
-  .val('<%= @patient.status %>');
+  .val(<% @current_procedure = @patient.get_current_procedure %>)
+  <%# .val('<%= @patient.status %>
+  .val('<%= @current_procedure.care_status %>');
 
 // rerack tooltip content 
 $('.daria-tooltip.tooltip-header-help')
-                  .attr('title', "<%= status_help_text(@patient)%>")
-                  .attr('data-original-title', "<%= status_help_text(@patient)%>")
+                  .attr('title', "<%= status_help_text(@current_procedure)%>")
+                  .attr('data-original-title', "<%= status_help_text(@current_procedure)%>")
                   .tooltip('update');
 
 // refresh changelog
@@ -16,7 +18,7 @@ $('#change_log').html(
 // Rerack shared flag status
 $('#patient_shared_flag').prop('checked', <%= @patient.shared_flag? %>);
 
-// Update the archive date on audit
+<%# // Update the archive date on audit
 $('#patient_fulfillment_attributes_audited')
   .parent()
   .parent()
@@ -24,7 +26,7 @@ $('#patient_fulfillment_attributes_audited')
   .parent()
   .parent()
   .find('p.archive-note')
-  .text("<%= t('patient.pledge_fulfillment.audit.archive_note', date: l(@patient.archive_date, format: :medium)) %>");
+  .text("<%= t('patient.pledge_fulfillment.audit.archive_note', date: l(@patient.archive_date, format: :medium)) %>
 
 // flash the result
 $('#flash').html('<%= escape_javascript(render partial: "layouts/messages") %>');

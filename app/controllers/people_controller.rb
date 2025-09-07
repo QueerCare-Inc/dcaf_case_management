@@ -65,7 +65,7 @@ class PeopleController < ApplicationController
 
     if @person.save
       flash[:notice] = t('flash.person_save_success',
-                         person: @person.name,
+                         #  person: @person.name, #ToDo: revisit name for this flash notice
                          org: current_tenant.name)
       redirect_to edit_person_path @person
     else

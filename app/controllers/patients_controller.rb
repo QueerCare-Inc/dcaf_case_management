@@ -19,6 +19,7 @@ class PatientsController < ApplicationController
   def create
     person = Person.new 
     patient = Patient.new patient_params, person_id: person.id
+    patient.create_new_procedure
 
     if patient.save
       flash[:notice] = t('flash.new_patient_save')
@@ -42,10 +43,13 @@ class PatientsController < ApplicationController
     # i18n-tasks-use t('activerecord.attributes.fulfillment.procedure_date')
     # i18n-tasks-use t('activerecord.attributes.practical_support.fulfilled')
     @note = @patient.notes.new
+    @patient = Patient.find(params[:id])
+    @procedure = @patient.get_current_procedure || Procedure.new
   end
 
   def update
     @patient.last_edited_by = current_user
+    @procedure.last_edited_by = current_user if @procedure.present?
 
     respond_to do |format|
       format.js do
@@ -105,8 +109,10 @@ class PatientsController < ApplicationController
 
   # requests from our autosave using jquery ($(form).submit()) use the js format
   def respond_to_update_for_js_format
-    if @patient.update patient_params
-      @patient = Patient.includes(versions: [:item, :user]).find(@patient.id) # reload
+    @patient = Patient.find(@patient.id) # reload
+    @procedure = @patient.get_current_procedure
+
+    if @patient.update(patient_params) && @procedure.update(procedure_params)
       flash.now[:notice] = t('flash.patient_info_saved', timestamp: Time.zone.now.display_timestamp)
     else
       error = @patient.errors.full_messages.to_sentence
@@ -116,7 +122,10 @@ class PatientsController < ApplicationController
 
   # requests from our autosave using React (via the useFetch hook) use the json format
   def respond_to_update_for_json_format
-    if @patient.update patient_params
+    @patient = Patient.find(@patient.id) # reload
+    @procedure = @patient.get_current_procedure
+
+    if @patient.update(patient_params) && @procedure.update(procedure_params)
       @patient.reload
       render json: {
         patient: @patient.reload.as_json,
@@ -130,8 +139,8 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :care_coordinator,
-    :status
+    :care_coordinator
+    # :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
@@ -154,6 +163,28 @@ class PatientsController < ApplicationController
     )
     
     params.require(:patient).permit(permitted_params)
+  end
+
+  def procedure_params
+    procedure_params = [
+      :region,
+      :region_id,
+      :patient_id,
+      :surgeon_id,
+      :clinic_id,
+      :procedure_date,
+      :procedure_type,
+      :service_start,
+      :intensive_service_end,
+      :service_end,
+      :care_status,
+      :intake_date,
+      { services: [] }
+    ]
+
+    params.require(:procedure).permit(
+      procedure_params
+    )
   end
 
   def render_csv

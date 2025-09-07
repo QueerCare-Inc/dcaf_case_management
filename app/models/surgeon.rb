@@ -21,6 +21,8 @@ class Surgeon < ApplicationRecord
             length: { maximum: 150 }
   validates_uniqueness_to_tenant :name
 
+  validates :procedure_type_list, presence: true, inclusion: { in: Procedure.procedure_types.values }
+
   validate :procedures_length
   validate :insurances_length
 

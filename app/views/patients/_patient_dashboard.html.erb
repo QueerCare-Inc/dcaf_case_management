@@ -4,29 +4,36 @@
                          local: false,
                          method: 'patch',
                          class: 'edit_patient' do |f| %>
+    <% base_person = Person.where(id: patient.person_id).first %>
+    <% base_user = User.where(id: patient.user_id).first %>
+
     <div class="row">
 
       <div class="col-2">
         <%= f.text_field :name,
-                         label: t('patient.shared.name'),
+                         value: base_user.name,
+                         label: t('activerecord.attributes.patient.name'),
                          autocomplete: 'off' %>
       </div>
 
       <div class="col-2">
         <%= f.text_field :pronouns,
-                         value: patient.pronouns,
+                         value: base_user.pronouns,
+                         label: t('activerecord.attributes.patient.pronouns'),
                          autocomplete: 'off' %>
       </div>
 
       <div class="col-2">
         <%= f.date_field :intake_date,
-                          label: t('patient.shared.intake_date'),
+                          value: patient.intake_date,
+                          label: t('activerecord.attributes.patient.intake_date'),
                           autocomplete: 'off' %>
       </div>
 
       <div class="col-2">
         <%= f.date_field :procedure_date,
-                         label: t('patient.shared.procedure_date'),
+                         value: patient.get_current_procedure.try(:procedure_date),
+                         label: t('activerecord.attributes.patient.procedure_date'),
                          autocomplete: 'off' %>
       </div>
     </div>
@@ -34,32 +41,34 @@
     <div class="row">
       <div class="col-2">
         <%= f.text_field :primary_phone,
-                         value: patient.primary_phone_display,
-                         label: t('patient.dashboard.phone_number'),
+                         value: base_user.primary_phone_display,
+                         label: t('activerecord.attributes.patient.phone_number'),
                          autocomplete: 'off' %>
       </div>
 
       <div class="col-2">
         <%= f.text_field :email,
-                          value: patient.email_display,
-                          label: t('patient.dashboard.email')
+                          value: base_user.email_display,
+                          label: t('activerecord.attributes.patient.email')
                           %>
       </div>
 
       <div class="col-2">
         <%= f.text_field :care_coordinator,
-                          label: t('patient.shared.care_coordinator'),
+                          value: patient.care_coordinator,
+                          label: t('activerecord.attributes.patient.care_coordinator'),
                           autocomplete: 'on' %>
       </div>
 
+      <% current_procedure = patient.get_current_procedure %>
       <div class="col-2">
         <div class="form-group">
-          <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(patient) %></label>
-          <input type="text" value="<%= patient.status %>" class="form-control form-control-plaintext" id="patient_status_display" autocomplete="off" disabled>
+          <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(current_procedure) %></label>
+          <input type="text" value="<%= current_procedure.status_key_text %>" class="form-control form-control-plaintext" id="patient_status_display" autocomplete="off" disabled>
         </div>
       </div>
 
-      <div class="col-3">
+      <div class="col-3"> 
         <% if current_user.admin? %>
           <div class="form-group">
             <label for="admin-delete"><%= t 'patient.dashboard.delete_label' %></label>
@@ -68,7 +77,7 @@
                           patient_path(patient),
                           class: 'btn btn-danger',
                           method: :delete,
-                          data: { confirm: t('patient.dashboard.confirm_del', name: patient.name) } %>
+                          data: { confirm: t('patient.dashboard.confirm_del', name: base_user.name) } %>
             </div>
           </div>
         <% end %>

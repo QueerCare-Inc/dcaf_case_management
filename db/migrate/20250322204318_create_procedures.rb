@@ -12,19 +12,15 @@ class CreateProcedures < ActiveRecord::Migration[7.2]
       t.references :clinic, foreign_key: true
       t.references :surgeon, foreign_key: true
 
-      # t.belongs_to :patient #redundant??
-
       # attributes
-      t.boolean :care_progress, array: true, default: [true, false, false, false, false, false, false, false, false]
       t.date :procedure_date, null: false
-      t.string :procedure_type, null: false, default: 'not_specified'
+      t.integer :procedure_type, null: false, default: 0 # not_specified
       t.string :services, array: true, default: []
       t.date :service_start
       t.date :intensive_service_end
       t.date :service_end
-      t.string :care_status
+      t.integer :care_status, null: false, default: 0 # new_care_request
       t.date :intake_date
-      # t.boolean :care_request_accepted, default: false
 
       # has many
       # care addresses, shifts, reimbursements

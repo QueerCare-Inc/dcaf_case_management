@@ -1,0 +1,45 @@
+<div id="procedure_information_content">
+  <h2 class="mt-4"><%= t('procedure.information.title') %></h2>
+
+  <%= bootstrap_form_with model: procedure,
+                          html: { id: 'procedure-form-1' },
+                          local: false,
+                          method: 'patch',
+                          class: 'edit_procedure' do |f| %>
+    <% clinic = procedure.get_clinic %>
+    <div class="row info-form">
+      <div class="col info-form-left">
+        <%= f.select :surgeon_id,
+                     options_for_select(surgeon_options, procedure.try(:surgeon_id)),
+                     label: t('procedure.information.surgeon') %>
+        <%= f.select :clinic_id,
+                     options_for_select(clinic_options, procedure.try(:clinic_id)),
+                     label: t('procedure.information.clinic'),
+                     id: 'clinic-dropdown' %>
+        <%# <%= f.time_field :appointment_time, include_seconds: false %>
+        <%= f.text_field :phone_number,
+                          value: clinic.try(:phone_number),
+                          label: t('procedure.information.phone_number'),
+                          autocomplete: 'off' %>
+
+      </div>
+
+      <div class="col info-form-right">
+        <% if procedure_type_options.present? %>
+          <%= f.select :procedure_type,
+            options_for_select(procedure_type_options, 
+                               procedure.try(:procedure_type)),
+            label: t('procedure.information.procedure_type') %>
+        <% end %>
+
+        <%# <% clinic = procedure.get_clinic %> 
+        <%# <% if clinic.present? %> 
+          <%# <%= render partial: 'procedures/clinic_information', %>
+                      <%# locals: { %>
+                        <%# clinic: clinic %>
+                      <%# } %> 
+        <%# <% end %> 
+      </div>
+    </div>
+  <% end %>
+</div>

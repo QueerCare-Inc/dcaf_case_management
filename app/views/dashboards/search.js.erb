@@ -2,7 +2,7 @@ $('#search_results_shell').empty();
 
 <% if @results.any? %>
   $("#search_results_shell").append(
-      "<%= escape_javascript(render partial: 'dashboards/patient_table_content', 
+      "<%= escape_javascript(render partial: 'patients/patient_table_content', 
                                     locals: { title: t('dashboard.partial_titles.search_results'), 
                                               table_type: 'search_results', 
                                               people: @results } ) %>");

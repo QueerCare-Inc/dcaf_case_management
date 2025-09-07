@@ -59,15 +59,19 @@ module TooltipsHelper
     t('tooltips.shared_cases', shared_reset: Config.shared_reset_days).strip
   end
 
+  def procedure_list_help_text
+    t('tooltips.procedure_list').strip
+  end
+
   def unconfirmed_support_help_text
     t('tooltips.unconfirmed_support').strip
   end
 
-  def status_help_text(patient)
-    patient_status = Statusable::STATUSES.find { |x, hsh| hsh[:key] == patient.patient_status }
-                                         .second
+  # TODO: add more tooltips for practical support
+  def status_help_text(procedure)
+    care_status = procedure.status_texts
 
-    status_def = "#{patient_status[:key]}: #{patient_status[:help_text]}"
+    status_def = "#{care_status[:key]}: #{care_status[:help_text]}"
 
     safe_join(["#{t('tooltips.status_definition')}:"].concat([status_def]), tag.br)
   end

@@ -4,12 +4,11 @@ class CreateCareAddressess < ActiveRecord::Migration[7.2]
       t.timestamps
 
       # belongs to
-      t.string :region, null: false
       t.references :region, foreign_key: true, null: false
       t.references :patient, foreign_key: true, null: false
       t.references :org, foreign_key: true, null: false
       # QC housing
-      # procedure
+      # procedure #reference added later
 
       # t.belongs_to :patient #redundant??
 
@@ -25,7 +24,8 @@ class CreateCareAddressess < ActiveRecord::Migration[7.2]
       t.numeric :coordinates, array: true
       t.boolean :qc_house
       t.string :closest_cross_street
-
+      t.string :accessibility_options, array: true, default: []
+      
       # has many
       # shifts
     end

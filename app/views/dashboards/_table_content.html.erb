@@ -1,4 +1,4 @@
-<!-- locals: title, table_type (for div id and tbody div id), pregnancies, sortable, autosortable -->
+<!-- locals: title, table_type (for div id and tbody div id), sortable, autosortable -->
 
 <div id="<%= table_type %>" class="margin-bottom mt-4">
   <h1 class="border-bottom title">
@@ -47,8 +47,7 @@
               <td><%= base_patient.intake_date.display_date %></td>
             <% end %>
 
-
-            <td><%= care_request.care_status %></td>
+            <td><%= care_request.status_key_text %></td>
             <td><%= care_request.procedure_date %></td>
             <td><%= base_patient.most_recent_note_display_text %> </td>
             <%# # ToDo: replace with appropriate care_request list objects %>

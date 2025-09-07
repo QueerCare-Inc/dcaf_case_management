@@ -6,7 +6,7 @@ class Person < ApplicationRecord
   include PaperTrailable
   include CareRequestListable
   include Notetakeable
-  include AttributeDisplayable
+  # include AttributeDisplayable
   include EventLoggable
   include PersonSearchable
   include PhoneCleanable
@@ -15,7 +15,7 @@ class Person < ApplicationRecord
   before_validation :clean_fields
   before_save :save_identifier
   after_destroy :destroy_associated
-  before_save :clean_primary_phone_number
+  # before_save :clean_primary_phone_number
   before_save :clean_emergency_contact_phone_number
 
   # Relationships
@@ -25,9 +25,10 @@ class Person < ApplicationRecord
   has_one :patient, required: false
   has_one :volunteer, required: false
   has_one :care_coordinator, required: false
-  
+
   # Validations
   # Worry about uniqueness to tenant after porting region info.
+  # validates :primary_phone, presence: true, phone: { possible: true, allow_blank: false }
   validates :emergency_contact_phone, phone: { possible: true, allow_blank: true }
   validates :age,
             numericality: { only_integer: true, allow_nil: true, greater_than_or_equal_to: 0 }
@@ -92,6 +93,12 @@ class Person < ApplicationRecord
     end
   end
 
+  def emergency_contact_phone_display
+    return nil unless emergency_contact_phone.present?
+
+    "#{emergency_contact_phone[0..2]}-#{emergency_contact_phone[3..5]}-#{emergency_contact_phone[6..9]}"
+  end
+
   def notes_count
     notes.size
   end
@@ -113,6 +120,23 @@ class Person < ApplicationRecord
       status: status,
       emergency_contact_phone_display: emergency_contact_phone_display
     )
+  end
+
+  def get_user_information
+    user = User.find(user_id).first
+    return nil unless user
+
+    # Return a hash with user information
+    {
+      id: user.id,
+      name: user.name,
+      primary_phone: user.primary_phone,
+      pronouns: user.pronouns,
+      email: user.email,
+      role: user.role,
+      region_id: user.region_id,
+      org_id: user.org_id
+    }
   end
 
   def create_new_patient
@@ -172,12 +196,15 @@ class Person < ApplicationRecord
     end
   end
 
-  def clean_primary_phone_number
-    self.primary_phone = clean_phone_number(self.primary_phone)
-  end
+  # def clean_primary_phone_number
+  #   self.primary_phone = clean_phone_number(primary_phone)
+  #   confirm_unique_phone_number(primary_phone)
+  #   return if errors[:this_phone_number_is_already_taken].blank?
+
+  #   errors.add(:primary_phone, 'is already taken in this region.')
+  # end
 
   def clean_emergency_contact_phone_number
-    self.emergency_contact_phone = clean_phone_number(self.emergency_contact_phone)
+    self.emergency_contact_phone = clean_phone_number(emergency_contact_phone)
   end
-  
 end

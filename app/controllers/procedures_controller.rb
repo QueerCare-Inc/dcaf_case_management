@@ -12,7 +12,9 @@ class ProceduresController < ApplicationController
   end
 
   def create
-    @procedure = Procedure.new procedure_params
+    @patient = Patient.find(params[:patient_id])
+    @procedure = @patient.create_new_procedure(procedure_params)
+
     if @procedure.save
       flash[:notice] = t('flash.procedure_created', procedure: @procedure.name)
       redirect_to procedures_path
@@ -54,15 +56,13 @@ class ProceduresController < ApplicationController
       :surgeon_id,
       :clinic_id,
       :procedure_date,
-      :type,
+      :procedure_type,
       :service_start,
       :intensive_service_end,
       :service_end,
       :care_status,
-      { services: [] },
-      { care_addresses: [] },
-      { shifts: [] },
-      { reimbursements: [] }
+      :intake_date,
+      { services: [] }
     ]
 
     params.require(:procedure).permit(

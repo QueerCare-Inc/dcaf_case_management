@@ -34,7 +34,7 @@ class CreateVolunteers < ActiveRecord::Migration[7.2]
       # end
       
       # new
-      t.string :volunteer_status
+      t.integer :volunteer_status
       t.string :shifts, array: true, default: []
       t.string :volunteer_types, array: true, default: []
       
