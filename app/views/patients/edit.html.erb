@@ -1,7 +1,13 @@
 <%= render partial: "patients/modal" %>
 
-<div id="patient_dashboard">
+<%# <div id="patient_dashboard">
   <%= render 'patients/patient_dashboard', patient: @patient %>
+<%# </div>  %>
+<%# <%debugger%> 
+
+
+<div id="patient_dashboard">
+  <%= render 'patients/patient_care_request_dashboard', care_request_entry: @care_request_entry %>
 </div>
 
 <div id="patient_detail" class="row">

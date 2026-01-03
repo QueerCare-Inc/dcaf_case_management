@@ -1,17 +1,54 @@
 <!-- locals: title, calendar_type (for div id and tbody div id) -->
-
-<div id="<%= calendar_type %>" class="margin-bottom mt-5">
-  <h1 class="border-bottom title">
-    <%= title %>
-  </h1>
-
-    <%= month_calendar events: @shifts do |date, shifts| %>
-        <%= date.to_formatted_s(:short) %>
-        
-        <% shifts.each do |shift| %>
-        <div>
-            <%= shift.name %>
+<div id = "calendar-container">
+  <div id="<%= calendar_type %>" class="margin-bottom mt-5">
+    <h1 class="border-bottom title">
+      <%= title %>
+    </h1>
+    <% if view == 'week'%>
+      <%= week_calendar events: @shifts do |date, shifts| %>
+        <div class="calendar-date">
+          <%= date.to_formatted_s(:short) %>
         </div>
+        
+        <% if shifts.any? %>
+          <% shifts.each do |shift| %>
+            <div class="calendar-event">
+              <%= link_to edit_shift_path(shift) do %>
+                <%= shift.shift_type %>
+                <span><%= DateTime.parse(shift.start_time).strftime('%I:%M %p') %> - <%= DateTime.parse(shift.end_time).strftime('%I:%M %p') %></span>
+              <% end %>
+            </div>
+          <% end %>
+        <%# <% else %>
+          <%# <div class="calendar-event"> %>
+            <%# <em>None</em> %>
+          <%# </div> %>
         <% end %>
+      <% end %>
+    <% else %>      
+      <%= month_calendar events: @shifts do |date, shifts| %>
+        <div class="calendar-date">
+          <%= date.to_formatted_s(:short) %>
+        </div>
+        
+        <% if shifts.any? %>
+          <%# <% shifts.take(4) do |shift| %>
+          <% shifts.group_by(&:shift_type).each do |shift_type, grouped_shifts| %>
+            <div class="shift-type">
+              <%= link_to "#{grouped_shifts.first.shift_type_key_text} (#{grouped_shifts.size})", week_dashboards_path(date: date, view: 'week'), class: "shift-type-link", remote: true %>
+            </div>
+          <% end %>
+          <%# <% if shifts.count > 4 %> 
+            <%# <div class="calendar-event"> %>
+              <%# <%= link_to "More (#{shifts.size - 4})", week_dashboards_path(date: date, view: 'week'), class: "more-shifts-link", remote: true %> 
+            <%# </div> %>
+          <%# <% end %>
+        <%# <% else %>
+          <%# <div class="calendar-event"> %>
+            <%# <em>None</em> %>
+          <%# </div> %>
+        <% end %>
+      <% end %>
     <% end %>
+  </div>
 </div>

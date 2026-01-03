@@ -1,0 +1,28 @@
+$('#care_address_search_results_shell').empty();
+
+<% if @care_address_results.any? %>
+  $("#care_address_search_results_shell").append(
+      "<%= escape_javascript(render partial: 'care_addresses/care_address_table',
+                                    locals: {
+                                            title: t('practical.partial_titles.care_address_list'),
+                                            table_type: 'care_address_search_results',
+                                            care_addresses: @care_address_results,
+                                            sortable: true,
+                                            autosortable: true
+                                            } ) %>");
+<% else %>
+  $("#care_address_search_results_shell").append("<h3 class='mt-5 mb-5'><small><%= t('care_address.search.no_results') %></small></h3>");
+<% end %>
+
+$("#care_address_search_results_shell").append(
+    "<%= escape_javascript(render partial: 'care_addresses/new_care_address',
+                                  locals: { 
+                                    procedure: @procedure,
+                                    new_care_address_form: @new_care_address_form,
+                                    prefilled_street_address: params[:search]
+                                  }) %>"
+);
+
+// Clear the search form fields
+$('#care_address_search_form_content .search_form_input').val('');
+

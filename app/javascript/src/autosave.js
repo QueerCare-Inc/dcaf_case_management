@@ -1,3 +1,5 @@
+console.log('autosave.js loaded and executed');
+
 // Autosave on patient forms.
 const fulfillmentFields = [
   '#patient_fulfillment_attributes_procedure_date',
@@ -16,6 +18,7 @@ const _markFulfilledWhenFieldsChecked = () => {
 };
 
 const activateAutosave = () => {
+  console.log('activateAutosave function executed');
   // Main patient form
   $(document).on("change", ".edit_patient", function() {
     $(this).submit();
@@ -27,11 +30,18 @@ const activateAutosave = () => {
   });
 
   // Fulfillment form
-  // If any of the fields are chekced, mark the Fulfilled checkbox too
   $(document).on("change", "#pledge_fulfillment_form", function() {
     _markFulfilledWhenFieldsChecked();
     $(this).submit();
   });
+
+  // Change event for care request entry form (using event delegation)
+  $(document).on("change", "form.edit_care_request_entry", function() {
+    console.log('Change event triggered on care request entry form');
+    $(this).submit(); // Trigger form submission
+  });
 };
 
-$(document).on('DOMContentLoaded', activateAutosave);
+// $(document).on('DOMContentLoaded', activateAutosave);
+$(document).ready(activateAutosave); // Fallback for non-Turbo environments
+

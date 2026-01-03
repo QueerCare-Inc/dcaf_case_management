@@ -1,0 +1,143 @@
+<% if current_user.admin? %>
+    <%= f.select :region_id, 
+                options_for_select(region_options, f.object.region.id),
+                label: t('person.information.region') %>
+<% end %>
+
+<%= f.select :referred_by,
+            options_for_select(referred_by_options(f.object.referred_by),
+                                f.object.referred_by),
+            value: f.object.referred_by,
+            label: t('person.information.referred_by', org: current_tenant.name),
+            autocomplete: 'off' %>
+
+<%= f.text_field :legal_name,
+                value: f.object.legal_name,
+                autocomplete: 'off',
+                label: t('person.information.legal_name')
+%>
+
+<% if Config.show_patient_identifier? %>
+    <%= f.text_field :identifier,
+                    readonly: true,
+                    label: t('person.information.identifier'),
+                    label_class: 'tooltip-header-input',
+                    data: { 'tooltip-text': patient_identifier_help_text } %>
+<% end %>
+
+<%= f.select :voicemail_preference,
+            options_for_select(voicemail_options(f.object.voicemail_preference),
+                                f.object.voicemail_preference),
+            value: f.object.voicemail_preference,
+            label: t('person.information.voicemail_preference') %>
+
+<%= f.check_box :textable,
+                value: f.object.textable,
+                label: t('person.information.textable'),
+                checked: f.object.textable? %>
+
+<%= f.select :insurance,
+            options_for_select(insurance_options(f.object.insurance),
+                                f.object.insurance),
+            value: f.object.insurance,
+            label: t('person.information.insurance') %>
+
+
+<fieldset>
+    <legend class="font-weight-bold" id="special_circumstances_label">
+        <%= t 'person.information.special_circumstances.title' %>
+    </legend>
+
+    
+    <%= f.form_group :special_circumstances do %>
+    <div class="row">
+        <div class="col">
+            <%= f.check_box :special_circumstances, {
+                            label: t('person.information.special_circumstances.housing_insecure'),
+                            name: 'patient[patient][special_circumstances][]',
+                            checked: f.object.special_circumstances.include?('Housing insecure'),
+                            id: 'housing_insecure_patient_special_circumstances' },
+                            'Housing insecure' %>
+            <%= f.check_box :special_circumstances, {
+                            label: t('person.information.special_circumstances.homelessness'),
+                            name: 'patient[patient][special_circumstances][]',
+                            checked: f.object.special_circumstances.include?('Homelessness'),
+                            id: 'home_patient_special_circumstances' },
+                            'Homelessness' %>
+            <%= f.check_box :special_circumstances, {
+                            label: t('person.information.special_circumstances.domestic_violence'),
+                            name: 'patient[patient][special_circumstances][]',
+                            checked: f.object.special_circumstances.include?('Domestic violence'),
+                            id: 'domestic_patient_special_circumstances' },
+                            'Domestic violence' %>
+            <%= f.check_box :special_circumstances, {
+                            label: t('person.information.special_circumstances.other_medical_issue'),
+                            name: 'patient[patient][special_circumstances][]',
+                            checked: f.object.special_circumstances.include?('Other medical issue'),
+                            id: 'other_patient_special_circumstances' },
+                            'Other medical issue' %>
+        </div>
+    </div>
+    <% end %>
+</fieldset>
+
+<fieldset>
+    <legend class="font-weight-bold" id="in_case_of_emergency_label">
+        <%= t 'person.information.in_case_of_emergency.title' %>
+    </legend>
+    
+    <%= f.form_group :in_case_of_emergency do %>
+        <div class="col">
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.ident_disclosure_permission', org: current_tenant.name),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Identity disclosure permission'),
+                                id: 'ident_disclosure_permission_ice' },
+                            'Identity disclorsure permission' %>
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.advanced_care_directive'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Advanced care directivev'),
+                                id: 'advanced_care_directive_ice' },
+                            'Advanced care directive' %>
+        </div>
+    <% end %>
+
+    <%= f.form_group :in_case_of_emergency do %>
+        <h5><%= t 'person.information.in_case_of_emergency.emergency_call.title', org: current_tenant.name %></h5>
+
+        <div class="col">
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.emergency_call.medical_emergency'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Medical emergency'),
+                                id: 'medical_emergency_ice' },
+                            'Medical emergency' %>
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.emergency_call.mental_health_emergency'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Mental health emergency'),
+                                id: 'mental_health_emergency_ice' },
+                            'Mental health emergency' %>
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.emergency_call.fire_or_smoke'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Fire or smoke'),
+                                id: 'fire_or_smoke_ice' },
+                            'Fire or smoke' %>
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.emergency_call.criminal_activity'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Criminal activity or danger to life'),
+                                id: 'criminal_activity_ice' },
+                            'Criminal activity or danger to life' %>
+            <%= f.check_box :in_case_of_emergency, {
+                                label: t('person.information.in_case_of_emergency.emergency_call.missing_person'),
+                                name: 'patient[patient][in_case_of_emergency][]',
+                                checked: f.object.in_case_of_emergency.include?('Missing or lost persons'),
+                                id: 'missing_person_ice' },
+                            'Missing or lost persons' %>
+        </div>
+    <% end %>  
+</fieldset>
+<%# <% end %>

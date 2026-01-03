@@ -1,0 +1,38 @@
+<h2 class = "mt-4"><%= t('shift.details.care') %></h2>
+<div class="row info-form">
+    <div class="col info-form-left">
+        <%= f.datetime_field :start_time,
+                            value: f.object.start_time&.then { |dt| DateTime.parse(dt) },
+                            label: t('shift.start_time'),
+                            disabled: disabled %>
+
+
+        <%= f.datetime_field :end_time,
+                            value: f.object.end_time&.then { |dt| DateTime.parse(dt) },
+                            label: t('shift.end_time'),
+                            disabled: disabled %>
+    </div>
+
+    <div class="col info-form-right">
+        <fieldset>
+            <legend class="font-weight-bold" id="services_required_label">
+            <%= t 'practical_support.services_required.title' %>
+            </legend>
+            <%= f.form_group :services do %>
+            <div class="row">
+                <div class="col">
+                    <% ServiceTypeable::SERVICES.each do |key, details| %>
+                        <%= f.check_box :services, {
+                                        label: details[:key],
+                                        name: 'procedure[procedure][services][]',
+                                        checked: f.object.services.include?(key.to_s),
+                                        id: "#{key}_procedure_services",
+                                        disabled: disabled }
+                                        %>
+                    <% end %>
+                </div>
+            </div>
+            <% end %>
+        </fieldset>
+    </div>
+</div>

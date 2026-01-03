@@ -10,8 +10,10 @@ class AuthFactor < ApplicationRecord
   end
   attr_accessor :current_form_step
 
+  encrypts :phone_number
+
   before_validation :clean_fields
-  before_save :clean_auth_factor_phone_number #, if: :phone_number_changed?
+  before_save :clean_auth_factor_phone_number # , if: :phone_number_changed?
 
   # acts_as_tenant :org
 
@@ -40,7 +42,7 @@ class AuthFactor < ApplicationRecord
 
   with_options if: -> { past_step?(:registration) } do
     validates :name, presence: true, uniqueness: { scope: :user_id }, length: { maximum: 30 }
-    validates :phone_number, presence: true, phone: { possible: true, allow_blank: false } 
+    validates :phone_number, presence: true, phone: { possible: true, allow_blank: false }
   end
 
   private
@@ -55,7 +57,7 @@ class AuthFactor < ApplicationRecord
     # If the form is complete, there will be no current step.
     return true if current_form_step.nil?
 
-    return true if form_steps.index(current_form_step) >= form_steps.index(step)
+    true if form_steps.index(current_form_step) >= form_steps.index(step)
   end
 
   def clean_auth_factor_phone_number

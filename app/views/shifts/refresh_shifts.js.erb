@@ -1,0 +1,28 @@
+$('#shift_list, #calendar_list').empty();
+
+$('#calendar_list').append(
+  "<%= render partial: 'dashboards/shift_calendar',
+                    locals: {
+                            title: t('practical.partial_titles.shift_calendar'),
+                            calendar_type: 'coordinator_cr',
+                            shifts: @procedure.shifts,
+                            view: 'month'
+                            } %>"
+);
+
+$('#shift_list').append(
+  "<%= render partial: 'shifts/shifts_table',
+              locals: {
+                      title: t('practical.partial_titles.shift_list'),
+                      table_type: 'shift_list',
+                      shifts: @procedure.get_page_shifts(params[:page] || 1),
+                      sortable: true,
+                      autosortable: true
+                      } %>"
+);
+
+$('#shift_add_shell').hide();
+
+$(".new-shift").modal('hide')
+$('body').removeClass('modal-open')
+$('.modal-backdrop').remove()

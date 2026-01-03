@@ -1,0 +1,8 @@
+// Handle success and error events for Rails UJS
+$(document).on('ajax:success', 'form[data-remote="true"]', function (event, data, status, xhr) {
+  console.log('Field updated successfully:', data);
+});
+
+$(document).on('ajax:error', 'form[data-remote="true"]', function (event, xhr, status, error) {
+  console.error('Error updating field:', error);
+});

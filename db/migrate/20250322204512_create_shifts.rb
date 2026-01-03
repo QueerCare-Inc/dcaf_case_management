@@ -4,7 +4,7 @@ class CreateShifts < ActiveRecord::Migration[7.2]
       t.timestamps
 
       # belongs to
-      t.string :region, null: false
+      t.string :region #, null: false
       t.references :region, foreign_key: true, null: false
       t.references :procedure, foreign_key: true, null: false
       t.references :patient, foreign_key: true, null: false
@@ -15,17 +15,17 @@ class CreateShifts < ActiveRecord::Migration[7.2]
       # t.belongs_to :care_address #redundant??
       
       # attributes
-      t.string :type, null: false
+      t.integer :shift_type, null: false
       t.string :services, array: true, default: []
-      t.datetime :start_time
-      t.datetime :end_time
+      t.text :start_time
+      t.text :end_time
 
       # has many
       # volunteers
     end
-    add_index :shifts, [:care_address_id, :org_id], unique: true
-    add_index :shifts, :type
-    add_index :shifts, :services
-    add_index :shifts, :start_time
+    add_index :shifts, [:procedure_id, :care_address_id, :org_id, :shift_type, :start_time], unique: true
+    # add_index :shifts, :shift_type
+    # add_index :shifts, :services
+    # add_index :shifts, :start_time
   end
 end

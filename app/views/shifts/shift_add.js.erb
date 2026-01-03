@@ -1,0 +1,10 @@
+$('#shift_add_shell').empty();
+
+$("#shift_add_shell").append(
+    "<%= escape_javascript(render partial: 'shifts/new_shift',
+                                  locals: { 
+                                    care_address_id: @care_address_id,
+                                    new_shift_form: @new_shift_form
+                                  }) %>"
+);
+<%# $('#shift_add_modal').modal('hide'); %>

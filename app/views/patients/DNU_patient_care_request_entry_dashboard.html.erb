@@ -1,0 +1,38 @@
+<div class="col-2">
+  <div class="row">
+    <%= f.date_field :intake_date,
+                    value: f.object.patient.intake_date.present? ? Date.parse(f.object.patient.intake_date) : nil,
+                    label: t('activerecord.attributes.patient.intake_date'),
+                    autocomplete: 'off' %>
+  </div>
+  <div class="row">
+    <% if f.object.care_coordinator.present? %>
+      <% cc_user = User.where(id: f.object.care_coordinator.user_id).first %>
+      <%= f.text_field :care_coordinator,
+                      value: cc_user.name,
+                      label: t('activerecord.attributes.patient.care_coordinator'),
+                      autocomplete: 'on' %>
+    <% else %>
+      <% @care_coordinator_users = User.where(role: 'care_coordinator') %>
+        <%# <%= f.object.label :care_coordinator_id, t('activerecord.attributes.patient.care_coordinator') %> 
+      <%= f.select :care_coordinator_id, 
+                        options_from_collection_for_select(@care_coordinator_users, :id, :name, f.object.care_coordinator_id), 
+                        { include_blank: 'Select Care Coordinator', class: 'form-control' } %>
+    <% end %>
+  </div>
+</div>
+
+<div class="col-2">
+  <div class="row">
+      <%= f.date_field :procedure_date,
+                          value: Date.parse(f.object.procedure.procedure_date),
+                          label: t('activerecord.attributes.patient.procedure_date'),
+                          autocomplete: 'off' %>
+  </div>
+  <div class="row">
+      <div class="form-group">
+          <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(f.object.procedure) %></label>
+          <input type="text" value="<%= f.object.status_key_text(f.object.procedure.care_status) %>" class="form-control form-control-plaintext" id="patient_status_display" autocomplete="off" disabled>
+      </div>
+  </div>
+</div>

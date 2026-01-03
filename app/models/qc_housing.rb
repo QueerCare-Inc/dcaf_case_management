@@ -10,18 +10,18 @@ class QcHousing < ApplicationRecord
   encrypts :city
   encrypts :state
   encrypts :zip
-  # encrypts :phone_number
+  encrypts :phone_number
 
   # Callbacks
   before_save :update_coordinates, if: :address_changed?
-  before_save :clean_qc_housing_phone_number 
+  before_save :clean_qc_housing_phone_number
   belongs_to :region
   belongs_to :volunteer
-  has_many :care_addresses, as: :can_care_address
+  has_many :care_addresses, as: :can_care_address, dependent: :nullify
 
   # Validations
   validates :street_address, :city, :state, :zip, :closest_cross_street, :start_date, :end_date, presence: true
-  validates :street_address, :city, :state, :zip, :closest_cross_street, :phone_number, :start_date, :end_date, :accessability,
+  validates :street_address, :city, :state, :zip, :closest_cross_street, :phone_number, :start_date, :end_date, :accessibility,
             length: { maximum: 150 }
   validates :phone_number, presence: true, phone: { possible: true, allow_blank: false }
 
@@ -78,14 +78,14 @@ class QcHousing < ApplicationRecord
   private
 
   def confirm_care_after_procedure
-    return unless start_date.present? && procedure.procedure_date&.send(:>, start_date)
-    return unless end_date.present? && procedure.procedure_date&.send(:>, end_date)
+    return unless start_date.present? && Date.parse(procedure.procedure_date).after?(Date.parse(start_date))
+    return unless end_date.present? && Date.parse(procedure.procedure_date).after?(Date.parse(end_date))
 
     errors.add(:start_date, 'and', :end_date, 'must be after date of procedure')
   end
 
   def confirm_end_date_after_start_date
-    return unless start_date.present? && end_date.present? && start_date&.send(:>, end_date)
+    return unless start_date.present? && end_date.present? && Date.parse(start_date).after? & Date.parse(end_date)
 
     errors.add(:start_date, 'must be before', :end_date)
   end

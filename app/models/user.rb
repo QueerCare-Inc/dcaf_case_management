@@ -5,9 +5,12 @@ class User < ApplicationRecord
 
   # Concerns
   include PaperTrailable
-  include CareRequestListable
+  # include CareRequestListable
   # include AttributeDisplayable
   include PhoneCleanable
+  include UserRoleable
+
+  encrypts :primary_phone
 
   # Devise modules
   devise  :database_authenticatable,
@@ -50,10 +53,10 @@ class User < ApplicationRecord
   has_many :care_request_list_entries
   has_many :auth_factors, dependent: :destroy
   belongs_to :region, optional: true
-  has_one :person
-  has_one :patient, required: false
-  has_one :volunteer, required: false
-  has_one :care_coordinator, required: false
+  has_one :person, dependent: :destroy
+  has_one :patient, required: false, dependent: :destroy
+  has_one :volunteer, required: false, dependent: :destroy
+  has_one :care_coordinator, required: false, dependent: :destroy
 
   # Validations
   validates :name,
@@ -188,6 +191,29 @@ class User < ApplicationRecord
       primary_phone_display: primary_phone_display,
       email_display: email_display
     )
+  end
+
+  def get_associated_shifts
+    if role == 'admin'
+      Shift.all.sort_by(&:start_time)
+    elsif role == 'coord_admin'
+      Region.find_by(id: region_id)&.shifts&.sort_by(&:start_time) || []
+    elsif role == 'care_coordinator'
+      CareCoordinator.find_by(user_id: id)&.shifts&.sort_by(&:start_time) || []
+    elsif role == 'volunteer'
+      Volunteer.find_by(user_id: id)&.shifts&.sort_by(&:start_time) || []
+    elsif role == 'cr'
+      Patient.find_by(user_id: id)&.shifts&.sort_by(&:start_time) || []
+    end
+  end
+
+  def find_care_request_entry_by_status(region, care_status)
+    CareRequestEntry.joins(:procedure)
+                    .where(procedures: { care_status: care_status, region: region })
+  end
+
+  def cc_or_higher?
+    %w[admin finance_admin coord_admin cc].include?(role)
   end
 
   private

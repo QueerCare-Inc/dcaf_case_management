@@ -8,6 +8,8 @@ class Region < ApplicationRecord
 
   has_many :people
   has_many :users
+  has_many :shift_entries
+  has_many :shifts, through: :shift_entries
   has_many :patients
   has_many :volunteers
   has_many :care_coordinators

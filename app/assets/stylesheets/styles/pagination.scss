@@ -21,3 +21,38 @@ span.page, span.first, span.prev, span.next, span.last {
     }
   }
 }
+
+// Care Address Table Pagination
+#shift-pagination {
+  .pagination-entries {
+    font-size: variables.$font-size;
+    display: inline-block;
+    margin-top: 1rem; // Add spacing above the pagination
+  }
+
+  nav.pagination {
+    display: flex; // Use flexbox for better alignment
+    justify-content: center; // Center the pagination controls
+    margin-top: 1rem;
+
+    span, a {
+      font-size: variables.$font-size;
+      padding: 0.5rem 1rem; // Add padding for clickable areas
+      margin: 0 0.25rem; // Add spacing between buttons
+      border: 1px solid #ddd; // Add a border for better visibility
+      border-radius: 4px; // Optional: Add rounded corners
+      text-decoration: none; // Remove underline from links
+      color: #007bff; // Set link color
+    }
+
+    span.current {
+      background-color: #007bff; // Highlight the current page
+      color: #fff; // Set text color to white
+      font-weight: bold;
+    }
+
+    a:hover {
+      background-color: #f8f9fa; // Add hover effect for links
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # Object representing core volunteer information and demographic data.
 class Volunteer < ApplicationRecord
   acts_as_tenant :org
-  
+
   # Concerns
   include PaperTrailable
   include PersonSearchable
@@ -17,15 +17,16 @@ class Volunteer < ApplicationRecord
   # has_many :notes, as: :can_note #TODO: update the structure of notes or add new note type
   # has_many :call_list_entries, dependent: :destroy #TODO: update the structure of calls and events or create new types
 
-  # has_many :shifts_volunteers
-  has_many :shifts, through: :shifts_volunteers
+  has_many :shift_entries, dependent: :nullify
+  has_many :shifts, through: :shift_entries, dependent: :nullify
 
   # Validations
   # Worry about uniqueness to tenant after porting region info.
   # validates_uniqueness_to_tenant :primary_phone
   # validate :shifts_length
   validate :volunteer_types_length
-  
+  validate :must_have_person
+
   # Methods
   # def has_shifts
   #   shifts.map { |shift| shift.present? }.any?
@@ -55,6 +56,18 @@ class Volunteer < ApplicationRecord
     matches.order(updated_at: :desc)
   end
 
+  def upcoming_shifts
+    shifts.where('start_time > ?', Time.zone.now)
+  end
+
+  def past_shifts
+    shifts.where('end_time < ?', Time.zone.now)
+  end
+
+  def shifts_on_date(date)
+    shifts.where('DATE(start_time) = ?', date)
+  end
+
   private
 
   # def shifts_length
@@ -71,5 +84,9 @@ class Volunteer < ApplicationRecord
     volunteer_types.each do |value|
       errors.add(:volunteer_types, 'is invalid') if value && value.length > 50
     end
+  end
+
+  def must_have_person
+    errors.add(:person, I18n.t('errors.volunteer.must_have_person')) unless person.present?
   end
 end

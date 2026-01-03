@@ -1,0 +1,76 @@
+<h2 class = "mt-4"><%= t('person.information.emergency_contact.title') %></h2>
+<div class = "row info-form">
+    <div class="col info-form-left">
+
+        <%# <%= f.select :language,
+                    options_for_select(language_options(f.object.language),
+                                        f.object.language),
+                    value: f.object.language,
+                    label: t('person.information.language'),
+                    autocomplete: 'off',
+                    disabled: disabled %>
+
+        <%= f.text_field :emergency_contact,
+                        value: f.object.emergency_contact,
+                        autocomplete: 'off',
+                        label: t('person.information.emergency_contact.name'),
+                        disabled: disabled %>
+
+        <%= f.text_field :emergency_contact_phone,
+                        value: f.object.emergency_contact_phone_display,
+                        autocomplete: 'off',
+                        label: t('person.information.emergency_contact.phone_number'),
+                        disabled: disabled %>
+
+        <%= f.text_field :emergency_contact_relationship,
+                        value: f.object.emergency_contact_relationship,
+                        autocomplete: 'off',
+                        label: t('person.information.emergency_contact.relationship'),
+                        disabled: disabled %>
+    </div>
+
+    <div class="col  info-form-right">
+
+        <fieldset>
+            <legend class="font-weight-bold" id="emergency_contact_options_label">
+                <%= t 'person.information.emergency_contact_options.title' %>
+            </legend>
+
+            
+            <%= f.form_group :emergency_contact_options do %>
+                <div class="row">
+                    <div class="col">
+                        <%= f.check_box :emergency_contact_options, {
+                                            label: t('person.information.emergency_contact_options.use_pronouns'),
+                                            name: 'patient[person][emergency_contact_options][]',
+                                            checked: f.object.emergency_contact_options.include?('Use pronouns'),
+                                            id: 'pronouns_person_emergency_contact_options',
+                                            disabled: disabled },
+                                        'Use pronouns' %>
+                        <%= f.check_box :emergency_contact_options, {
+                                            label: t('person.information.emergency_contact_options.use_name'),
+                                            name: 'patient[person][emergency_contact_options][]',
+                                            checked: f.object.emergency_contact_options.include?('Use name'),
+                                            id: 'name_person_emergency_contact_options',
+                                            disabled: disabled },
+                                        'Use name' %>
+                        <%= f.check_box :emergency_contact_options, {
+                                            label: t('person.information.emergency_contact_options.use_legal_name'),
+                                            name: 'patient[person][emergency_contact_options][]',
+                                            checked: f.object.emergency_contact_options.include?('Use legal name'),
+                                            id: 'legal_name_emergency_contact_options',
+                                            disabled: disabled },
+                                        'Use legal name' %>
+                        <%= f.check_box :emergency_contact_options, {
+                                            label: t('person.information.emergency_contact_options.other'),
+                                            name: 'patient[person][emergency_contact_options][]',
+                                            checked: f.object.emergency_contact_options.include?('Other'),
+                                            id: 'other_emergency_contact_options',
+                                            disabled: disabled },
+                                        'Other' %>
+                    </div>
+                </div>
+            <% end %>
+        </fieldset>
+    </div>
+</div>

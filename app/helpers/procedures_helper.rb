@@ -1,19 +1,9 @@
 # Functions primarily related to populating selects on procedures edit view.
 module ProceduresHelper
   def procedure_type_options
-    [nil,
-     [t('procedure.helper.procedure_type.breast_augmentation'),  'Breast augmentation'],
-     [t('procedure.helper.procedure_type.breast_reduction'),     'Breast reduction'],
-     [t('procedure.helper.procedure_type.ffs'),                  'FFS'],
-     [t('procedure.helper.procedure_type.fms'),                  'Facial masculinization'],
-     [t('procedure.helper.procedure_type.hysterectomy'),         'Hysterectomy'],
-     [t('procedure.helper.procedure_type.mastectomy'),           'Mastectomy'],
-     [t('procedure.helper.procedure_type.metoidioplasty'),       'Metoidioplasty'],
-     [t('procedure.helper.procedure_type.orchiectomy'),          'Orchiectomy'],
-     [t('procedure.helper.procedure_type.phalloplasty'),         'Phalloplasty'],
-     [t('procedure.helper.procedure_type.vaginoplasty'),         'Vaginoplasty'],
-     [t('common.other'),                                         'Other'],
-     [t('common.prefer_not_to_answer'),                          'Prefer not to answer']]
+    [['Select an option', nil]] + Procedure.procedure_types.keys.map do |key|
+      [key.humanize, key]
+    end
   end
 
   # helper function for use with `options_for_select`

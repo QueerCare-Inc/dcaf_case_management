@@ -17,7 +17,10 @@ class CareCoordinator < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :user, optional: true
   # has_many :notes, as: :can_note #TODO: update the structure of notes or add new note type
-  has_many :shifts, through: :shifts_volunteers
+  has_many :shift_entries, dependent: :nullify
+  has_many :shifts, through: :shift_entries, dependent: :nullify
+  has_many :procedures, through: :shift_entries, dependent: :nullify
+  has_many :patients, through: :shift_entries, dependent: :nullify
   # accepts_nested_attributes_for :shifts
 
   # Validations
@@ -25,7 +28,8 @@ class CareCoordinator < ApplicationRecord
   # validates_uniqueness_to_tenant :primary_phone
   # validate :shifts_length
   validate :volunteer_types_length
-  
+  validate :must_have_person
+
   # Methods
   # def has_patients
   #   patients.map { |patient| patient.present? }.any?
@@ -89,4 +93,8 @@ class CareCoordinator < ApplicationRecord
   #     errors.add(:patients, 'is invalid') if value && value.length > 50
   #   end
   # end
+
+  def must_have_person
+    errors.add(:person, I18n.t('errors.care_coordinator.must_have_person')) unless person.present?
+  end
 end

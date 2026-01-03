@@ -24,7 +24,7 @@
     <tbody id="<%= table_type %>_content">
       <% procedures.each do |procedure| %>
         <%# <% base_patient = Patient.where(id: procedure.patient_id).first %>
-        
+        <% care_request_entry = CareRequestEntry.where(procedure: procedure).first %>
         
         <tr class="procedure-data" id="<%= procedure.id %>">
           <% if local_assigns[:sortable] %>
@@ -47,7 +47,7 @@
               <%= t('common.none') %>
             <% end %>
           </td>
-          <td><%= procedure.status_key_text %></td>
+          <td><%= care_request_entry.status_key_text(procedure.care_status) %></td>
           <%# <td><%= procedure.most_recent_note_display_text %>
         </tr>
       <% end %>

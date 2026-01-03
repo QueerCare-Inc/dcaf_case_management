@@ -93,7 +93,7 @@ class PeopleController < ApplicationController
 
   def find_person
     @person = Person.includes(versions: [:item, :user])
-                      .find params[:id]
+                    .find params[:id]
   end
 
   def find_person_minimal
@@ -128,12 +128,12 @@ class PeopleController < ApplicationController
 
   PERSON_INFORMATION_PARAMS = [
     :region_id,
-    :age, :race_ethnicity, :language, :textable,
-    :city, :state, :zipcode, 
+    :age, :race_ethnicity, :language,
+    :city, :state, :zipcode,
     :emergency_contact, :emergency_contact_phone, :emergency_contact_relationship,
     :employment_status, :income,
     :household_size_adults, :household_size_children,
-    { special_circumstances: [] }
+    { emergency_contact_options: [] }
   ].freeze
 
   def person_params

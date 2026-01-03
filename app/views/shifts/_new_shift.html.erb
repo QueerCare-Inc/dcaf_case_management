@@ -1,0 +1,20 @@
+<%# <div id="new_care_address_form_content"> %>
+<%# @care_address = CareAddress.find(care_address_id) %>
+<%= bootstrap_form_for @new_shift_form, 
+                        url: add_shift_procedure_path(@procedure), 
+                        remote: true do |f| %>
+    <%= f.hidden_field :care_address_id, value: care_address_id %>
+    <%# <%= f.hidden_field :locale, value: params[:locale] %>
+
+    <%= f.fields_for :shift, @shift do |shift_fields| %>
+        <%= render 'shifts/shift_information', f: shift_fields,
+                                                disabled: false %>
+    <% end %>
+
+    <%= f.form_group 'submit' do %>
+        <%= f.submit 'Save Shift', data: { disable_with: 'Saving...' } %>
+    <% end %>
+                           
+    </div> 
+<% end %> 
+<%# </div> %>

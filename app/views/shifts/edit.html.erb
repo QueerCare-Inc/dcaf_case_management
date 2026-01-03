@@ -1,0 +1,94 @@
+<div class = "col" >
+    <div class = "row-mb-5" >
+        <div id="shift_details_form_content" >
+            <h1 class = "mt-4"><%= t('shift.details.title') %></h1>
+            <%= bootstrap_form_with model: @shift, 
+                                    method: 'patch',
+                                    local: true,
+                                    html: { id: 'shift-details-form' } ,
+                                    class: 'edit_shift' do |f| %>
+                
+                <!-- Hidden fields for IDs -->
+                <%= f.hidden_field :patient_id, value: @shift.patient_id %>
+                <%= f.hidden_field :shift_id, value: @shift.id %>
+                <%= f.hidden_field :procedure_id, value: @shift.procedure_id %>
+                <%= f.hidden_field :care_address_id, value: @shift.care_address_id %>
+                
+                
+
+                <%# <%= f.select :shift_type,
+                                    options_for_select(
+                                        Shift.shift_types.keys, 
+                                        @shift.shift_type
+                                        ), 
+                                    class: 'form-control' %>     
+
+                        <%# <%= f.datetime_field :start_time,  %>
+                                        <%# value: @shift.start_time&.then { |dt| DateTime.parse(dt)}, %>
+                                        <%# label: t('shift.start_time') %>
+                        <%# <%= f.datetime_field :end_time,  %>
+                                        <%# value: @shift.end_time&.then { |dt| DateTime.parse(dt)}, %>
+                                        <%# label: t('shift.end_time') %>
+                        <%# <%= f.text_field :care_address, value: @shift.care_address&.street_address %>
+                        <%# <%= f.text_field :patient_name, value: @patient_user&.name %>
+                        <%# <%= f.text_field :care_coordinator, value: @cc_user&.name %> 
+                
+
+                        <%# <div class="actions">
+                        <%= link_to 'Edit Shift', edit_shift_path(@shift), class: 'btn btn-primary' %>
+                        <%# <%= link_to 'Back to Shifts', shifts_path, class: 'btn btn-secondary' %> 
+
+
+                        <%# <% @patient = @shift.patient %>
+                        <%# <% @patient_user = User.where(id: @patient.user_id).first %> 
+                        <%# <% @care_coordinator = @patient.care_coordinator %> 
+                        <%# <% @cc_user = User.where(id: @care_coordinator.user_id).first %> 
+                <div class="col-sm-12">
+                    <%= f.fields_for :user, User.where(id: @shift.patient.user_id).first do |user_fields| %>
+                        <%= render 'shifts/patient_information', f: user_fields %>
+                    <% end %>
+
+                    <%= f.fields_for :shift, @shift do |shift_fields| %>
+                        <%= render 'shifts/shift_information', f: shift_fields,
+                                                                disabled: true %>
+                    <% end %>
+
+                    <%# Care Address Information %>
+                    <%= f.fields_for :care_address, @shift.care_address do |care_address_fields| %>
+                        <%= render 'shifts/care_address_information', f: care_address_fields,
+                                                        disabled: true %>
+                    <% end %>
+
+                    <%= f.fields_for :procedure, @shift.procedure do |procedure_fields| %>
+                        <%= render 'shifts/procedure_information', f: procedure_fields %>
+                    <% end %>
+                    
+                    <%# Volunteer Information %>
+                    <%= f.fields_for :volunteers, @shift.volunteers do |volunteer_fields| %>
+                        <%= render 'shifts/volunteer_information', f: volunteer_fields,
+                                                                disabled: true %>
+                    <% end %>
+
+                    <%= f.fields_for :person, @shift.patient.person do |person_fields| %>
+                        <%= render 'shifts/person_information', f: person_fields,
+                                                                disabled: true %>
+                    <% end %>   
+
+
+                    <%= f.fields_for :patient, @shift.patient do |patient_fields| %>
+                        <%= render 'shifts/in_case_of_emergency', f: patient_fields,
+                                                                disabled: true %>
+                    <% end %>
+
+
+                    
+                    
+
+                    
+                </div>
+                
+                <%= render partial: 'dashboards/modal' %>
+            <% end %>
+        </div>
+    </div>
+</div>

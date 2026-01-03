@@ -13,14 +13,14 @@ class CreateProcedures < ActiveRecord::Migration[7.2]
       t.references :surgeon, foreign_key: true
 
       # attributes
-      t.date :procedure_date, null: false
+      t.text :procedure_date, null: false
       t.integer :procedure_type, null: false, default: 0 # not_specified
       t.string :services, array: true, default: []
-      t.date :service_start
-      t.date :intensive_service_end
-      t.date :service_end
+      t.text :service_start
+      t.text :intensive_service_end
+      t.text :service_end
       t.integer :care_status, null: false, default: 0 # new_care_request
-      t.date :intake_date
+      t.text :intake_date
 
       # has many
       # care addresses, shifts, reimbursements

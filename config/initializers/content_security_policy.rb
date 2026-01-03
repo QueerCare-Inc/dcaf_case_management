@@ -15,7 +15,11 @@ Rails.application.config.content_security_policy do |policy|
   policy.style_src   :self, :unsafe_inline
 
   # Specify URI for violation reports
-  policy.report_uri  "https://#{ENV['CSP_VIOLATION_URI']}/csp/reportOnly"
+  if ENV['CSP_VIOLATION_URI'].present? && ENV['CSP_VIOLATION_URI'] != 'csp'
+    policy.report_uri "https://#{ENV['CSP_VIOLATION_URI']}/csp/reportOnly"
+  else
+    Rails.logger.warn("CSP_VIOLATION_URI is not set or invalid. Skipping report_uri configuration.")
+  end
 
   # If ASSET_SITE_URL is set, allow that too
   policy.script_src  :self, "https://#{ENV['ASSET_SITE_URL']}", :unsafe_eval    if ENV['ASSET_SITE_URL'].present?

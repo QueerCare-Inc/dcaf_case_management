@@ -1,0 +1,25 @@
+// rerack tooltip content 
+$('.daria-tooltip.tooltip-header-help')
+                  .attr('title', "<%= status_help_text(@procedure)%>")
+                  .attr('data-original-title', "<%= status_help_text(@procedure)%>")
+                  .tooltip('update');
+  
+// refresh changelog
+<%# $('#change_log').html( %>
+  <%# '<%= escape_javascript(render partial: "procedures/change_log", locals: { procedure: @procedure })%>
+<%# ); %>
+
+<%# $('#care_address_search_results_shell').empty();
+$(".new-care_address").modal('show')
+$("#care_address_search_results_shell").append(
+      "<% 'testing testing' %>
+<%# $("#care_address_search_results_shell").append( %>
+      <%# "<%= escape_javascript(render partial: 'care_addresses/new_care_address', %>
+                                        <%# locals: { procedure: @procedure }) %>
+
+// flash the result
+$('#flash').html('<%= escape_javascript(render partial: "layouts/messages") %>');
+$('#flash').removeClass().hide().fadeIn('slow');
+setTimeout(function() {
+  $('#flash').hide();
+}, 5000);

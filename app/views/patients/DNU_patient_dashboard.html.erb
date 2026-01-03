@@ -1,0 +1,55 @@
+<div id="patient_dashboard_content">
+  <%= bootstrap_form_with model: @patient,
+                url: update_user_patient_and_procedure_path, 
+                method: :patch, 
+                local: false, 
+                html: { id: 'patient_dashboard_form' }, 
+                class: 'edit_patient' do |f| %>
+    <!-- Hidden fields for IDs -->
+    <%= f.hidden_field :patient_id, value: @patient.id %>
+    <%= f.hidden_field :user_id, value: @patient.user_id %>
+    <%= f.hidden_field :procedure_id, value: @patient.get_current_procedure.id %>
+
+    <div class="row">
+      <%= f.fields_for :user, User.where(id: @patient.user_id).first do |user_fields| %>
+        <%= render 'patients/patient_user_dashboard', f: user_fields %>
+      <% end %>
+
+      <%= f.fields_for :care_request_entry, @patient.get_current_procedure.care_request_entry do |care_request_entry_fields|%>
+        <%= render 'patients/patient_care_request_entry_dashboard', f: care_request_entry_fields %>
+      <% end %>
+      
+      <div class="col-3"> 
+        <div class="row">
+          <% if current_user.admin? %>
+            <div class="form-group">
+              <label for="admin-delete"><%= t 'patient.dashboard.delete_label' %></label>
+              <div>
+                <%= link_to t('patient.dashboard.delete'),
+                            patient_path(@patient),
+                            class: 'btn btn-danger',
+                            method: :delete,
+                            data: { confirm: t('patient.dashboard.confirm_del', name: User.where(id: @patient.user_id).first.name) } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="row">
+          <% if (current_user.admin? || current_user.care_coordinator? || current_user.coord_admin?) && @patient.get_current_procedure.care_status == 'coordinator_assigned' %>
+            <div class="form-group">
+              <label for="intake-complete"><%= t 'patient.dashboard.intake_complete_label' %></label>
+              <div>
+                <%= link_to t('patient.dashboard.intake_complete'),
+                            mark_intake_complete_path(@patient.get_current_procedure.care_request_entry),
+                            class: 'btn btn-success',
+                            method: :patch,
+                            data: { confirm: t('patient.dashboard.confirm_intake_complete', name: User.where(id: @patient.user_id).first.name) } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

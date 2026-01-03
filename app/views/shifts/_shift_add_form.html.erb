@@ -1,0 +1,41 @@
+<div id="shift_add_form" class="margin-bottom">
+  <h1 class="border-bottom title">
+    <%= t 'shift.add.header' %>
+  </h1>
+
+  <%# ToDo: make conditional based on current user %>
+  <%# ToDo: make conditional based on the presence of Care Addresses %>
+  <%= button_to t('practical_support.add_care_shifts'),
+        generate_shifts_procedure_path(@procedure),
+        method: :post,
+        class: 'btn btn-primary',
+        remote: true %>
+
+  <!-- Add a flex container to stack the search input and results vertically -->
+  <div class="d-flex flex-column">
+    <%= bootstrap_form_with url: select_care_address_procedure_path(@procedure), 
+                            html: { id: 'shift_add_form_content' },
+                            layout: :inline, 
+                            local: false, 
+                            remote: true, 
+                            class: 'edit_shifts' do |f| %>
+      <%= f.hidden_field :locale, value: params[:locale] %>
+
+      <!-- Dropdown for selecting an existing care address -->
+      <%= f.select :care_address_id,
+                   options_for_select(@care_addresses.map { |ca| [ca.street_address, ca.id] }),
+                   { label: t('care_address.street_address') },
+                   { id: 'care_address-dropdown', class: 'form-control' } %>
+
+      <!-- Submit Button -->
+      <%= f.form_group 'submit' do %>
+        <%= f.submit t('common.add'), 
+                     class: 'btn btn-primary', 
+                     data: { disable_with: t('common.saving') } %>
+      <% end %>
+    <% end %>
+
+    <!-- Results Container -->
+    <div id="shift_add_shell" class="mt-4"></div>
+  </div>
+</div>

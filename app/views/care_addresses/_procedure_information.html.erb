@@ -1,0 +1,42 @@
+<h2 class = "mt-4"><%= t('care_address.details.procedure') %></h2>
+<div id="shift_procedure_information_content">
+    <div class = "row info-form">
+    
+        <div class="col info-form-left">
+        
+            <%= f.text_field :procedure_type,
+                            value: f.object.procedure_type,
+                            label: t('procedure.information.procedure_type'),
+                            disabled: true %>
+
+            <%# <% clinic = f.object.get_clinic %>
+
+            <%= f.text_field :surgeon,
+                            value: Surgeon.where(id: f.object.surgeon_id).first&.name,
+                            label: t('procedure.information.surgeon'),
+                            disabled: true %>
+        </div>
+        <div class="col info-form-right">
+            <%= f.text_field :clinic,
+                            value: Clinic.where(id: f.object.clinic_id).first&.name,
+                            label: t('procedure.information.clinic'),
+                            disabled: true %>
+            <%# <%= f.time_field :appointment_time, include_seconds: false %>
+            <%= f.text_field :phone_number,
+                                value: Clinic.where(id: f.object.clinic_id).first&.phone_number,
+                                label: t('procedure.information.phone_number'),
+                                autocomplete: 'off',
+                                disabled: true %>
+
+                
+
+            <%# <% clinic = f.object.get_clinic %> 
+            <%# <% if clinic.present? %> 
+            <%# <%= render partial: 'procedures/clinic_information', %>
+                        <%# locals: { %>
+                            <%# clinic: clinic %>
+                        <%# } %> 
+            <%# <% end %> 
+        </div>
+    </div>
+</div>

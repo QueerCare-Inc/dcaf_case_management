@@ -11,7 +11,7 @@ class CreateArchivedPatients < ActiveRecord::Migration[7.2]
       t.string :voicemail_preference, default: 'not_specified'
       # t.string :region, null: false
       t.string :language
-      t.date :intake_date
+      t.text :intake_date
       t.boolean :shared_flag
       t.string :city
       t.string :state
@@ -23,7 +23,7 @@ class CreateArchivedPatients < ActiveRecord::Migration[7.2]
       t.boolean :has_special_circumstances
       t.string :referred_by
       t.boolean :referred_to_clinic
-      t.date :procedure_date
+      t.text :procedure_date
       t.boolean :textable
       t.boolean :multiday_appointment
       t.boolean :practical_support_waiver

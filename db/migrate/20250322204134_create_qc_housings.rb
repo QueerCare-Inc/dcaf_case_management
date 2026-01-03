@@ -12,12 +12,12 @@ class CreateQcHousings < ActiveRecord::Migration[7.2]
       # t.belongs_to :volunteer #redundant??
 
       # attributes
-      t.string :street_address, null: false
+      t.text :street_address, null: false
       t.string :city, null: false
       t.string :state, null: false
       t.string :zip
       t.string :closest_cross_street
-      t.string :phone_number, limit: 15, null: false
+      t.text :phone_number, null: false
       t.numeric :coordinates, array: true
 
       t.string :accessibility

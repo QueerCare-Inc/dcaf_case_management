@@ -1,0 +1,54 @@
+<%# <%= bootstrap_form_with model: @procedure, #procedure,
+                        html: { id: 'practical-support-patient-form' },
+                        local: false, # class: 'edit_practical_support' 
+                        method: 'patch' do |f| %> 
+
+    <!-- Hidden fields for IDs -->
+    <%# <%= f.hidden_field :patient_id, value: @procedure.patient_id %> 
+    <%# <%= f.hidden_field :person_id, value: @procedure.person_id %> 
+    <%# <%= f.hidden_field :procedure_id, value: @procedure.id %> 
+
+<div class="row">
+  <div class="col info-form-left">
+    <fieldset>
+      <legend class="font-weight-bold" id="services_required_label">
+        <%= t 'practical_support.services_required.title' %>
+      </legend>
+      <%= f.form_group :services do %>
+        <div class="row">
+          <div class="col">
+            <% ServiceTypeable::SERVICES.each do |key, details| %>
+              <%= f.check_box :services, {
+                              label: details[:key],
+                              name: 'procedure[procedure][services][]',
+                              checked: f.object.services.include?(key.to_s),
+                              id: "#{key}_procedure_services" },
+                              key, '' %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </fieldset>
+  </div>
+
+
+  <div class="col info-form-left">
+    <%= f.date_field :service_start,
+                      value: f.object.service_start&.then { |date| Date.parse(date) },
+                      label: t('practical_support.service_start'),
+                      autocomplete: 'off' %>
+
+    <%= f.date_field :intensive_service_end,
+                      value: f.object.intensive_service_end&.then { |date| Date.parse(date) },
+                      label: t('practical_support.intensive_service_end'),
+                      autocomplete: 'off' %>
+
+    <%= f.date_field :service_end,
+                      value: f.object.service_end&.then { |date| Date.parse(date) },
+                      label: t('practical_support.service_end'),
+                      autocomplete: 'off' %>
+  </div>
+</div>
+<%# <div class="form-actions d-flex justify-content-end">
+  <%= f.submit t('common.update'), class: 'btn btn-primary' %>
+<%# </div> %>

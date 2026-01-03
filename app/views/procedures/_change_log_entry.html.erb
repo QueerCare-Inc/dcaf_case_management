@@ -1,0 +1,15 @@
+<% if revision.has_changed_fields? %>
+  <tr class="procedure-change-log-entry">
+    <td><%= revision.date_of_change %></td>
+    <td>
+      <div>
+        <%= t("procedure.change_log.objects.#{revision.item_type.underscore}") %> (<%= revision.item_id %>):
+      </div>
+
+      <div>
+        <%= safe_join_fields revision.shaped_changes %>
+      </div>
+    </td>
+    <td><%= revision.changed_by_user %></td>
+  </tr>
+<% end %>

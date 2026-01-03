@@ -1,0 +1,30 @@
+<div class="col-2">
+    <div class="row">
+        <%= f.text_field :name,
+                            value: f.object.name,
+                            label: t('activerecord.attributes.patient.name'),
+                            autocomplete: 'off' %>
+    </div>
+    <div class="row">
+        <%= f.text_field :primary_phone,
+                            value: f.object.primary_phone_display,
+                            label: t('activerecord.attributes.patient.phone_number'),
+                            autocomplete: 'off' %>
+    </div>
+</div>
+
+<div class="col-2">
+    <div class="row">
+        <%= f.text_field :pronouns,
+                            value: f.object.pronouns,
+                            label: t('activerecord.attributes.patient.pronouns'),
+                            autocomplete: 'off' %>
+    </div>
+
+    <div class="row">
+        <%= f.text_field :email,
+                            value: f.object.email_display,
+                            label: t('activerecord.attributes.patient.email')
+                            %>
+    </div>
+</div>

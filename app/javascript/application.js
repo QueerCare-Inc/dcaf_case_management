@@ -28,3 +28,10 @@ import './src/under_care_list_drag_and_drop';
 
 // React
 import './src/components/PatientDashboardForm';
+import './src/components/NewCareAddressForm';
+// import './src/components/CareAddressSearch';
+// import './src/components/CareRequestForm';
+// import './src/components/CareRequestIntakeForm';
+// import './src/components/ProcedureForm';
+// import './src/components/NewPatientForm'
+// import './src/components/PatientCareRequestDashboard';

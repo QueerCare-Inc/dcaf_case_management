@@ -1,0 +1,14 @@
+
+<div class="row">
+    <%= f.date_field :procedure_date,
+                        value: Date.parse(f.object.procedure_date),
+                        label: t('activerecord.attributes.patient.procedure_date'),
+                        autocomplete: 'off' %>
+</div>
+<div class="row">
+    <div class="form-group">
+        <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(f.object) %></label>
+        <% care_request_entry = CareRequestEntry.where(procedure: f.object).first %>
+        <input type="text" value="<%= care_request_entry.status_key_text(f.object.care_status) %>" class="form-control form-control-plaintext" id="patient_status_display" autocomplete="off" disabled>
+    </div>
+</div>

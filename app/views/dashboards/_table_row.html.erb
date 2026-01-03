@@ -1,0 +1,121 @@
+<%# ToDo: care request and procedure are awkwardly clashing here. New care request model?? %>
+<% if care_request_entry.id == care_request_entry.patient.get_current_procedure_id %>
+  <tr class="care_request-data" id="<%= care_request_entry.id %>">
+    <%# Handle for row %>
+    <% if local_assigns[:sortable] %>
+      <td class="handle" scope="row">
+        <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
+      </td>
+    <% else %>
+      <td scope="row"><!-- spacer --></td>
+    <% end %>
+  
+    <%# Phone %>
+    <td><%= care_request_entry.patient.user.primary_phone_display %></td> 
+
+    <%# Name %>
+    <td><%= link_to care_request_entry.patient.user.name, edit_patient_path(care_request_entry.patient) %></td>
+
+    <%# Care Coordinator %>
+    <td>
+      <% if care_request_entry.care_coordinator_id.present? %>
+        <% care_coordinator = CareCoordinator.find(care_request_entry.care_coordinator_id) %>
+        <%= form_with url: update_care_coordinator_care_request_entry_path(care_request_entry), method: :patch, remote: true do |form| %>
+          <%= form.select :care_coordinator_id, 
+                          options_from_collection_for_select(@care_coordinator_users, :id, :name, care_coordinator.user_id), 
+                          { include_blank: 'Select Care Coordinator' }, 
+                          { class: 'form-control' } %>
+          <%= form.submit 'Update', class: 'btn btn-primary btn-sm' %>
+        <% end %>
+      <% else %>
+        <%= form_with url: update_care_coordinator_care_request_entry_path(care_request_entry), method: :patch, remote: true do |form| %>
+          <%= form.select :care_coordinator_id, 
+                          options_from_collection_for_select(@care_coordinator_users, :id, :name, nil), 
+                          { include_blank: 'Select Care Coordinator' }, 
+                          { class: 'form-control' } %>
+          <%= form.submit 'Assign', class: 'btn btn-primary btn-sm' %>
+        <% end %>
+      <% end %>
+    </td>
+
+    <%# Intake Date %>
+    <% if care_request_entry.patient.intake_date.nil? %>
+      <td><%= nil %></td>
+    <% else %>
+      <td><%= Date.parse(care_request_entry.patient.intake_date).display_date %></td>
+    <% end %>
+
+    <%# Status %>
+    <td><%= care_request_entry.status_key_text(care_request_entry.procedure.care_status) %></td>
+
+    <%# Procedure Date %>
+    <td><%= Date.parse(care_request_entry.procedure.procedure_date) %></td>
+
+    <%# Most Recent Note %>
+    <td><%= care_request_entry.patient.most_recent_note_display_text %> </td>
+
+    <%# Action Link %>
+    <%# # ToDo: replace with appropriate care_request list objects %>
+    <% if table_type == 'new_care_requests_list' %>
+      <th scope="row"><!-- action --></th>
+      <%# <td>
+        <%= link_to t('dashboard.table_row.assign_care_request'),
+                    assign_care_request_path(care_request_entry),
+                    method: :patch,
+                    remote: true %>
+      <%# </td> %>
+    <% elsif table_type == 'assigned_care_requests_list' %>
+      <td>
+        <%= link_to t('dashboard.table_row.mark_intake_complete'),
+                    mark_intake_complete_care_request_entry_path(care_request_entry),
+                    method: :patch,
+                    remote: true %>
+      </td>
+    <% elsif table_type == 'intake_complete_list' %>
+      <td>
+        <%= link_to t('dashboard.table_row.mark_accepted'),
+                    mark_accepted_care_request_entry_path(care_request_entry),
+                    method: :patch,
+                    remote: true %>
+      </td>
+    <% elsif table_type == 'active_care_requests_list' %>
+      <td>
+        <%= link_to t('dashboard.table_row.mark_procedure_confirmed'),
+                    mark_procedure_confirmed_care_request_entry_path(care_request_entry),
+                    method: :patch,
+                    remote: true %>
+      </td>
+    <% elsif table_type == 'procedure_confirmed_list' %>
+      <td>
+        <%= link_to t('dashboard.table_row.mark_under_care'),
+                    mark_under_care_care_request_entry_path(care_request_entry),
+                    method: :patch,
+                    remote: true %>
+      </td>
+    <% elsif table_type == 'under_care_list' %>
+      <%# <td>
+        <%= link_to t('dashboard.table_row.email_volunteer_list'),
+                    email_volunteer_list_care_request_entry_path(care_request_entry),
+                    method: :post,
+                    remote: true %>
+      <%# </td>  %>
+      <th scope="row"><!-- action --></th>
+    <% end %>
+
+    <%# Delete Care Request %>
+    <%# <% if current_user.care_coordinate_entries.map(&:patient_id).include?(base_patient.id) %> 
+      <%# <td>
+        <%# <%= link_to remove_patient_path(base_patient), %>
+                    <%# method: :patch, %>
+                    <%# data: { confirm: t('dashboard.table_content.remove_from_call_list_confirm', %>
+                            <%# name: base_patient.name) }, %>
+                    <%# aria: { label: t('dashboard.table_content.remove_from_call_list_confirm', %>
+                            <%# name: base_patient.name)}, %>
+                    <%# remote: true do %>
+          <%# <i class="fas fa-xmark fa-fw text-danger" aria-hidden="true"></i> %>
+          <%# <span class="sr-only">Remove call</span> %>
+        <%# <% end %>
+      <%# </td> %>
+    <%# <% else %>
+  <% end %>
+</tr>

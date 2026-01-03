@@ -1,0 +1,82 @@
+<div class="row">
+  <div class="col info-form-left">
+
+    <%= f.text_field :street_address,
+      label: t('care_address.street_address') %>
+
+    <div class="row mt-4">
+      <div class="col-8">
+        <%= f.text_field :city, autocomplete: 'off' %>
+      </div>
+
+      <div class="col-4">
+        <%= f.select :state, options_for_select(state_options(care_address.state),
+                                    care_address.state), autocomplete: 'off' %>
+      </div>
+    </div>
+
+    <%= f.text_field :zip,
+                        label: t('care_address.zip'),
+                        autocomplete: 'off' %>
+    <%= f.text_field :phone_number,
+                        label: t('care_address.phone_number'),
+                        autocomplete: 'off' %>
+
+    <%=  f.check_box :qc_housing,
+                        label: t('care_address.qc_housing'),
+                        checked: false %>
+  </div>
+  <div class="col info-form-right">
+    <fieldset>
+      <legend class="font-weight-bold" id="accessibility_options_label">
+        <%= t 'care_address.accessibility.title' %>
+      </legend>
+
+      <%= f.form_group :accessibility_options do %>
+      <div class="row">
+        <div class="col">
+          <%= f.check_box :accessibility_options, {
+                          label: t('care_address.accessibility.wheelchair_accessible'),
+                          name: 'care_address[accessibility_options][]',
+                          checked: care_address.accessibility_options.include?('Wheelchair accessible'),
+                          id: 'wheelchair_accessible_care_address_accessibility_options' },
+                          'Wheelchair accessible', '' %>
+          <%= f.check_box :accessibility_options, {
+                          label: t('care_address.accessibility.shower_grab_bar'),
+                          name: 'care_address[accessibility_options][]',
+                          checked: care_address.accessibility_options.include?('Shower grab bar'),
+                          id: 'shower_grab_bar_care_address_accessibility_options' },
+                          'Shower grab bar', '' %>
+              
+          <%= f.check_box :accessibility_options, {
+                          label: t('care_address.accessibility.other'),
+                          name: 'care_address[accessibility_options][]',
+                          checked: care_address.accessibility_options.include?('Other'),
+                          id: 'other_accessibility_options' },
+                          'Other', '' %>
+        </div>
+      </div>
+    <% end %>
+  </fieldset>
+
+  <%= f.date_field :start_date,
+                      label: t('care_address.start_date'),
+                      value: Date.current,
+                      required: true,
+                      autocomplete: 'off' %>
+  <%= f.date_field :end_date,
+                      label: t('care_address.end_date'),
+                      value: Date.current,
+                      required: true,
+                      autocomplete: 'off' %>
+  <%=  f.check_box :confirmed,
+                      label: t('care_address.confirmed'),
+                      checked: false %>
+  <%= f.submit t('common.add'), class:'btn btn-primary' %>
+                  <%# @care_address.save, %>
+                  <%# method: :patch, %>
+                  <%# class: 'btn btn-primary', %>
+                  <%# remote: true %>
+  <%# %>
+  </div>
+</div>                    

@@ -16,7 +16,7 @@
         <tr id='user-<%= user.id %>' class='user-row'>
           <td><!-- spacer --></td>
           <td><%= link_to user.name, edit_user_path(user) %></td>
-          <td><%= user.role %>
+          <td><%= user.user_role_key_text %>
           <td><%= user.current_sign_in_at %>
           <td><%= user.created_at %>
           <td><%= user_lock_status(user) %>

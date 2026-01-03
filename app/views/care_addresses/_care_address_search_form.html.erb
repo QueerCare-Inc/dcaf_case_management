@@ -1,0 +1,31 @@
+<div id="care_address_search_form" class="margin-bottom">
+  <h1 class="border-bottom title">
+    <%= t 'care_address.search.header' %>
+  </h1>
+
+  <!-- Add a flex container to stack the search input and results vertically -->
+  <div class="d-flex flex-column">
+    <%= bootstrap_form_with url: search_care_address_procedure_path(@procedure), 
+                            html: { id: 'care_address_search_form_content' },
+                            layout: :inline, 
+                            local: false, 
+                            remote: true, ##NEW
+                            class: 'edit_practical_support' do |p| %>
+      <%= p.hidden_field :locale, value: params[:locale] %>
+
+      <%= p.text_field :search,
+                       placeholder: t('care_address.search.input_placeholder'),
+                       hide_label: true,
+                       class: 'search_form_input mb-3' %> <!-- Add margin for spacing -->
+
+      <%= p.button class: 'btn btn-primary',
+                   title: t('common.search'),
+                   aria: { label: t('common.search') } do %>
+        <i class="fas fa-search"></i>
+      <% end %>
+    <% end %>
+
+    <!-- Ensure the results container is stacked below the search input -->
+    <div id="care_address_search_results_shell" class="mt-4"></div>
+  </div>
+</div>

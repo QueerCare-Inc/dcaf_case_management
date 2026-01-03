@@ -69,7 +69,8 @@ module TooltipsHelper
 
   # TODO: add more tooltips for practical support
   def status_help_text(procedure)
-    care_status = procedure.status_texts
+    care_request_entry = CareRequestEntry.where(procedure: procedure).first
+    care_status = care_request_entry.status_texts(procedure.care_status)
 
     status_def = "#{care_status[:key]}: #{care_status[:help_text]}"
 

@@ -1,0 +1,15 @@
+// Append the new row to the Care Address table
+$('#care_address_list_table tbody').append(
+  "<%= j render partial: 'care_addresses/care_address_row', locals: { care_address: @care_address } %>"
+);
+
+// Remove the form once the new address is added
+$('#new_care_address_form').remove();
+
+// Optional: show a success message (Bootstrap alert)
+$('.flash-messages').append(
+  '<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">' +
+    '<%= j t("care_address.add_success") %>' +
+    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+  '</div>'
+);

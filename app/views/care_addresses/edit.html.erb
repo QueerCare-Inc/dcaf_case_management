@@ -1,0 +1,57 @@
+<div class = "col" >
+    <div class = "row-mb-5" >
+        <div id="care_address_details_form_content" >
+            <h1 class = "mt-4"><%= t('care_address.details.title') %></h1>
+            <%= bootstrap_form_with model: @care_address, 
+                                    method: 'patch',
+                                    local: true,
+                                    html: { id: 'care_address-details-form' } ,
+                                    class: 'edit_care_address' do |f| %>
+                
+                <!-- Hidden fields for IDs -->
+                <%= f.hidden_field :patient_id, value: @care_address.patient_id %>
+                <%= f.hidden_field :procedure_id, value: @care_address.procedure_id %>
+                <%= f.hidden_field :care_address_id, value: @care_address.id %>
+
+
+                <div class="col-sm-12">
+                    <%= f.fields_for :user, User.where(id: @care_address.patient.user_id).first do |user_fields| %>
+                        <%= render 'care_addresses/patient_information', f: user_fields %>
+                    <% end %>
+                    
+                    <%= f.fields_for :care_address, @care_address do |care_address_fields| %>
+                      <%= render 'care_addresses/care_address_information', f: care_address_fields, disabled: false %>
+                    <% end %>
+                    
+                    <%= f.fields_for :procedure, @care_address.procedure do |procedure_fields| %>
+                        <%= render 'care_addresses/procedure_information', f: procedure_fields %>
+                    <% end %>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <% @shifts = @care_address.shifts.sort_by(&:start_time) %>
+                        <%= render partial: 'dashboards/shift_calendar',
+                                locals: {
+                                        title: t('practical.partial_titles.shift_calendar'),
+                                        calendar_type: 'coordinator_cr',
+                                        shifts: @shifts,
+                                        view: 'month'
+                                        } %>
+
+                        <%= render partial: 'shifts/shifts_table',
+                                    locals: {
+                                            title: t('practical.partial_titles.shift_list'),
+                                            table_type: 'shift_list',
+                                            shifts: @care_address.get_page_shifts(params[:page] || 1),
+                                            sortable: true,
+                                            autosortable: true
+                                            } %>
+                    </div>
+                </div> 
+                
+                <%= render partial: 'dashboards/modal' %>
+            <% end %>
+        </div>
+    </div>
+</div>

@@ -7,21 +7,34 @@ class Procedure < ApplicationRecord
   include Shareable
   include Notetakeable
   include AttributeDisplayable
-  include Statusable
+  # include Statusable
   include ProcedureTypeable
   include CareAddressListable
+  include DateDisplayable
+  include ServiceTypeable
 
   # Callbacks
 
   # Relationships
   belongs_to :region
   belongs_to :patient
+  belongs_to :care_request_entry
+  accepts_nested_attributes_for :care_request_entry
+  # has_one :care_coordinator, through: :patient, optional: true
+  belongs_to :care_coordinator, optional: true
   has_one :clinic
   has_one :surgeon
-  has_many :shifts, as: :can_shift
-  has_many :care_addresses, as: :can_care_address
+  has_many :shift_entries, dependent: :destroy
+  has_many :care_addresses, through: :shift_entries, dependent: :destroy
+  has_many :shifts, through: :shift_entries, dependent: :destroy
   has_many :reimbursements, as: :can_reimburse
   # has_many :notes, as: :can_note
+
+  encrypts :procedure_date
+  encrypts :service_start
+  encrypts :intensive_service_end
+  encrypts :service_end
+  encrypts :intake_date
 
   enum :procedure_type, {
     not_specified: 0,
@@ -58,14 +71,15 @@ class Procedure < ApplicationRecord
   # Worry about uniqueness to tenant after porting region info.
   # validates_uniqueness_to_tenant :primary_phone
   validates :patient,
-            :region,
             :procedure_date,
             presence: true
-  validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/
+  # validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/
+
   validate :confirm_appointment_after_intake
 
   validate :services_length
   validate :reimbursements_length
+  validate :must_have_patient
 
   # Methods
   def okay_to_destroy?
@@ -124,14 +138,14 @@ class Procedure < ApplicationRecord
   #   archived
   # TODO: add others?
 
-  def get_patient
-    Patient.where(id: patient_id)
-  end
+  # def get_patient
+  #   Patient.where(id: patient_id)
+  # end
 
-  def get_care_coordinator_id
-    patient = get_patient
-    Care_Coordinator.where(id: patient.care_coordinator_id).id
-  end
+  # def get_care_coordinator_id
+  #   patient = get_patient
+  #   Care_Coordinator.where(id: patient.care_coordinator_id).id
+  # end
 
   def get_clinic
     Clinic.where(id: clinic_id).first
@@ -148,8 +162,8 @@ class Procedure < ApplicationRecord
       state: '',
       zip: '00000',
       phone_number: '+15555555555',
-      start_date: procedure_date + 1.day,
-      end_date: procedure_date + 1.month
+      start_date: Date.parse(procedure_date) + 1.day,
+      end_date: Date.parse(procedure_date) + 1.month
     )
   end
 
@@ -160,7 +174,7 @@ class Procedure < ApplicationRecord
       patient_id: patient_id,
       care_address_id: care_address_id,
       procedure_id: id,
-      type: 'other',
+      shift_type: :other_shift,
       services: [],
       start_time: DateTime.now,
       end_time: DateTime.now + 1.hour
@@ -178,41 +192,120 @@ class Procedure < ApplicationRecord
   # services: personal_care, companionship, other
 
   def generate_shifts
-    for care_address in care_addresses
-      next unless care_address.start_date.present? && care_address.end_date.present?
+    require 'parallel'
+    require 'concurrent'
 
-      # Create a shift for each care address
-      for date_now in care_address.start_date..care_address.end_date
-        for start_time, end_time in [[Time.zone.parse('08:00'), Time.zone.parse('12:00')],
-                                     [Time.zone.parse('12:00'), Time.zone.parse('16:00')],
-                                     [Time.zone.parse('16:00'), Time.zone.parse('20:00')]]
+    # Capture the current tenant
+    current_tenant = ActsAsTenant.current_tenant
 
-          shift = create_new_shift(care_address.id)
-          shift.services = services && %w[personal_care meals chores grocery_shopping prescriptions
-                                          transportation companionship other]
-          shift.start_time = date_now.change(hour: start_time.hour, min: start_time.min)
-          shift.end_time = date_now.change(hour: end_time.hour, min: end_time.min)
-          shift.save
+    shift_entries_to_create = Concurrent::Array.new
+    intensive_end_date = Date.parse(intensive_service_end)
+    shift_times = [
+      { start_hour: 8, end_hour: 12, shift_type: :in_home,
+        services: %w[personal_care meals chores grocery_shopping prescriptions transportation companionship other_service] },
+      { start_hour: 12, end_hour: 16, shift_type: :in_home,
+        services: %w[personal_care meals chores grocery_shopping prescriptions transportation companionship other_service] },
+      { start_hour: 16, end_hour: 20, shift_type: :in_home,
+        services: %w[personal_care meals chores grocery_shopping prescriptions transportation companionship other_service] },
+      { start_hour: 20, end_hour: 8, shift_type: :overnight,
+        services: %w[personal_care companionship other_service], overnight: true }
+    ]
+    valid_care_addresses = care_address_list(self).where.not(start_date: nil, end_date: nil)
+
+    Parallel.each(valid_care_addresses, in_threads: 4) do |care_address|
+      # Set the tenant in each thread
+      ActsAsTenant.current_tenant = current_tenant
+
+      start_date = Date.parse(care_address.start_date)
+      end_date = Date.parse(care_address.end_date)
+
+      (start_date..end_date).each do |date_now|
+        # Morning, Afternoon, and Evening shifts
+        shift_times.each do |shift_time|
+          # Overnight shift
+          next if shift_time[:overnight] && (date_now > intensive_end_date || date_now > end_date)
+
+          start_time = Time.zone.local(date_now.year, date_now.month, date_now.day, shift_time[:start_hour], 0)
+          end_time = Time.zone.local(date_now.year, date_now.month, date_now.day, shift_time[:end_hour], 0)
+          end_time += 1.day if shift_time[:overnight]
+
+          ActiveRecord::Base.transaction do
+            # Find the overlap between self.services and shift_time[:services]
+            services = (self.services || []) & shift_time[:services]
+            formatted_services = string_services_to_symbols(services)
+
+            # Check if the shift already exists
+            shift = Shift.find_or_create_by!(
+              procedure_id: id,
+              care_address_id: care_address.id,
+              start_time: start_time,
+              end_time: end_time
+            ) do |new_shift|
+              new_shift.org_id = org_id
+              new_shift.region_id = region_id
+              new_shift.patient_id = patient_id
+              new_shift.shift_type = shift_time[:shift_type]
+              new_shift.services = formatted_services.map(&:to_s)
+            end
+
+            # Check if the shift entry already exists
+            unless ShiftEntry.exists?(
+              procedure_id: id,
+              care_address_id: care_address.id,
+              shift_id: shift.id
+            )
+              # Add the shift entry to the list of shift entries to create
+              shift_entries_to_create << {
+                org_id: org_id,
+                region_id: region_id,
+                care_coordinator_id: nil,
+                patient_id: patient_id,
+                volunteer_id: nil, # Set this to `nil` initially; assign volunteers later
+                procedure_id: id,
+                care_address_id: care_address.id,
+                shift_id: shift.id,
+                created_at: Time.zone.now,
+                updated_at: Time.zone.now
+              }
+            end
+          end
         end
-        next unless date_now != care_address.end_date
-
-        # Create an overnight shift if the end date is not the same as the start date
-        shift = create_new_shift(care_address.id)
-        shift.services = services && %w[personal_care companionship other]
-        shift.start_time = date_now.change(hour: 20, min: 0) # 8:00 PM
-        shift.end_time = (date_now + 1.day).change(hour: 8, min: 0) # 8:00 AM next day
-        shift.save
       end
-      # true if shifts.present?
-      # false if shifts.empty?
     end
-    false
+
+    # Perform bulk insert for shift entries
+    ShiftEntry.insert_all(shift_entries_to_create) if shift_entries_to_create.any?
+
+    shift_entries_to_create.any?
+  end
+
+  def get_all_shifts
+    @procedure = Procedure.find(params[:id])
+    @shifts = @procedure.shifts.order(:start_time) # Fetch and sort shifts
+  end
+
+  def get_page_shifts(page, per_page = 10)
+    # shifts = Shift.where(procedure_id: id)
+    sorted_shifts = # Sort in Ruby
+      shifts.sort_by do |shift|
+        DateTime.parse(shift.start_time)
+            rescue StandardError
+              nil
+      end
+    Kaminari.paginate_array(sorted_shifts).page(page).per(per_page) # Paginate in memory
   end
 
   private
 
+  def string_services_to_symbols(services)
+    services.map(&:to_sym).select do |service|
+      ServiceTypeable::SERVICES.key?(service)
+    end
+  end
+
   def confirm_appointment_after_intake
-    return unless procedure_date.present? && intake_date&.send(:>, procedure_date)
+    return unless intake_date.present?
+    return unless procedure_date.present? && Date.parse(intake_date).after?(Date.parse(procedure_date))
 
     errors.add(:procedure_date, 'must be after date of intake')
   end
@@ -236,5 +329,20 @@ class Procedure < ApplicationRecord
     reimbursements.each do |value|
       errors.add(:reimbursements, 'is invalid') if value && value.length > 50
     end
+  end
+
+  def must_have_patient
+    errors.add(:patient, I18n.t('errors.procedure.must_have_patient')) unless patient.present?
+  end
+
+  def create_care_request_entry
+    CareRequestEntry.create!(
+      patient: patient,
+      procedure: self,
+      care_coordinator: care_coordinator,
+      region: region
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create CareRequestEntry: #{e.message}"
   end
 end

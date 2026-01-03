@@ -1,0 +1,26 @@
+<h2 class = "mt-4"><%= t('shift.details.patient') %></h2>
+<div class="row info-form">
+    <div class="col info-form-left">
+        <%= f.text_field :name,
+                            value: f.object.name,
+                            label: t('activerecord.attributes.patient.name'),
+                            disabled: true %>
+
+        <%= f.text_field :primary_phone,
+                            value: f.object.primary_phone_display,
+                            label: t('activerecord.attributes.patient.phone_number'),
+                            disabled: true %>
+    </div>
+    <div class="col info-form-right">
+        <%= f.text_field :pronouns,
+                            value: f.object.pronouns,
+                            label: t('activerecord.attributes.patient.pronouns'),
+                            disabled: true %>
+
+        <%= f.text_field :email,
+                            value: f.object.email_display,
+                            label: t('activerecord.attributes.patient.email'),
+                            disabled: true
+                            %>
+    </div>
+</div>

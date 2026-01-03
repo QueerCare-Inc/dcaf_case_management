@@ -1,0 +1,26 @@
+// rerack status
+$('#patient_status_display')
+  .val(<% @current_procedure = @patient.get_current_procedure %>)
+  <%# .val('<%= @patient.status %>
+  .val('<%= @current_procedure.care_status %>');
+
+// rerack tooltip content 
+$('.daria-tooltip.tooltip-header-help')
+                  .attr('title', "<%= status_help_text(@current_procedure)%>")
+                  .attr('data-original-title', "<%= status_help_text(@current_procedure)%>")
+                  .tooltip('update');
+
+// refresh changelog
+$('#change_log').html(
+  '<%= escape_javascript(render partial: "patients/change_log", locals: { patient: @patient })%>'
+);
+
+// Update the practical support form with any changes
+$('#practical_support_form').html('<%= j render partial: "practical_supports/services_required_form", locals: { procedure: @procedure } %>');
+
+// flash the result
+$('#flash').html('<%= escape_javascript(render partial: "layouts/messages") %>');
+$('#flash').removeClass().hide().fadeIn('slow');
+setTimeout(function() {
+  $('#flash').hide();
+}, 5000);

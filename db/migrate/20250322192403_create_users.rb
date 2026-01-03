@@ -6,7 +6,8 @@ class CreateUsers < ActiveRecord::Migration[7.2]
       t.integer :role, null: false, default: 0
       t.boolean :disabled_by_org, default: false
       t.references :org, foreign_key: true
-      t.string :primary_phone, default: 555-555-5555, limit: 15, null: false
+      # t.string :primary_phone, default: 555-555-5555, limit: 15, null: false
+      t.text :primary_phone, null: false
       t.string :pronouns
       t.references :region, foreign_key: true
 

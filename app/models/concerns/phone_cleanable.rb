@@ -31,4 +31,10 @@ module PhoneCleanable
                  "on the #{users_region.name} region. If you need the user's region changed, please contact the care coordinator directors.")
     end
   end
+
+  def phone_number_display(phone_number)
+    return nil unless phone_number.present?
+
+    "#{phone_number[1..3]}-#{phone_number[4..6]}-#{phone_number[7..10]}"
+  end
 end

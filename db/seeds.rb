@@ -1,6 +1,8 @@
 # Set up fixtures and database seeds to simulate a production environment.
 raise "No running seeds in prod" unless [nil, "Sandbox"].include? ENV["DARIA_FUND"]
 
+Phonelib.add_additional_regex :us, Phonelib::Core::MOBILE, '[5]{10}' # this will add number 1-555-555-5555 to be valid
+
 # Clear out existing DB
 ActsAsTenant.without_tenant do
   Config.destroy_all
@@ -23,6 +25,7 @@ ActsAsTenant.without_tenant do
   QcHousing.destroy_all
   Procedure.destroy_all
   Shift.destroy_all
+  ShiftEntry.destroy_all
   Surgeon.destroy_all
   Reimbursement.destroy_all
 end
@@ -242,7 +245,7 @@ org2 = Org.create!(
       region: regions.first,
       name: "Dr. One", 
       phone_number: generate_random_us_phone_number, #"968-574-3625",
-      procedure_types: ['breast augmentation', 'mastectomy'],
+      procedure_type_list: Procedure.procedure_types.slice(:breast_augmentation, :mastectomy).values,
       region_id: regions.first.id
     )
 
@@ -250,7 +253,7 @@ org2 = Org.create!(
       region: regions.first,
       name: "Dr. Two", 
       phone_number: generate_random_us_phone_number, #"142-536-9685",
-      procedure_types: ['facial feminization', 'facial masculinization'],
+      procedure_type_list: Procedure.procedure_types.slice(:facial_feminization, :facial_masculinization).values,
       region_id: regions.first.id
     )
 
@@ -258,7 +261,7 @@ org2 = Org.create!(
       region: regions.second,
       name: "Dr. Three", 
       phone_number: generate_random_us_phone_number, #"635-241-7485",
-      procedure_types: ['vaginoplasty'],
+      procedure_type_list: Procedure.procedure_types.slice(:vaginoplasty).values,
       region_id: regions.second.id
     )
 
@@ -266,7 +269,7 @@ org2 = Org.create!(
       region: regions.second,
       name: "Dr. Four", 
       phone_number: generate_random_us_phone_number, #"415-263-8574",
-      procedure_types: ['metoidioplasty', 'phalloplasty'],
+      procedure_type_list: Procedure.procedure_types.slice(:metoidioplasty, :phalloplasty).values,
       region_id: regions.second.id
     )
 
@@ -306,6 +309,7 @@ org2 = Org.create!(
                   name: "testuser patient", 
                   email: "test_p#{i}@example.com",
                   primary_phone: generate_random_us_phone_number, #"123-123-123#{i}", 
+                  pronouns: "he/she/they",
                   region: regions.first,
                   region_id: regions.first.id,
                   password: password, 
@@ -319,38 +323,55 @@ org2 = Org.create!(
         shared_flag: i.even?
       )
       procedure = patient.create_new_procedure
-      care_progress = procedure.care_progress
-      care_progress[0] = true
-      procedure.update!(
-        care_status: :new_care_request,
-        care_progress: care_progress
-      )
+
+      # procedure_type_value = Procedure.procedure_types[:other]
+      # care_status_value = Procedure.care_statuses[:new_care_request]
+
+      # debugger 
+      # # puts "Procedure type value: #{procedure_type_value}" # Debugging
+      # # puts "Care status value: #{care_status_value}"       # Debugging
+
+      # procedure = Procedure.new(
+      #   org_id: org.id,
+      #   region_id: regions.first.id,
+      #   person_id: cr_person.id,
+      #   patient_id: patient.id,
+      #   procedure_date: Date.today + 1.month,
+      #   procedure_type: procedure_type_value,
+      #   care_status: care_status_value
+      # )
+
+      procedure.save!
+      # procedure = patient.get_current_procedure
       
       # Create associated objects
       if i.even? && i < 6
         PaperTrail.request(whodunnit: admin_user.id) do
-          patient.update!(
+          # patient.update!(
+          #   care_coordinator_id: care_coordinator1.id
+          # )
+          
+          care_request_entry = CareRequestEntry.where(procedure_id: procedure.id).first
+          care_request_entry.update!(
             care_coordinator_id: care_coordinator1.id
           )
-          care_progress = procedure.care_progress
-          care_progress[1] = true
+          
           procedure.update!(
-            care_status: :coordinator_assigned,
-            care_progress: care_progress
+            care_status: Procedure.care_statuses[:coordinator_assigned]
           )
         end
       elsif i < 6
         PaperTrail.request(whodunnit: admin_user.id) do
-          patient.update!(
+          # patient.update!(
+          #   care_coordinator_id: care_coordinator2.id
+          # )
+          
+          care_request_entry = CareRequestEntry.where(procedure_id: procedure.id).first
+          care_request_entry.update!(
             care_coordinator_id: care_coordinator2.id
           )
-          
-          care_progress = procedure.care_progress
-          care_progress[1] = true
-
           procedure.update!(
-            care_status: :coordinator_assigned,
-            care_progress: care_progress
+            care_status: Procedure.care_statuses[:coordinator_assigned]
           )
         end
       end
@@ -369,22 +390,79 @@ org2 = Org.create!(
             state: 'CA'
           )
           patient.update!(
-            intake_date: i.day.from_now,
+            intake_date: Date.today + i.day,
           )
 
-          care_progress = procedure.care_progress
-          care_progress[2] = true
-
           procedure.update!(
-            procedure_date: (i+7).days.from_now,
-            service_start: (i+10).days.from_now,
-            intensive_service_end: (i+24).days.from_now,
-            service_end: (i+40).days.from_now,
-            care_status: :intake_complete,
-            care_progress: care_progress,
+            procedure_date: Date.today + (i+7).days,
+            service_start: Date.today + (i+10).days,
+            intensive_service_end: Date.today + (i+24).days,
+            service_end: Date.today + (i+40).days,
+            procedure_type: Procedure.procedure_types[:breast_augmentation],
+            services: ["Transportation", "Chores"],
+            care_status: Procedure.care_statuses[:intake_complete],
             surgeon_id: surgeon1.id,
             clinic_id: clinic1.id
           )
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+
+          care_address.update!(
+            street_address: "1600 Pennsylvania Ave NW",
+            city: "Washington",
+            state: "DC",
+            start_date: Date.today + (i+10).days,
+            end_date: Date.today + (i+15).days,
+            # coordinates: { lat: 38.89511, lng: -77.03637 }, # White House coordinates
+            closest_cross_street: "Pennsylvania Ave NW & 15th St NW",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1 First Street",
+            city: "Washington",
+            state: "DC",
+            start_date: Date.today + (i+16).days,
+            end_date: Date.today + (i+20).days,
+            # coordinates: { lat: 38.890556, lng: -77.004444 }, # Supreme Court
+            closest_cross_street: "First St NE & Maryland Ave NE",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "101 Independence Ave SE",
+            city: "Washington",
+            state: "DC",
+            start_date: Date.today + (i+21).days,
+            end_date: Date.today + (i+30).days,
+            # coordinates: { lat: 38.888611, lng: -77.004722 }, # Library of Congress
+            closest_cross_street: "Independence Ave SE & 1st St SE",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1401 Pennsylvania Ave NW",
+            city: "Washington",
+            state: "DC",
+            start_date: Date.today + (i+31).days,
+            end_date: Date.today + (i+40).days,
+            # coordinates: { lat: 38.896667, lng: -77.03222 }, # Willard's Hotel
+            closest_cross_street: "Pennsylvania Ave NW & 14th St NW",
+            confirmed: false
+          )
+          care_address.update_coordinates
+          
+          procedure.generate_shifts
         end  
       when 1
         PaperTrail.request(whodunnit: cc_user2.id) do
@@ -398,20 +476,61 @@ org2 = Org.create!(
             state: 'CA'
           )
           patient.update!(
-            intake_date: i.day.from_now,
+            intake_date: Date.today + i.day,
           )
-          care_progress = procedure.care_progress
-          care_progress[2] = true
           procedure.update!(
-            procedure_date: (i+7).days.from_now,
-            service_start: (i+10).days.from_now,
-            intensive_service_end: (i+24).days.from_now,
-            service_end: (i+40).days.from_now,
-            care_status: :intake_complete,
-            care_progress: care_progress,
+            procedure_date: Date.today + (i+7).days,
+            service_start: Date.today + (i+10).days,
+            intensive_service_end: Date.today + (i+24).days,
+            service_end: Date.today + (i+40).days,
+            care_status: Procedure.care_statuses[:intake_complete],
             surgeon_id: surgeon2.id,
             clinic_id: clinic3.id
           )
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "600 Montgomery St",
+            city: "San Francisco",
+            state: "CA",
+            start_date: Date.today + (i+10).days,
+            end_date: Date.today + (i+20).days,
+            # coordinates: { lat: 37.7852, lng: -122.4028 }, # Transamerica Pyramid
+            closest_cross_street: "Montgomery St & Clay St",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "950 Mason St",
+            city: "San Francisco",
+            state: "CA",
+            start_date: Date.today + (i+21).days,
+            end_date: Date.today + (i+30).days,
+            # coordinates: { lat: 37.7924, lng: -122.4102 }, # Fairmont Hotel
+            closest_cross_street: "Mason St & California St",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1635 Woods Dr",
+            city: "Los Angeles",
+            state: "CA",
+            start_date: Date.today + (i+31).days,
+            end_date: Date.today + (i+40).days,
+            # coordinates: { lat: 37.100437, lng: -118.370152 }, # Stahl House
+            closest_cross_street: "Woods Dr & Mulholland Dr",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          procedure.generate_shifts
         end
       when 2
         PaperTrail.request(whodunnit: cc_user2.id) do
@@ -425,27 +544,64 @@ org2 = Org.create!(
             state: 'CA'
           )
           patient.update!(
-            intake_date: i.day.from_now,
+            intake_date: Date.today + i.day,
           )
-          care_progress = procedure.care_progress
-          care_progress[2] = true
           procedure.update!(
-            procedure_date: (i+7).days.from_now,
-            service_start: (i+10).days.from_now,
-            intensive_service_end: (i+24).days.from_now,
-            service_end: (i+40).days.from_now,
-            care_status: :intake_complete,
-            care_progress: care_progress,
+            procedure_date: Date.today + (i+7).days,
+            service_start: Date.today + (i+10).days,
+            intensive_service_end: Date.today + (i+24).days,
+            service_end: Date.today + (i+40).days,
+            care_status: Procedure.care_statuses[:intake_complete],
             surgeon_id: surgeon3.id,
             clinic_id: clinic2.id
           )
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "5 Embarcadero Center",
+            city: "San Francisco",
+            state: "CA",
+            start_date: Date.today + (i+10).days,
+            end_date: Date.today + (i+20).days,
+            # coordinates: { lat: 37.79432, lng: -122.39584 }, # Hyatt Regency
+            closest_cross_street: "Embarcadero Center & Market St",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "4 Westmoreland Pl",
+            city: "Pasadena",
+            state: "CA",
+            start_date: Date.today + (i+21).days,
+            end_date: Date.today + (i+30).days,
+            # coordinates: { lat: 34.151561, lng: -118.1608 }, # Gamble House
+            closest_cross_street: "Westmoreland Pl & S Orange Grove Blvd",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1500 Orange Ave",
+            city: "Coronado",
+            state: "CA",
+            start_date: Date.today + (i+31).days,
+            end_date: Date.today + (i+40).days,
+            # coordinates: { lat: 32.6809, lng: -117.1784 }, # Hotel del Coronado
+            closest_cross_street: "Orange Ave & 1st St",
+            confirmed: false
+          )
+          care_address.update_coordinates
+          procedure.generate_shifts
         end
-        care_progress = procedure.care_progress
-        care_progress[3] = true
         PaperTrail.request(whodunnit: admin_user.id) do
           procedure.update!(
-            care_status: :accepted_care_request,
-            care_progress: care_progress
+            care_status: Procedure.care_statuses[:accepted_care_request]
           )
         end
       when 3
@@ -462,32 +618,38 @@ org2 = Org.create!(
           patient.update!(
             intake_date: (i+10).days.ago,
           )
-          care_progress = procedure.care_progress
-          care_progress[2] = true
           procedure.update!(
             procedure_date: (i+7).days.ago,
             service_start: (i+6).days.ago,
-            intensive_service_end: (i+8).days.from_now,
-            service_end: (i+20).days.from_now,
-            care_status: :intake_complete,
-            care_progress: care_progress,
+            intensive_service_end: Date.today + (i+8).days,
+            service_end: Date.today + (i+20).days,
+            care_status: Procedure.care_statuses[:intake_complete],
             surgeon_id: surgeon4.id,
             clinic_id: clinic4.id
           )
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1491 Mill Run Rd",
+            city: "Mill Run",
+            state: "PA",
+            start_date: Date.today + (i+10).days,
+            end_date: Date.today + (i+40).days,
+            # coordinates: { lat: 39.906111, lng: -79.468056 }, # Fallingwater
+            closest_cross_street: "Mill Run Rd & PA-381",
+            confirmed: false
+          )
+          care_address.update_coordinates
+          procedure.generate_shifts
         end
-        care_progress = procedure.care_progress
-        care_progress[3] = true
         PaperTrail.request(whodunnit: admin_user.id) do
           procedure.update!(
-            care_status: :accepted_care_request,
-            care_progress: care_progress
+            care_status: Procedure.care_statuses[:accepted_care_request]
           )
         end
-        care_progress = procedure.care_progress
-        care_progress[4] = true
         procedure.update!(
-          care_status: :procedure_confirmed,
-          care_progress: care_progress
+          care_status: Procedure.care_statuses[:procedure_confirmed]
         )
       when 4
         PaperTrail.request(whodunnit: cc_user1.id) do
@@ -503,39 +665,72 @@ org2 = Org.create!(
           patient.update!(
             intake_date: (i+10).days.ago,
           )
-          care_progress = procedure.care_progress
-          care_progress[2] = true
           procedure.update!(
             procedure_date: (i+7).days.ago,
             service_start: (i+6).days.ago,
-            intensive_service_end: (i+8).days.from_now,
-            service_end: (i+20).days.from_now,
-            care_status: :intake_complete,
-            care_progress: care_progress,
+            intensive_service_end: Date.today + (i+8).days,
+            service_end: Date.today + (i+20).days,
+            care_status: Procedure.care_statuses[:intake_complete],
             surgeon_id: surgeon4.id,
             clinic_id: clinic4.id
           )
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "44 West 44th St",
+            city: "New York",
+            state: "NY",
+            start_date: Date.today + (i+10).days,
+            end_date: Date.today + (i+20).days,
+            # coordinates: { lat: 40.755556, lng: -73.982222 }, # Royalton Hotel
+            closest_cross_street: "West 44th St & 6th Ave",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "760 United Nations Plaza",
+            city: "New York",
+            state: "NY",
+            start_date: Date.today + (i+21).days,
+            end_date: Date.today + (i+30).days,
+            # coordinates: { lat: 40.749444, lng: -73.968056 }, # UN Headquarters
+            closest_cross_street: "1st Ave & E 44th St",
+            confirmed: false
+          )
+          care_address.update_coordinates
+
+          # add a care address
+          care_address = procedure.create_new_care_address
+          care_address.update!(
+            street_address: "1 West 72nd St",
+            city: "New York",
+            state: "NY",
+            start_date: Date.today + (i+31).days,
+            end_date: Date.today + (i+40).days,
+            # coordinates: { lat: 40.776667, lng: -73.976389 }, # The Dakota
+            closest_cross_street: "West 72nd St & Central Park West",
+            confirmed: false
+          )
+          care_address.update_coordinates
+          procedure.generate_shifts
         end
-        care_progress = procedure.care_progress
-        care_progress[3] = true
         PaperTrail.request(whodunnit: admin_user.id) do
           procedure.update!(
-            care_status: :accepted_care_request,
-            care_progress: care_progress
+            care_status: Procedure.care_statuses[:accepted_care_request]
           )
         end
-        care_progress = procedure.care_progress
-        care_progress[4] = true
-        care_progress[5] = true
         procedure.update!(
-          care_status: :under_care,
-          care_progress: care_progress
+          care_status: Procedure.care_statuses[:under_care]
         )
       when 5
         PaperTrail.request(whodunnit: admin_user.id) do
           # With special circumstances
           cr_user.update!(name: "Special Circumstances - four")
-          cr_person.update!(special_circumstances: ["Prison", "Fetal anomaly"])
+          patient.update!(special_circumstances: ["Prison", "Fetal anomaly"])
           # # And a recent call on file
           # patient.calls.create!(status: :left_voicemail)
         end
@@ -679,6 +874,7 @@ org2 = Org.create!(
       patient.update!(
         # procedure_date: 130.days.ago,
         # clinic: Clinic.all.sample,
+        special_circumstances: ["", "", "Homelessness", "", "", "Other medical issue", "", "", ""],
         referred_to_clinic: patient_number.odd?,
         updated_at: 139.days.ago # not sure if this even works?
       )
@@ -694,7 +890,6 @@ org2 = Org.create!(
         income: "$10,000-14,999",
         household_size_adults: 3,
         household_size_children: 2,
-        special_circumstances: ["", "", "Homelessness", "", "", "Other medical issue", "", "", ""],
         updated_at: 138.days.ago # not sure if this even works?
       )
 
@@ -772,7 +967,8 @@ org2 = Org.create!(
         referred_by: "Clinic",
         # abortion info - hand filled in
         # clinic: Clinic.all.sample,
-        referred_to_clinic: patient_number.odd?
+        referred_to_clinic: patient_number.odd?,
+        special_circumstances: ["", "", "Homelessness", "", "", "Other medical issue", "", "", ""]
       )
       cr_user.update!(
         pronouns: "they/them"
@@ -790,8 +986,7 @@ org2 = Org.create!(
         employment_status: "Student",
         income: "$10,000-14,999",
         household_size_adults: 3,
-        household_size_children: 2,
-        special_circumstances: ["", "", "Homelessness", "", "", "Other medical issue", "", "", ""]
+        household_size_children: 2        
       )
 
       # toggle flag, maybe
@@ -920,9 +1115,6 @@ org2 = Org.create!(
           volunteer_user.update!(
             name: "Special Circumstances - four"
           )
-          volunteer_person.update!(
-            special_circumstances: ["Prison", "Fetal anomaly"]
-          )
         end
       end
       volunteer.save
@@ -940,6 +1132,8 @@ ActsAsTenant.without_tenant do
        "Inserted #{Note.count} Note objects. \n" \
        "Inserted #{Patient.count} Patient objects. \n" \
        "Inserted #{Procedure.count} Procedure objects. \n" \
+       "Inserted #{Shift.count} Shift objects. \n" \
+       "Inserted #{CareAddress.count} CareAddress objects. \n" \
        "Inserted #{ArchivedPatient.count} ArchivedPatient objects. \n" \
        "Inserted #{User.count} User objects. \n" \
        "Inserted #{Clinic.count} Clinic objects. \n" \

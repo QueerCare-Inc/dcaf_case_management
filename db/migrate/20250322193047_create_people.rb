@@ -2,7 +2,7 @@ class CreatePeople < ActiveRecord::Migration[7.2]
   def change
     create_table :people do |t|
       t.timestamps
-
+ 
       # belongs to
       t.references :user, foreign_key: true #, null: false 
       #allow for new patients to be created without a user id (to be linked later)
@@ -11,9 +11,10 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       
       # new
       t.string :identifier
-      t.string :emergency_contact
-      t.string :emergency_contact_phone, limit: 15
+      t.text :emergency_contact
+      t.text :emergency_contact_phone
       t.string :emergency_contact_relationship
+      t.string :emergency_contact_options, array: true, default: []
       t.string :language
       t.integer :age
       t.string :city
@@ -25,8 +26,6 @@ class CreatePeople < ActiveRecord::Migration[7.2]
       t.integer :household_size_adults
       t.string :income
       t.string :person_status
-      t.string :special_circumstances, array: true, default: []
-      t.boolean :textable
     end
     add_index :people, [:user_id, :region_id, :org_id]
     add_index :people, :identifier

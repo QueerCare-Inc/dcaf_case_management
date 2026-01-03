@@ -1,0 +1,66 @@
+<h2 class = "mt-4"><%= t('shift.details.care_address') %></h2>
+<div class="row info-form">
+    <div class="col info-form-left">
+        <%= f.text_field :street_address,
+                            value: f.object.street_address,
+                            label: t('activerecord.attributes.care_address.street_address'),
+                            disabled: disabled %>
+        <div class="row mt-4">
+            <div class="col-8">
+                <%= f.text_field :city,
+                                    value: f.object.city,
+                                    label: t('activerecord.attributes.care_address.city'),
+                                    disabled: disabled %>
+            </div>
+            <div class="col-4">
+                <%= f.text_field :state,
+                                value: f.object.state,
+                                label: t('activerecord.attributes.care_address.state'),
+                                disabled: disabled %>
+            </div>
+        </div>
+        <%= f.text_field :phone_number,
+                            value: f.object.phone_number,
+                            label: t('activerecord.attributes.care_address.phone_number'),
+                            disabled: disabled %>
+
+    </div>
+    <div class="col info-form-right">
+        <fieldset>
+            <legend class="font-weight-bold" id="accessibility_options_label">
+                <%= t 'care_address.accessibility.title' %>
+            </legend>
+
+            <%= f.form_group :accessibility_options do %>
+                <div class="row">
+                    <div class="col">
+                    <%= f.check_box :accessibility_options, {
+                                    label: t('care_address.accessibility.wheelchair_accessible'),
+                                    name: 'care_address[accessibility_options][]',
+                                    checked: f.object.accessibility_options.include?('Wheelchair accessible'),
+                                    id: 'wheelchair_accessible_care_address_accessibility_options',
+                                    disabled: disabled },
+                                    'Wheelchair accessible', '' %>
+                    <%= f.check_box :accessibility_options, {
+                                    label: t('care_address.accessibility.shower_grab_bar'),
+                                    name: 'care_address[accessibility_options][]',
+                                    checked: f.object.accessibility_options.include?('Shower grab bar'),
+                                    id: 'shower_grab_bar_care_address_accessibility_options',
+                                    disabled: disabled },
+                                    'Shower grab bar', '' %>
+                        
+                    <%= f.check_box :accessibility_options, {
+                                    label: t('care_address.accessibility.other'),
+                                    name: 'care_address[accessibility_options][]',
+                                    checked: f.object.accessibility_options.include?('Other'),
+                                    id: 'other_accessibility_options',
+                                    disabled: disabled },
+                                    'Other', '' %>
+                    </div>
+                </div>
+            <% end %>
+        </fieldset>
+
+
+    </div>
+</div>

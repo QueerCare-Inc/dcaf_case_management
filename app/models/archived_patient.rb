@@ -5,6 +5,10 @@ class ArchivedPatient < ApplicationRecord
   # Concerns
   include PaperTrailable
   # include Exportable
+  include DateDisplayable
+
+  encrypts :intake_date
+  encrypts :procedure_date
 
   # Relationships
   belongs_to :clinic, optional: true
@@ -27,7 +31,8 @@ class ArchivedPatient < ApplicationRecord
   # Validations
   validates :intake_date,
             # :region,
-            presence: true
+            presence: true,
+            format: /\A\d{4}-\d{1,2}-\d{1,2}\z/
   validates :procedure_date, format: /\A\d{4}-\d{1,2}-\d{1,2}\z/,
                              allow_blank: true
   validates_associated :fulfillment
@@ -88,7 +93,7 @@ class ArchivedPatient < ApplicationRecord
     patient.versions.destroy_all
 
     patient.fulfillment.update! can_fulfill: archived_patient
-    
+
     archived_patient.save!
     archived_patient
   end

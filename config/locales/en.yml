@@ -54,6 +54,7 @@ en:
         insurance: Insurance
         intake_date: Intake Date
         language: Language
+        region: Region
         region_id: Region ID
         multiday_appointment: Multi-day appointment
         name: Name
@@ -123,6 +124,11 @@ en:
     city: City
     closest_cross_street: Closest cross street
     confirmed: Confirmed
+    details:
+      title: Care Address Details
+      patient: Patient
+      procedure: Procedure
+      care_address: Care Address
     end_date: End date
     helper:
       accessibility_options:
@@ -131,6 +137,10 @@ en:
         other: Other (see notes)
     phone_number: Phone number
     qc_house: QueerCare house
+    search:
+      header: Add Care Address
+      input_placeholder: Street Addres (123 Main St) or Phone (555-555-5555)
+      no_results: Your search produced no results
     start_date: Start date
     state: State
     street_address: Street address
@@ -188,6 +198,7 @@ en:
     save: Save
     search: Search
     services: Services
+    shift_details: Shift Details
     status: Status
     support_dates: Support dates
     surgeon: Surgeon
@@ -244,6 +255,15 @@ en:
       clear_call_list: Clear your call list
       clear_call_list_confirm: Are you sure you want to clear your current call list? This will also clear completed calls.
       remove_from_call_list_confirm: Are you sure you want to remove %{name} from your call list?
+    table_row:
+      assign_care_request: Assign
+      email_volunteer_list: Email volunteers
+      mark_accepted: Accept
+      mark_intake_complete: Complete intake
+      mark_procedure_confirmed: Confirm
+      mark_rejected: Reject
+      mark_under_care: Under care
+      
   devise:
     omniauth_callbacks:
       success: Successfully logged in with %{kind}
@@ -272,6 +292,25 @@ en:
     messages:
       password:
         password_strength: Passwords need to be stronger than that. Try a longer or more complicated password please.
+    care_address:
+      must_have_procedure: A care address must be connected to a procedure.
+    care_coordinator:
+      must_have_person: A care coordinator must be connected to a person.
+    patient:
+      must_have_person: A patient must be connected to a person.
+    person:
+      must_have_user: A person must be connected to a user.
+    procedure:
+      must_have_patient: A procedure must be connected to a patient.
+    shift_entry:
+      must_have_care_address: A shift entry must be connected to a care address.
+      must_have_procedure: A shift entry must be connected to a procedure.
+      must_have_shift: A shift entry must be connected to a shift.
+    shift:
+      must_have_care_address: A shift must be connected to a care address.
+      must_have_shift_entry: A shift must have at least one shift entry.
+    volunteer:
+      must_have_person: A volunteer must be connected to a person.
   events:
     add_to_call_list: Add to call list
     couldnt_reach_patient: called, but couldn't reach
@@ -296,6 +335,7 @@ en:
     new_patient_save: A new patient has been successfully saved
     new_person_error: Errors prevented this person from being saved - %{error}
     new_person_save: A new person has been successfully saved
+    overlapping_care_address: This care address overlaps with an existing care address for this patient. Please check the dates and try again.
     patient_info_saved: Patient info successfully saved at %{timestamp}
     patient_removed_database: Patient successfully removed from database.
     patient_removed_database_error: Can't delete patients with pledges; please correct the patient record and try again.
@@ -397,9 +437,12 @@ en:
     dashboard:
       called_on: 'Called on: %{date}'
       confirm_del: Are you sure you want to delete %{name}? Only do this if you're sure this is a duplicate patient for the same pregnancy. (Seriously, no takebacks!)
+      confirm_intake_complete: Are you sure you want to mark %{name}'s intake as complete?
       delete: Delete duplicate patient record
       delete_label: 'Admin: Delete'
       email: Email
+      intake_complete: Intake complete
+      intake_complete_label: Mark intake complete
       phone_number: Phone number
     helper:
       day:
@@ -563,13 +606,13 @@ en:
     services_required:
       title: Services Required
       personal_care: Personal care
-      meal: Meal
+      meals: Meals
       chores: Chores
-      grocery: Grocery shopping
+      grocery_shopping: Grocery shopping
       prescriptions: Prescription pick-up
       transportation: Transportation
       companionship: Companionship
-      other: Other (see notes)
+      other_service: Other (see notes)
     service_start: Care start date
     service_end: Care end date
     intensive_service_end: Intensive care end date
@@ -669,7 +712,50 @@ en:
         no_voicemail: Do not leave this patient a voicemail
         voicemail_identify: Voicemail OK; Okay to identify as %{org}
         voicemail_no_identify: Voicemail OK; Do not identify as %{org}
-
+  shift:
+    add:
+      header: Add Shifts
+    details:
+      care: Care Details
+      care_address: Care Address
+      patient: Patient
+      title: Shift Details
+    service_type:
+      key:
+        personal_care: Personal care
+        meals: Meals
+        chores: Chores
+        grocery_shopping: Grocery shopping
+        prescriptions: Prescription pick-up
+        transportation: Transportation
+        companionship: Companionship
+        other_service: Other (see notes)
+      help_text:
+        personal_care: Assistance with activities of daily living (bathing, dressing, toileting, etc.)
+        meals: Preparing and/or providing meals
+        chores: Light housecleaning, laundry, etc.
+        grocery_shopping: Grocery shopping and/or running errands
+        prescriptions: Picking up prescriptions from the pharmacy
+        transportation: Providing rides to/from appointments
+        companionship: Providing companionship and emotional support
+        other_service: Other (see notes)
+    shift_type:
+      key:
+        in_home: In-home
+        errands: Errands
+        transportation: Transportation
+        virtual: Virtual
+        other: Other
+        overnight: Overnight
+      help_text:
+        in_home: Care provided at the patient's home
+        errands: Running errands for the patient
+        transportation: Providing rides to/from appointments
+        virtual: Care provided remotely via phone or video call
+        other: Other (see notes)
+        overnight: Overnight care
+    start_time: Shift start time
+    end_time: Shift end time
   tooltips:
     budget_bar: The budget bar lists money tentatively set aside for a patient (by entering a value in the %{org} pledge field) and money sent to a clinic for a patient (by checking the I sent the pledge checkbox) over a given period.
     call_list: This sortable list is used to keep track of patients to call back during your shift. Use the search to populate it.
@@ -695,6 +781,15 @@ en:
     procedure_confirmed: This sortable list is used to keep track of care requests that have had their procedure confirmed. 
     under_care: This sortable list is used to keep track of care requests with patients currently receiving care. 
   user:
+    roleable_types:
+      key:
+        care_coordinator: Care Coordinator
+        data_volunteer: Data Volunteer
+        admin: Admin
+        cr: Care Recipient
+        volunteer: Volunteer
+        finance_admin: Finance Admin
+        coord_admin: Coordinator Admin
     common:
       last_login: Last Login
       role: Role
@@ -730,3 +825,6 @@ en:
     user_table:
       date_created: Date Created
       full_name: Full Name
+  volunteer:
+    information:
+      title: Volunteer Information

@@ -1,0 +1,17 @@
+$('#care_address_list').empty();
+
+$('#care_address_list').append(
+  '<%= escape_javascript(render partial: 'care_addresses/care_address_table',
+                                locals: {
+                                        title: t('practical.partial_titles.care_address_list'),
+                                        table_type: 'care_address_list',
+                                        care_addresses: @procedure.care_address_list(@procedure),
+                                        sortable: true,
+                                        autosortable: true }) %>'
+);
+
+$('#care_address_search_results_shell').hide();
+
+$(".new-care_address").modal('hide')
+$('body').removeClass('modal-open')
+$('.modal-backdrop').remove()

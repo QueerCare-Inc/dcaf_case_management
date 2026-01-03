@@ -6,13 +6,18 @@ class Patient < ApplicationRecord
   # Concerns
   include PaperTrailable
   include Shareable
-  include CareRequestListable
+  # include CareRequestListable
   include Notetakeable
   include PersonSearchable
   include EventLoggable
+  include DateDisplayable
+
+  encrypts :legal_name
+  encrypts :intake_date
 
   # Callbacks
   after_create :initialize_fulfillment
+  after_create :create_care_request_entry
   after_update :confirm_still_shared, if: :shared_flag?
   after_update :update_care_coordinate_regions, if: :saved_change_to_region_id?
   after_update :update_current_procedure_id, if: :care_request_list_populated?
@@ -22,10 +27,17 @@ class Patient < ApplicationRecord
   belongs_to :person
   belongs_to :region, optional: true
   belongs_to :user, optional: true
-  has_many :notes, as: :can_note
+  # belongs_to :care_coordinator, optional: true
+  has_many :notes, as: :can_note, dependent: :destroy
   # has_many :care_coordinate_entries, dependent: :destroy
   has_one :fulfillment, as: :can_fulfill
-  has_many :procedures, dependent: :destroy
+  has_many :shift_entries, dependent: :destroy
+  has_many :shifts, through: :shift_entries, dependent: :destroy
+  has_many :care_addresses, through: :shift_entries, dependent: :destroy
+  has_many :procedures, through: :shift_entries, dependent: :destroy
+  has_many :care_request_entries, dependent: :destroy
+  accepts_nested_attributes_for :care_request_entries, allow_destroy: true
+
   # has_many :care_request_list_entries, dependent: :destroy
   accepts_nested_attributes_for :procedures
   belongs_to :last_edited_by, class_name: 'User', inverse_of: nil, optional: true
@@ -39,11 +51,12 @@ class Patient < ApplicationRecord
   # validates :intake_date, presence: true
 
   validates :insurance, :referred_by, length: { maximum: 150 }
-  validates :voicemail_preference, :care_coordinator, length: { maximum: 150 }
+  validates :voicemail_preference, length: { maximum: 150 } # :care_coordinator,
   validates_associated :fulfillment
 
   validate :in_case_of_emergency_length
-  validate :emergency_contact_options_length
+  validate :special_circumstances_length
+  validate :must_have_person
 
   # Methods
   def event_params
@@ -80,10 +93,6 @@ class Patient < ApplicationRecord
     in_case_of_emergency.map { |emergency| emergency.present? }.any?
   end
 
-  def has_emergency_contact_options
-    emergency_contact_options.map { |option| option.present? }.any?
-  end
-
   def archive_date
     if fulfillment.audited?
       # If a patient fulfillment is ticked off as audited, archive 3 months
@@ -111,15 +120,31 @@ class Patient < ApplicationRecord
   end
 
   def create_new_procedure
-    Procedure.create(
-      org_id: org_id,
-      region_id: region_id,
-      person_id: person_id,
-      patient_id: id,
-      procedure_date: Date.today + 1.month,
-      procedure_type: Procedure.procedure_types[:other],
-      care_status: Procedure.care_statuses[:new_care_request]
-    )
+    Procedure.transaction do
+      # Create the Procedure without validation
+      procedure = Procedure.new(
+        org_id: org_id,
+        region_id: region_id,
+        person_id: person_id,
+        patient_id: id,
+        procedure_date: Date.today + 1.month,
+        procedure_type: Procedure.procedure_types[:other],
+        care_status: Procedure.care_statuses[:new_care_request]
+      )
+      procedure.save!(validate: false)
+
+      # Create the CareRequestEntry and associate it with the Procedure
+      care_request_entry = CareRequestEntry.create!(
+        patient: self,
+        procedure: procedure,
+        region: region,
+        care_coordinator: nil # Set this if applicable
+      )
+      # Update the Procedure with the CareRequestEntry
+      procedure.update!(care_request_entry: care_request_entry)
+
+      procedure
+    end
   end
 
   def procedure_search(search_limit: 5)
@@ -135,6 +160,7 @@ class Patient < ApplicationRecord
 
   def update_current_procedure_id
     base_procedure = procedure_search
+
     future_procedures = base_procedure.where('procedure_date >= ?', DateTime.now)
     # TODO: add a way to remove procedures that were an error
     current_procedure = future_procedures.first
@@ -167,6 +193,19 @@ class Patient < ApplicationRecord
     intake_date.display_date
   end
 
+  def get_all_shifts
+    Shift.where(patient_id: id).sort_by(&:start_time)
+  end
+
+  def create_care_request_entry
+    procedure = get_current_procedure
+    CareRequestEntry.create_care_request_entry(
+      patient: self,
+      procedure: procedure,
+      region: region
+    )
+  end
+
   private
 
   def initialize_fulfillment
@@ -178,6 +217,19 @@ class Patient < ApplicationRecord
                   updated_at: { '$lte' => datetime })
   end
 
+  # This is intended to protect against saving maliscious data sent via an edited request. It should
+  # not be possible to trigger errors here via the UI.
+  def special_circumstances_length
+    # The max length is (2 x n) where n is the number of special circumstances checkboxes. With no
+    # boxes checked, there are n elements (all blank), and there is an additional element present
+    # for every checked box.
+    errors.add(:special_circumstances, 'is invalid') unless special_circumstances.length <= 14
+
+    special_circumstances.each do |value|
+      errors.add(:special_circumstances, 'is invalid') if value && value.length > 50
+    end
+  end
+
   def in_case_of_emergency_length
     errors.add(:in_case_of_emergency, 'is invalid') unless in_case_of_emergency.length <= 7
 
@@ -186,11 +238,7 @@ class Patient < ApplicationRecord
     end
   end
 
-  def emergency_contact_options_length
-    errors.add(:emergency_contact_options, 'is invalid') unless emergency_contact_options.length <= 7
-
-    emergency_contact_options.each do |value|
-      errors.add(:emergency_contact_options, 'is invalid') if value && value.length > 120
-    end
+  def must_have_person
+    errors.add(:person, I18n.t('errors.patient.must_have_person')) unless person.present?
   end
 end

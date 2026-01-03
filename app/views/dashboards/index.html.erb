@@ -1,10 +1,24 @@
 <div class="row">
   <div class="col-sm-12">
+    <% @shifts = current_user.get_associated_shifts %>
     <%= render partial: 'dashboards/shift_calendar',
                locals: {
                         title: t('dashboard.partial_titles.coordinator_cr'),
-                        calendar_type: 'coordinator_cr'
+                        calendar_type: 'coordinator_cr',
+                        shifts: @shifts,
+                        view: 'month'
                         } %>
+    <%# <%= render partial: 'dashboards/calendar',
+               locals: {
+                     title: t('dashboard.partial_titles.coordinator_cr'),
+                     calendar_type: 'coordinator_cr',
+                     shifts: @shifts,
+                     view: @view
+               }
+               %>
+    <% calendar_type = 'coordinator_cr' %>
+    <% @view = 'month' %>
+    <div id="calendar_container_shell"></div>
     
     <%= render partial: 'dashboards/search_form' %>
 
@@ -13,7 +27,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.new_care_requests'),
                         table_type: 'new_care_requests_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :new_care_request),
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :new_care_request),
                         sortable: true,
                         autosortable: true
                         } %>
@@ -21,7 +35,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.assigned_care_requests'),
                         table_type: 'assigned_care_requests_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :coordinator_assigned), 
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :coordinator_assigned), 
                         sortable: true,
                         autosortable: true
                         } %>
@@ -29,7 +43,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.intake_complete'),
                         table_type: 'intake_complete_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :intake_complete), 
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :intake_complete), 
                         sortable: true,
                         autosortable: true
                         } %>
@@ -37,7 +51,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.active_care_requests'),
                         table_type: 'active_care_requests_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :accepted_care_request), 
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :accepted_care_request), 
                         sortable: true,
                         autosortable: true
                         } %>
@@ -45,7 +59,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.procedure_confirmed'),
                         table_type: 'procedure_confirmed_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :procedure_confirmed), 
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :procedure_confirmed), 
                         sortable: true,
                         autosortable: true
                         } %>
@@ -53,7 +67,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.under_care'),
                         table_type: 'under_care_list',
-                        care_requests: current_user.find_care_request_by_status(current_region, :under_care), 
+                        care_request_entries: current_user.find_care_request_entry_by_status(current_region, :under_care), 
                         sortable: true,
                         autosortable: true
                         } %>
@@ -63,7 +77,7 @@
                  locals: {
                         title: t('dashboard.partial_titles.assigned_care_requests'),
                         table_type: 'assigned_care_requests_list',
-                        care_requests: current_user.care_coordinator_assigned_care_requests(current_region, current_user),
+                        care_request_entries: current_user.care_coordinator_assigned_care_requests(current_region, current_user),
                         sortable: true,
                         autosortable: true
                         } %>
@@ -71,7 +85,7 @@
                  locals: { 
                         title: t('dashboard.partial_titles.shared_cases'),
                         table_type: 'shared_cases',
-                        care_requests: @shared_patients,
+                        care_request_entries: @shared_patients,
                         autosortable: true 
                         } %> 
       <p>Replace with Unfulfilled Volunteer Shifts</p>

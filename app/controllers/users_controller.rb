@@ -127,7 +127,7 @@ class UsersController < ApplicationController
   end
 
   def find_person
-    Person.find()
+    Person.find
   end
 
   def user_params

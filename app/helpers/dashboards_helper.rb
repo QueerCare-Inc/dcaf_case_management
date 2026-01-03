@@ -1,7 +1,7 @@
 # Convenience methods consumed in the dashboards controller index view
 module DashboardsHelper
   def date_range(date: Time.zone.now)
-    if (Config.start_day == :monthly )
+    if Config.start_day == :monthly
       month_range(date: date)
     else
       week_range(date: date)
@@ -27,5 +27,12 @@ module DashboardsHelper
                         l week_end, format: '%B %-d'
                       end
     "#{week_start_string} - #{week_end_string}"
+  end
+
+  def render_shifts(day, shifts)
+    shifts.map do |shift|
+      content_tag(:div,
+                  "#{shift.shift_type}: #{DateTime.parse(shift.start_time).strftime('%I:%M %p')} - #{DateTime.parse(shift.end_time).strftime('%I:%M %p')}")
+    end.join.html_safe
   end
 end

@@ -1,0 +1,29 @@
+<tr id="care_address_<%= care_address.id %>">
+  <% if sortable %>
+    <td class="handle" scope="row">
+      <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
+    </td>
+  <% else %>
+    <td scope="row"><!-- spacer --></td>
+  <% end %>
+
+  <td><%= care_address.street_address %></td>
+  <td><%= care_address.city %></td>
+  <td><%= care_address.phone_number_display(care_address.phone_number) %></td>
+  <td><%= care_address.start_date %></td>
+  <td><%= care_address.end_date %></td>
+  <td><%= care_address.confirmed ? "✔" : "✘" %></td>
+  <td>
+    <%= link_to t('common.view_details'),
+                edit_care_address_path(care_address) %>
+  </td>
+  <td><%= link_to 'Delete', care_address_path(care_address), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  <td><%= link_to 'Add shift', 
+                  method: :post,
+                  url: select_care_address_procedure_path(@procedure), 
+                  html: { id: 'shift_add_form_content' },
+                  local: false, 
+                  remote: true, 
+                  class: 'edit_shifts'
+                  %></td>
+</tr>

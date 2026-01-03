@@ -1,0 +1,27 @@
+<div class="row">
+  <%= f.date_field :intake_date,
+                   value: f.object.intake_date.present? ? Date.parse(f.object.intake_date) : nil,
+                   label: t('activerecord.attributes.patient.intake_date'),
+                   autocomplete: 'off' %>
+</div>
+<div class="row">
+  <% procedure = f.object.get_current_procedure %>
+  <% care_request_entry = procedure&.care_request_entry %>
+  <% care_coordinator = care_request_entry&.care_coordinator %>
+
+  <% if care_coordinator.present? %>
+    <% cc_user = User.where(id: care_coordinator.user_id).first %>
+    <%= f.text_field :care_coordinator,
+                     value: cc_user.name,
+                     label: t('activerecord.attributes.patient.care_coordinator'),
+                     autocomplete: 'on' %>
+  <% else %>
+    <% @care_coordinator_users = User.where(role: 'care_coordinator') %>
+    <%= f.fields_for :care_request_entry, care_request_entry do |cre_f| %>
+      <%# <%= cre_f.label :care_coordinator_id, t('activerecord.attributes.patient.care_coordinator') %> 
+      <%= cre_f.select :care_coordinator_id, 
+                       options_from_collection_for_select(@care_coordinator_users, :id, :name, care_coordinator&.id), 
+                       { include_blank: 'Select Care Coordinator', class: 'form-control' } %>
+    <% end %>
+  <% end %>
+</div>

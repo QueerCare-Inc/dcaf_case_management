@@ -1,0 +1,10 @@
+<%= bootstrap_form_with model: @patient, #patient,
+                        html: { id: 'practical-support-waiver-form' },
+                        local: false,
+                        method: 'patch' do |f| %>
+    <% if Config.display_practical_support_waiver? %>
+        <%= f.form_group :practical_support_waiver do %>
+            <%= f.check_box :practical_support_waiver, label: t('practical_support.practical_support_waiver') %>
+        <% end %>
+    <% end %>
+<% end %>

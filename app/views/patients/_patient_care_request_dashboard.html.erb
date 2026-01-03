@@ -1,0 +1,137 @@
+<div id="patient_care_request_dashboard_content">
+  <%= bootstrap_form_with model: @care_request_entry,
+                          url: care_request_entry_path(@care_request_entry), 
+                          method: :patch, 
+                          local: false, 
+                          data: { remote: true },
+                          html: { id: 'patient_care_request_dashboard_form' }, 
+                          class: 'edit_care_request_entry' do |f| %>
+    <!-- Hidden fields for IDs -->
+    <%= f.hidden_field :procedure_id, value: @care_request_entry.procedure.id %>
+    <%= f.hidden_field :patient_id, value: @care_request_entry.patient.id %>
+    <%# <%= f.hidden_field :care_coordinator_id, value: @care_request_entry.care_coordinator.id %>
+
+    <div class="row">
+      <%# User %>
+      <% @patient_user = @care_request_entry.patient.user %>
+      <%= f.fields_for :user, @patient_user do |user_fields| %>
+        <div class="col-2">
+          <div class="row">
+              <%= user_fields.text_field :name,
+                                  value: @patient_user.name,
+                                  label: t('activerecord.attributes.patient.name'),
+                                  autocomplete: 'off',
+                                  data: {field: 'user[name]'} %>
+          </div>
+          <div class="row">
+              <%= user_fields.text_field :primary_phone,
+                                  value: @patient_user.primary_phone,
+                                  label: t('activerecord.attributes.patient.phone_number'),
+                                  autocomplete: 'off',
+                                  data: {field: 'user[primary_phone]'} %>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <div class="row">
+              <%= user_fields.text_field :pronouns,
+                                  value: @patient_user.pronouns,
+                                  label: t('activerecord.attributes.patient.pronouns'),
+                                  autocomplete: 'off',
+                                  data: {field: 'user[pronouns]'} %>
+          </div>
+
+          <div class="row">
+            <%= user_fields.text_field :email,
+                              value: @patient_user.email_display,
+                              label: t('activerecord.attributes.patient.email'),
+                              data: {field: 'user[email]'} %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Patient %>
+      <div class="col-2">
+        <% @patient = @care_request_entry.patient %>
+        <%= f.fields_for :patient, @patient do |patient_fields| %>
+          <div class="row">
+            <%= patient_fields.date_field :intake_date,
+                                          value: @patient.intake_date.present? ? Date.parse(@patient.intake_date) : nil,
+                                          label: t('activerecord.attributes.patient.intake_date'),
+                                          autocomplete: 'off',
+                                          data: {field: 'patient[intake_date]'} %>
+          </div>
+        <% end %>
+
+
+        <div class="row">
+          <% @care_coordinator_users = User.joins(:care_coordinator).where(role: 'care_coordinator') %>
+          <% if @care_request_entry.care_coordinator_id.present? %> 
+            <% cc = CareCoordinator.where(id: @care_request_entry.care_coordinator_id).first %>
+            <% cc_user = User.where(id: cc.user_id).first %>
+            <%= f.select :care_coordinator_id, 
+                            options_from_collection_for_select(@care_coordinator_users, :id, :name, cc_user.id), 
+                            { include_blank: 'Select Care Coordinator' }, 
+                            { class: 'form-control', data: { field: 'care_coordinator_id' } } %>
+          <% else %>
+            <%= f.select :care_coordinator_id, 
+                            options_from_collection_for_select(@care_coordinator_users, :id, :name), 
+                            { include_blank: 'Select Care Coordinator' }, 
+                            { class: 'form-control', data: { field: 'care_coordinator_id' } } %>
+          <% end %>
+        </div>
+      </div>
+
+      <% @procedure = @care_request_entry.procedure %>
+      <%= f.fields_for :procedure, @procedure do |procedure_fields| %>
+        <div class="col-2">
+          <div class="row">
+              <%= procedure_fields.date_field :procedure_date,
+                                  value: Date.parse(@procedure.procedure_date),
+                                  label: t('activerecord.attributes.patient.procedure_date'),
+                                  autocomplete: 'off',
+                                  data: {field: 'procedure[procedure_date]'} %>
+          </div>
+          <div class="row">
+              <div class="form-group">
+                  <label for="status"><%= t 'patient.shared.status' %> <%= tooltip_shell status_help_text(@procedure) %></label>
+                  <input type="text" value="<%= @care_request_entry.status_key_text(@procedure.care_status) %>" id="patient_status_display" autocomplete="off" disabled>
+              </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <div class="col-3"> 
+        <div class="row">
+          <% if current_user.admin? %>
+            <div class="form-group">
+              <label for="admin-delete"><%= t 'patient.dashboard.delete_label' %></label>
+              <div>
+                <%= link_to t('patient.dashboard.delete'),
+                            patient_path(@care_request_entry.patient),
+                            class: 'btn btn-danger',
+                            method: :delete,
+                            data: { confirm: t('patient.dashboard.confirm_del', name: User.where(id: @care_request_entry.patient.user_id).first.name) } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="row">
+          <% if (current_user.admin? || current_user.care_coordinator? || current_user.coord_admin?) && @care_request_entry.procedure.care_status == 'coordinator_assigned' %>
+            <div class="form-group">
+              <label for="intake-complete"><%= t 'patient.dashboard.intake_complete_label' %></label>
+              <div>
+                <%= link_to t('patient.dashboard.intake_complete'),
+                            mark_intake_complete_path(@care_request_entry),
+                            class: 'btn btn-success',
+                            method: :patch,
+                            data: { confirm: t('patient.dashboard.confirm_intake_complete', name: User.where(id: @care_request_entry.patient.user_id).first.name) } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

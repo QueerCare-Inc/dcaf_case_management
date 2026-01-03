@@ -1,0 +1,4 @@
+$('.modal-content').html('');
+$('.modal').attr('id', 'add-care-address-<%= @care_address.id %>-edit-modal');
+$('.modal-content').append('<%= escape_javascript(render partial: "practical_supports/edit", locals: { procedure: @procedure, care_address: @care_address, note: @note })%>');
+$('.modal').modal('toggle');

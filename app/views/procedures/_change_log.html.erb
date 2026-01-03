@@ -1,0 +1,19 @@
+<div id="change_log_content">
+  <h2><%= t('procedure.change_log.title') %></h2>
+
+  <table class="table border-side" id="change-log-table">
+    <thead>
+      <tr>
+        <th><%= t('procedure.change_log.table.modified_date') %></th>
+        <th><%= t('procedure.change_log.table.change') %></th>
+        <th><%= t('procedure.change_log.table.case_manager') %></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% procedure.all_versions(current_user.allowed_data_access?).each do |revision| %>
+        <%= render 'procedures/change_log_entry', revision: revision %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

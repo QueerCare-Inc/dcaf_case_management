@@ -14,29 +14,36 @@ module AttributeDisplayable
 
   def procedure_date_display
     return nil unless procedure_date.present?
-    "#{procedure_date}"
+
+    Date.parse(procedure_date).strftime('%m/%d/%y')
+    # "#{procedure_date}"
   end
 
   def procedure_type_display
     return nil unless procedure_type.present?
+
     t("procedure.helper.procedure_type.#{procedure_type.downcase.gsub(' ', '_')}")
   end
 
   def surgeon_display
     surgeon = Surgeon.find_by(id: surgeon_id)
     return nil unless surgeon.present?
+
     surgeon.name
   end
 
   def clinic_display
     clinic = Clinic.find_by(id: clinic_id)
     return nil unless clinic.present?
+
     clinic.name
   end
 
   def support_dates_display
     return nil unless service_start.present? && service_end.present?
-    "#{service_start} - #{service_end}"
+
+    Date.parse(service_start).strftime('%m/%d/%y') + ' - ' + Date.parse(service_end).strftime('%m/%d/%y')
+    # "#{service_start} - #{service_end}"
   end
 
   # def email_display

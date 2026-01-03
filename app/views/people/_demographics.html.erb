@@ -1,0 +1,119 @@
+<%= f.select :language,
+            options_for_select(language_options(f.object.language),
+                                f.object.language),
+            value: f.object.language,
+            label: t('person.information.language'),
+            autocomplete: 'off' %>
+
+<%= f.number_field :age, 
+                    value: f.object.age,
+                    autocomplete: 'off' %>
+
+<%= f.select :race_ethnicity,
+            options_for_select(race_ethnicity_options,
+                                f.object.race_ethnicity),
+            value: f.object.race_ethnicity,
+            autocomplete: 'off' %> 
+
+<%= f.select :employment_status,
+            options_for_select(employment_status_options,
+                                f.object.employment_status),
+            value: f.object.employment_status,
+            autocomplete: 'off' %>
+<%= f.select :income,
+            options_for_select(income_options,
+                                f.object.income),
+            value: f.object.income,
+            help: t('person.information.income_help'),
+            autocomplete: 'off' %>
+
+<div class="row">
+    <div class="col">
+        <%= f.select :household_size_adults,
+                    options_for_select(household_size_options,
+                                    f.object.household_size_adults),
+                    value: f.object.household_size_adults,
+                    help: t('person.information.household_help') %>
+    </div>
+    <div class="col">
+        <%= f.select :household_size_children,
+                    options_for_select(household_size_options,
+                                        f.object.household_size_children),
+                    value: f.object.household_size_children %>
+    </div>
+</div>
+
+    
+<div class="row mt-4">
+    <div class="col-8">
+        <%= f.text_field :city, 
+                        value: f.object.city, 
+                        autocomplete: 'off' %>
+    </div>
+
+    <div class="col-4">
+        <%= f.select :state, 
+                    options_for_select(state_options(f.object.state),
+                                    f.object.state), 
+                    value: f.object.state,
+                    autocomplete: 'off' %>
+    </div>
+</div>
+
+<%= f.text_field :zipcode, 
+                value: f.object.zipcode,
+                autocomplete: 'off',
+                pattern: '\d{5}(-?\d{4})?' %>
+
+
+<h3><%= t 'person.information.emergency_contact.title' %></h3>
+<%= f.text_field :emergency_contact,
+                value: f.object.emergency_contact,
+                autocomplete: 'off',
+                label: t('person.information.emergency_contact.name') %>
+<%= f.text_field :emergency_contact_phone,
+                value: f.object.emergency_contact_phone_display,
+                autocomplete: 'off',
+                label: t('person.information.emergency_contact.phone_number') %>
+<%= f.text_field :emergency_contact_relationship,
+                value: f.object.emergency_contact_relationship,
+                autocomplete: 'off',
+                label: t('person.information.emergency_contact.relationship') %>
+
+<fieldset>
+    <legend class="font-weight-bold" id="emergency_contact_options_label">
+        <%= t 'person.information.emergency_contact_options.title' %>
+    </legend>
+
+    
+    <%= f.form_group :emergency_contact_options do %>
+        <div class="row">
+            <div class="col">
+                <%= f.check_box :emergency_contact_options, {
+                                    label: t('person.information.emergency_contact_options.use_pronouns'),
+                                    name: 'patient[person][emergency_contact_options][]',
+                                    checked: f.object.emergency_contact_options.include?('Use pronouns'),
+                                    id: 'pronouns_person_emergency_contact_options' },
+                                'Use pronouns' %>
+                <%= f.check_box :emergency_contact_options, {
+                                    label: t('person.information.emergency_contact_options.use_name'),
+                                    name: 'patient[person][emergency_contact_options][]',
+                                    checked: f.object.emergency_contact_options.include?('Use name'),
+                                    id: 'name_person_emergency_contact_options' },
+                                'Use name' %>
+                <%= f.check_box :emergency_contact_options, {
+                                    label: t('person.information.emergency_contact_options.use_legal_name'),
+                                    name: 'patient[person][emergency_contact_options][]',
+                                    checked: f.object.emergency_contact_options.include?('Use legal name'),
+                                    id: 'legal_name_emergency_contact_options' },
+                                'Use legal name' %>
+                <%= f.check_box :emergency_contact_options, {
+                                    label: t('person.information.emergency_contact_options.other'),
+                                    name: 'patient[person][emergency_contact_options][]',
+                                    checked: f.object.emergency_contact_options.include?('Other'),
+                                    id: 'other_emergency_contact_options' },
+                                'Other' %>
+            </div>
+        </div>
+    <% end %>
+</fieldset>

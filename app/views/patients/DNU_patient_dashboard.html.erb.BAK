@@ -25,7 +25,7 @@
 
       <div class="col-2">
         <%= f.date_field :intake_date,
-                          value: patient.intake_date,
+                          value: Date.parse(patient.intake_date),
                           label: t('activerecord.attributes.patient.intake_date'),
                           autocomplete: 'off' %>
       </div>

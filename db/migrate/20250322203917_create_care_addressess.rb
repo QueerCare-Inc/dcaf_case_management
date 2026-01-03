@@ -13,16 +13,16 @@ class CreateCareAddressess < ActiveRecord::Migration[7.2]
       # t.belongs_to :patient #redundant??
 
       # attributes
-      t.string :street_address, null: false
+      t.text :street_address, null: false
       t.string :city, null: false
       t.string :state, null: false
       t.string :zip
-      t.string :phone_number, limit: 15, null: false
-      t.date :start_date, null: false
-      t.date :end_date, null: false
-      t.boolean :confirmed
-      t.numeric :coordinates, array: true
-      t.boolean :qc_house
+      t.text :phone_number, null: false
+      t.text :start_date, null: false
+      t.text :end_date, null: false
+      t.boolean :confirmed, default: false
+      t.numeric :coordinates, array: true, default: []
+      t.boolean :qc_house, default: false
       t.string :closest_cross_street
       t.string :accessibility_options, array: true, default: []
       

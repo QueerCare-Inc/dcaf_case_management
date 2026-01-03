@@ -1,0 +1,71 @@
+<!-- locals: title, table_type (for div id and tbody div id), sortable, autosortable -->
+
+<div id="<%= table_type %>" class="margin-bottom mt-5">
+  <h3 class="border-bottom title">
+    <%= title %>
+  </h3>
+
+  
+  <table class="table border-side" id="<%= table_type %>_table">
+    <thead>
+      <tr>
+        <th scope="col"><!-- handle/spacer --></th>
+        <th scope="col"><%= t 'common.phone_number' %></th>
+        <%# <th scope="col"><%= t 'common.email' %></th> 
+        <%= th_autosortable t('common.type'), 'string', local_assigns %>
+        <%= th_autosortable t('common.start_time'), 'string', local_assigns %>
+        <%= th_autosortable t('common.end_time'), 'string', local_assigns %>
+
+        <th scope="col"><%= t 'common.location' %></th>
+        <th scope="col"><%= t 'common.volunteers' %></th>
+        <th scope="col"><!-- shift details --></th>
+        <th scope="col"><!-- email volunteer base --></th>
+      </tr>
+    </thead>
+
+    <tbody id="<%= table_type %>_content">
+      <% shifts.each do |shift| %>
+        <% care_address = CareAddress.find_by(id: shift.care_address_id) %>
+        
+        <tr class="shift-data" id="<%= shift.id %>">
+          <% if local_assigns[:sortable] %>
+            <td class="handle" scope="row">
+              <i class="fas fa-arrows-alt fa-fw sortable-handle text-muted"></i>
+            </td>
+          <% else %>
+            <td scope="row"><!-- spacer --></td>
+          <% end %>
+
+          <td><%= care_address.phone_number %></td>
+          <%# <td><%= shift.email %></td> 
+          <td><%= shift.shift_type_key_text || t('common.none') %></td>
+          <td><%= DateTime.parse(shift.start_time).in_time_zone.strftime('%m/%d %H:%M') %></td>
+          <td><%= DateTime.parse(shift.end_time).in_time_zone.strftime('%m/%d %H:%M') %></td>
+          <td><%= care_address.street_address %></td>
+          <td>
+            <%# ToDo: update with volunteers %>
+            <%# <% if shift.volunteers.any? %>
+              <%# <%= shift.volunteers.map(&:name).join(', ') %> 
+            <%# <% else %> 
+            <%= t('common.none') %>
+            <%# <% end %>
+          </td>
+
+          <td>
+            <%= link_to t('common.view_details'),
+                        edit_shift_path(shift) %>
+          </td>
+          <td>
+            <%# <%= link_to t('common.email_volunteer_base'),
+                        email_volunteer_base(shift),
+                        method: :patch,
+                        remote: true %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <div id="shift-pagination">
+      <%= paginate shifts %>
+    </div>
+  </table>
+</div>

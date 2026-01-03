@@ -69,3 +69,17 @@ module DARIA
     config.active_record.encryption.deterministic_key = [ENV.fetch("ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY", "default_deterministic_key")]
   end
 end
+
+# Add middleware for logging all incoming requests
+class DebugMiddleware
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    Rails.logger.debug "Request: #{env['REQUEST_METHOD']} #{env['PATH_INFO']} Params: #{Rack::Utils.parse_nested_query(env['QUERY_STRING'])}"
+    @app.call(env)
+  end
+end
+
+Rails.application.config.middleware.use DebugMiddleware

@@ -11,6 +11,9 @@ class Person < ApplicationRecord
   include PersonSearchable
   include PhoneCleanable
 
+  encrypts :emergency_contact_phone
+  encrypts :emergency_contact
+
   # Callbacks
   before_validation :clean_fields
   before_save :save_identifier
@@ -21,10 +24,10 @@ class Person < ApplicationRecord
   # Relationships
   belongs_to :region
   belongs_to :user
-  has_many :notes, as: :can_note
-  has_one :patient, required: false
-  has_one :volunteer, required: false
-  has_one :care_coordinator, required: false
+  has_many :notes, as: :can_note, dependent: :destroy
+  has_one :patient, required: false, dependent: :destroy
+  has_one :volunteer, required: false, dependent: :destroy
+  has_one :care_coordinator, required: false, dependent: :destroy
 
   # Validations
   # Worry about uniqueness to tenant after porting region info.
@@ -37,14 +40,14 @@ class Person < ApplicationRecord
   validates :emergency_contact, :emergency_contact_phone, :emergency_contact_relationship,
             :language, :city, :state, :zipcode, :race_ethnicity, :employment_status,
             :income, length: { maximum: 150 }
+  validate :emergency_contact_options_length
 
   # validation for standard US zipcodes
   # allow ZIP (NNNNN) or ZIP+4 (NNNNN-NNNN)
   validates :zipcode, format: /\A\d{5}(-\d{4})?\z/,
                       length: { minimum: 5, maximum: 10 },
                       allow_blank: true
-
-  validate :special_circumstances_length
+  validate :must_have_user
 
   # Methods
   def save_identifier
@@ -101,6 +104,10 @@ class Person < ApplicationRecord
 
   def notes_count
     notes.size
+  end
+
+  def has_emergency_contact_options
+    emergency_contact_options.map { |option| option.present? }.any?
   end
 
   def has_special_circumstances
@@ -183,19 +190,6 @@ class Person < ApplicationRecord
     zipcode.gsub!(/(\d{5})(\d{4})/, '\1-\2') if zipcode
   end
 
-  # This is intended to protect against saving maliscious data sent via an edited request. It should
-  # not be possible to trigger errors here via the UI.
-  def special_circumstances_length
-    # The max length is (2 x n) where n is the number of special circumstances checkboxes. With no
-    # boxes checked, there are n elements (all blank), and there is an additional element present
-    # for every checked box.
-    errors.add(:special_circumstances, 'is invalid') unless special_circumstances.length <= 14
-
-    special_circumstances.each do |value|
-      errors.add(:special_circumstances, 'is invalid') if value && value.length > 50
-    end
-  end
-
   # def clean_primary_phone_number
   #   self.primary_phone = clean_phone_number(primary_phone)
   #   confirm_unique_phone_number(primary_phone)
@@ -206,5 +200,17 @@ class Person < ApplicationRecord
 
   def clean_emergency_contact_phone_number
     self.emergency_contact_phone = clean_phone_number(emergency_contact_phone)
+  end
+
+  def emergency_contact_options_length
+    errors.add(:emergency_contact_options, 'is invalid') unless emergency_contact_options.length <= 7
+
+    emergency_contact_options.each do |value|
+      errors.add(:emergency_contact_options, 'is invalid') if value && value.length > 120
+    end
+  end
+
+  def must_have_user
+    errors.add(:user, I18n.t('errors.person.must_have_user')) unless user.present?
   end
 end

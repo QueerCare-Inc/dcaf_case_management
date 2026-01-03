@@ -17,7 +17,7 @@ class PatientsController < ApplicationController
   end
 
   def create
-    person = Person.new 
+    person = Person.new
     patient = Patient.new patient_params, person_id: person.id
     patient.create_new_procedure
 
@@ -44,7 +44,9 @@ class PatientsController < ApplicationController
     # i18n-tasks-use t('activerecord.attributes.practical_support.fulfilled')
     @note = @patient.notes.new
     @patient = Patient.find(params[:id])
-    @procedure = @patient.get_current_procedure || Procedure.new
+    @procedure = @patient.get_current_procedure || @patient.create_new_procedure # Procedure.new
+    @care_addresses = @procedure.care_addresses
+    @care_request_entry = @procedure.care_request_entry
   end
 
   def update
@@ -91,14 +93,79 @@ class PatientsController < ApplicationController
     end
   end
 
+  def update_patient_and_person
+    @person = Person.find(params[:patient][:person_id])
+    @patient = Patient.find(params[:patient][:patient_id])
+
+    patient_params = params[:patient].require(:patient).permit(PATIENT_INFORMATION_PARAMS)
+    person_params = params[:patient].require(:person).permit(PERSON_INFORMATION_PARAMS)
+
+    if @patient.update(patient_params) && @person.update(person_params)
+      flash.now[:notice] = t('flash.patient_info_saved', timestamp: Time.zone.now.display_timestamp)
+    else
+      error = @patient.errors.full_messages.to_sentence
+      flash.now[:alert] = error
+      error = @person.errors.full_messages.to_sentence
+      flash.now[:alert] = error
+    end
+  end
+
+  def update_user_patient_and_procedure
+    @user = User.find(params[:patient][:user_id])
+    @patient = Patient.find(params[:patient][:patient_id])
+    @procedure = Procedure.find(params[:patient][:procedure_id])
+    # debugger
+
+    patient_params = params[:patient].require(:patient).permit(PATIENT_DASHBOARD_PARAMS)
+    user_params = params[:patient].require(:user).permit(USER_DASHBOARD_PARAMS)
+    procedure_params = params[:patient].require(:procedure).permit(PROCEDURE_DASHBOARD_PARAMS)
+
+    if @patient.update(patient_params) && @user.update(user_params) && @procedure.update(procedure_params)
+      flash.now[:notice] = t('flash.patient_info_saved', timestamp: Time.zone.now.display_timestamp)
+    else
+      error = @user.errors.full_messages.to_sentence
+      flash.now[:alert] = error
+      error = @patient.errors.full_messages.to_sentence
+      flash.now[:alert] = error
+      error = @procedure.errors.full_messages.to_sentence
+      flash.now[:alert] = error
+    end
+  end
+
+  def assign_care_coordinator
+    @patient = Patient.find(params[:patient_id])
+    @care_coordinator = CareCoordinator.find(params[:care_coordinator_id])
+
+    if @patient.update(care_coordinator: @care_coordinator)
+      flash[:notice] = 'Care Coordinator assigned successfully.'
+    else
+      flash[:alert] = 'Failed to assign Care Coordinator.'
+    end
+
+    # redirect_to patient_path(@patient)
+  end
+
+  def remove_care_coordinator
+    @patient = Patient.find(params[:patient_id])
+    if @patient.update(care_coordinator: nil)
+      flash[:notice] = 'Care Coordinator removed successfully.'
+    else
+      flash[:alert] = 'Failed to remove Care Coordinator.'
+    end
+  end
+
   private
 
   # preload patient with versions for edit and js format update requests
   def should_preload_patient_with_versions?
+    Rails.logger.debug "Action Name: #{action_name}"
+    Rails.logger.debug "Request Format: #{request.format}"
     action_name.to_sym == :edit || (action_name.to_sym == :update && !request.format.json?)
   end
 
   def find_patient
+    Rails.logger.debug 'Inside find_patient before_action'
+    Rails.logger.debug "Params: #{params.inspect}"
     @patient = Patient.includes(versions: [:item, :user])
                       .find params[:id]
   end
@@ -139,31 +206,65 @@ class PatientsController < ApplicationController
   end
 
   PATIENT_DASHBOARD_PARAMS = [
-    :care_coordinator
+    :care_coordinator,
+    :intake_date,
+    { care_request_entry: [
+      :care_coordinator_id
+    ] }
     # :status
   ].freeze
 
   PATIENT_INFORMATION_PARAMS = [
     :region_id,
     :person_id,
-    :legal_name, 
-    :insurance, :referred_by,
-    :emergency_disclosure, :advanced_care_directive, :call_911_permissions,
-    { in_case_of_emergency: [] },
-    { emergency_contact_options: [] }
+    :legal_name,
+    :insurance,
+    :referred_by,
+    :textable,
+    :voicemail_preference,
+    # :emergency_disclosure,
+    # :advanced_care_directive,
+    # :call_911_permissions,
+    { in_case_of_emergency: [],
+      special_circumstances: [] }
   ].freeze
 
-  OTHER_PARAMS = [:shared_flag, :intake_date].freeze
+  OTHER_PARAMS = [:shared_flag].freeze
 
   def patient_params
     permitted_params = [].concat(
-      PATIENT_DASHBOARD_PARAMS, 
+      PATIENT_DASHBOARD_PARAMS,
       PATIENT_INFORMATION_PARAMS,
       OTHER_PARAMS
     )
-    
+
     params.require(:patient).permit(permitted_params)
   end
+
+  PERSON_INFORMATION_PARAMS = [
+    :region_id,
+    :age,
+    :race_ethnicity,
+    :language,
+    :city, :state, :zipcode,
+    :emergency_contact,
+    :emergency_contact_phone,
+    :emergency_contact_relationship,
+    :employment_status,
+    :income,
+    :household_size_adults,
+    :household_size_children,
+    { emergency_contact_options: [] }
+  ].freeze
+
+  def person_params
+    params.require(:person).permit(PERSON_INFORMATION_PARAMS)
+  end
+
+  PROCEDURE_DASHBOARD_PARAMS = [
+    :procedure_date,
+    :care_status
+  ].freeze
 
   def procedure_params
     procedure_params = [
@@ -186,6 +287,13 @@ class PatientsController < ApplicationController
       procedure_params
     )
   end
+
+  USER_DASHBOARD_PARAMS = [
+    :name,
+    :pronouns,
+    :primary_phone,
+    :email
+  ].freeze
 
   def render_csv
     now = Time.zone.now.strftime('%Y%m%d')

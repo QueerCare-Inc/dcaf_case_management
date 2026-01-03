@@ -6,6 +6,7 @@ class DashboardsController < ApplicationController
 
   def index
     @shared_patients = eager_loaded_patients.shared_patients(current_region)
+    @care_coordinator_users = load_care_coordinator_users
     # @unconfirmed_support_patients = eager_loaded_patients.unconfirmed_practical_support(current_region)
   end
 
@@ -32,6 +33,39 @@ class DashboardsController < ApplicationController
     respond_to { |format| format.js }
   end
 
+  def week
+    @date = params[:date].to_date
+    @view = params[:view] || 'month'
+    # debugger
+    # @shifts = Shift.where(start_time: @date.beginning_of_week..@date.end_of_week)
+    # Fetch all shifts and filter them manually
+    @shifts = if @view == 'week'
+                Shift.all.select do |shift|
+                  DateTime.parse(shift.start_time) >= @date.beginning_of_week &&
+                    DateTime.parse(shift.start_time) <= @date.end_of_week
+                end
+              else
+                current_user.get_associated_shifts
+              end
+
+    # # Initialize the week calendar
+    # calendar = SimpleCalendar::WeekCalendar.new(self, date: @date, events: @shifts)
+
+    # date_range = @date.beginning_of_week..@date.end_of_week
+
+    # render partial: 'simple_calendar/week_calendar', locals: {
+    #   calendar: calendar,
+    #   date_range: date_range.to_a,
+    #   passed_block: lambda { |day, shifts|
+    #     render_shifts(day, shifts)
+    #   }
+    # }
+    respond_to do |format|
+      format.html
+      format.js
+    end
+  end
+
   private
 
   def eager_loaded_patients
@@ -48,5 +82,9 @@ class DashboardsController < ApplicationController
 
   def pick_region_if_not_set
     redirect_to new_region_path if session[:region_id].blank?
+  end
+
+  def load_care_coordinator_users
+    @care_coordinator_users = User.where(role: 'care_coordinator')
   end
 end

@@ -2,160 +2,92 @@
   <h2><%= t 'practical_support.title' %></h2>
   <p class="mb-5"><%= practical_support_guidance_link %></p>
 
-  <%= bootstrap_form_with model: @patient, #patient,
-                            html: { id: 'practical-support-patient-form' },
-                            local: false,
-                            method: 'patch',
-                            class: 'edit_procedure' do |f| %>
-    <%# <% procedure = patient.get_current_procedure %>
-    <% if Config.display_practical_support_waiver? %>
-      <%= f.form_group :practical_support_waiver do %>
-        <%= f.check_box :practical_support_waiver, label: t('practical_support.practical_support_waiver') %>
-      <% end %>
-    <% end %>
-  <% end %>
+  
+  <div class="row">
+    <div class="col">
+      <%= render partial: 'practical_supports/support_waiver',
+                  locals: {
+                            patient: @patient
+                          } %>
 
-  <%= bootstrap_form_with model: @procedure, #procedure,
-                            html: { id: 'practical-support-patient-form' },
-                            local: false,
-                            method: 'patch',
-                            class: 'edit_procedure' do |f| %>
-    <div class="row">
-      <div class="col info-form-left">
-        <fieldset>
-          <legend class="font-weight-bold" id="services_required_label">
-            <%= t 'practical_support.services_required.title' %>
-          </legend>
-          
-          <%= f.form_group :services do %>
-            <div class="row">
-              <div class="col">
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.personal_care'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Personal care'),
-                                id: 'personal_care_procedure_services' },
-                                'Personal Care', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.meal'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Meal assistance'),
-                                id: 'meal_procedure_services' },
-                                'Meal assistance', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.chores'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Household chores'),
-                                id: 'chores_procedure_services' },
-                                'Household chores', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.grocery'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Grocery shopping'),
-                                id: 'grocery_procedure_services' },
-                                'Grocery shopping', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.prescriptions'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Prescription pick-up'),
-                                id: 'prescription_procedure_services' },
-                                'Prescription pick-up', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.transportation'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Transportation'),
-                                id: 'transportation_procedure_services' },
-                                'Transportation', '' %>
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.companionship'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Companionship'),
-                                id: 'companionship_procedure_services' },
-                                'Companionship', '' %>              
-                <%= f.check_box :services, {
-                                label: t('practical_support.services_required.other'),
-                                name: 'procedure[services][]',
-                                checked: @procedure.services.include?('Other'),
-                                id: 'other_procedure_services' },
-                                'Other', '' %>
-              </div>
-            </div>
-          <% end %>
-        </fieldset>
-      </div>
+      <%= bootstrap_form_with model: @procedure,
+                              url: update_practical_support_path,
+                              method: :patch,
+                              local: false,
+                              html: {id: 'practical_support_form'},
+                              class: 'edit_practical_support' do |f| %>
 
-    
-      <div class="col info-form-left">
-        <%= f.date_field :service_start,
-                          value: @procedure.service_start&.display_date,
-                          label: t('practical_support.service_start'),
-                          autocomplete: 'off' %>
+        <%= f.hidden_field :patient_id, value: @procedure.patient_id %>
+        <%= f.hidden_field :person_id, value: @procedure.person_id %>
+        <%= f.hidden_field :procedure_id, value: @procedure.id %>
 
-        <%= f.date_field :intensive_service_end,
-                          value: @procedure.intensive_service_end&.display_date,
-                          label: t('practical_support.intensive_service_end'),
-                          autocomplete: 'off' %>
-
-        <%= f.date_field :service_end,
-                          value: @procedure.service_end&.display_date,
-                          label: t('practical_support.service_end'),
-                          autocomplete: 'off' %>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-12">
-        <%= render partial: 'care_addresses/care_address_search_form' #,
-                    # locals: { @procedure: @procedure }
-                  %>
-
-        <%= render partial: 'care_addresses/care_address_table',
+        <%# <%= render partial: 'practical_supports/services_required_form',
                     locals: {
-                            title: t('practical.partial_titles.care_address_list'),
-                            table_type: 'care_address_list',
-                            care_addresses: @procedure.care_address_list(procedure),
-                            sortable: true,
-                            autosortable: true
+                              procedure: @procedure
                             } %>
-        <%# <%= 'Add Another Address Button (coming)' %>
-        
-        
-        
-
-        <%# ToDo: fix this form %>
-      </div>
+        <%= f.fields_for :procedure, @procedure do |procedure_fields| %>
+          <%= render 'practical_supports/services_required_form', f: procedure_fields %>
+        <% end %> 
+                            
+        <%= render partial: 'care_addresses/care_address_table',
+                  locals: {
+                          title: t('practical.partial_titles.care_address_list'),
+                          table_type: 'care_address_list',
+                          care_addresses: @procedure.care_address_list(procedure),
+                          sortable: true,
+                          autosortable: true
+                          } %>
+      <% end %>
     </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <%# ToDo: revisit how this is nested %>
+      <%= render partial: 'care_addresses/care_address_search_form' #,
+                      # locals: { @procedure: @procedure }
+                    %>
+    </div>
+  </div>
 
-    <div class="row">
-      <div class="col-sm-12">
+  <br>
+
+  <div class="row" style="margin-top: 20px;">
+    <div class="col">
+      <%= render partial: 'shifts/shift_add_form'
+                      # locals: { @procedure: @procedure }
+                    %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <%= bootstrap_form_with model: @procedure,
+                              url: update_practical_support_path,
+                              method: :patch,
+                              local: false,
+                              html: {id: 'practical_support_form'},
+                              class: 'edit_practical_support' do |f| %>
+        <%= f.hidden_field :patient_id, value: @procedure.patient_id %>
+        <%= f.hidden_field :person_id, value: @procedure.person_id %>
+        <%= f.hidden_field :procedure_id, value: @procedure.id %>
+        
+        <% @shifts = @procedure.shifts.sort_by(&:start_time) %>
         <%= render partial: 'dashboards/shift_calendar',
                   locals: {
-                            title: t('practical.partial_titles.shift_calendar'),
-                            calendar_type: 'coordinator_cr',
-                            shifts: @procedure.shifts
-                            } %>
-        
-        <%# <%= f.button class: 'btn btn-primary',
-                      <%# title: t('practical_support.add_care_shifts') do %>
-            <%# <%= t 'practical_support.add_care_shifts' %>
-        <%# <% end %> 
-        <%# ToDo: link to populating shifts %>
-        <%= button_to t('practical_support.add_care_shifts'),
-              @procedure.generate_shifts,
-              method: :create,
-              class: 'btn btn-primary',
-              remote: true %>
+                          title: t('practical.partial_titles.shift_calendar'),
+                          calendar_type: 'coordinator_cr',
+                          shifts: @shifts,
+                          view: 'month'
+                          } %>
 
         <%= render partial: 'shifts/shifts_table',
                     locals: {
                             title: t('practical.partial_titles.shift_list'),
                             table_type: 'shift_list',
-                            shifts: @procedure.shifts,
+                            shifts: @procedure.get_page_shifts(params[:page] || 1),
                             sortable: true,
                             autosortable: true
                             } %>
-      </div>
+      <% end %>
     </div>
-  <% end %>
-  
+  </div> 
 </div>

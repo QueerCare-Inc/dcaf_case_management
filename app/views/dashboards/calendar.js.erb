@@ -1,0 +1,11 @@
+<%# $('#calendar-container').html('<%= j render partial: "simple_calendar/#{@view}_calendar", locals: { calendar: calendar, date_range: date_range.to_a, passed_block: passed_block } %>
+$('#calendar_container_shell').empty();
+
+$("#calendar_container_shell").append(
+    "<%= escape_javascript(render partial: 'dashboards/shift_calendar',
+                                    locals: {
+                                            title: t('dashboard.partial_titles.coordinator_cr'),
+                                            calendar_type: calendar_type,
+                                            shifts: @shifts,
+                                            view: @view
+                                            } ) %>");

@@ -4,23 +4,23 @@ module Statusable
 
   STATUSES = {
     rejected_care_request: { key: I18n.t('procedure.care_status.key.rejected_care_request'),
-                  help_text: I18n.t('procedure.care_status.help.rejected_care_request') },
+                             help_text: I18n.t('procedure.care_status.help.rejected_care_request') },
     archived: { key: I18n.t('procedure.care_status.key.archived'),
-                  help_text: I18n.t('procedure.care_status.help.archived') },
+                help_text: I18n.t('procedure.care_status.help.archived') },
     new_care_request: { key: I18n.t('procedure.care_status.key.new_care_request'),
-                   help_text: I18n.t('procedure.care_status.help.new_care_request') },
+                        help_text: I18n.t('procedure.care_status.help.new_care_request') },
     coordinator_assigned: { key: I18n.t('procedure.care_status.key.coordinator_assigned'),
-                 help_text: I18n.t('procedure.care_status.help.coordinator_assigned') },
+                            help_text: I18n.t('procedure.care_status.help.coordinator_assigned') },
     intake_complete: { key: I18n.t('procedure.care_status.key.intake_complete'),
-               help_text: I18n.t('procedure.care_status.help.intake_complete') },
+                       help_text: I18n.t('procedure.care_status.help.intake_complete') },
     accepted_care_request: { key: I18n.t('procedure.care_status.key.accepted_care_request'),
-               help_text: I18n.t('procedure.care_status.help.accepted_care_request') },
+                             help_text: I18n.t('procedure.care_status.help.accepted_care_request') },
     procedure_confirmed: { key: I18n.t('procedure.care_status.key.procedure_confirmed'),
-               help_text: I18n.t('procedure.care_status.help.procedure_confirmed') },
+                           help_text: I18n.t('procedure.care_status.help.procedure_confirmed') },
     under_care: { key: I18n.t('procedure.care_status.key.under_care'),
-               help_text: I18n.t('procedure.care_status.help.under_care') },
+                  help_text: I18n.t('procedure.care_status.help.under_care') },
     care_complete: { key: I18n.t('procedure.care_status.key.care_complete'),
-               help_text: I18n.t('procedure.care_status.help.care_complete') }
+                     help_text: I18n.t('procedure.care_status.help.care_complete') }
   }.freeze
 
   # def status
@@ -32,19 +32,19 @@ module Statusable
   #   STATUSES[:needs_appt][:key]
   # end
 
-  def status_texts
+  def status_texts(care_status)
     status = STATUSES[care_status.to_sym]
-    return status if status
-  end
-  
-  def status_key_text
-    status = STATUSES[care_status.to_sym]
-    return status[:key] if status 
+    status if status
   end
 
-  def status_help_text
+  def status_key_text(care_status)
     status = STATUSES[care_status.to_sym]
-    return status[:help] if status 
+    status[:key] if status
+  end
+
+  def status_help_text(care_status)
+    status = STATUSES[care_status.to_sym]
+    status[:help] if status
   end
 
   private
